@@ -1,5 +1,6 @@
 package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.Transaction;
 import com.uff.project.fintrace.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,16 +70,6 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<?> getTransactionsByCategory(@PathVariable String category) {
-        try {
-            List<Transaction> transactions = transactionRepository.findByCategory(category);
-            return buildResponse(transactions, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
-        }
-    }
 
     @GetMapping("/date-range")
     public ResponseEntity<?> getTransactionsByDateRange(

@@ -14,7 +14,9 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = true)
+    private Category category;
 
     @Column(name = "amount")
     private Double amount;
@@ -31,11 +33,11 @@ public class Transaction {
         this.type = type;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 
