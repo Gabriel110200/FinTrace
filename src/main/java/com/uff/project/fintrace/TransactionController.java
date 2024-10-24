@@ -3,6 +3,8 @@ package com.uff.project.fintrace;
 import com.uff.project.fintrace.model.Transaction;
 import com.uff.project.fintrace.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -20,13 +22,21 @@ public class TransactionController {
     }
 
     @GetMapping
-    public List<Transaction> getAllTransactions() {
-        return transactionRepository.findAll();
+    public ResponseEntity<List<Transaction>> getAllTransactions() {
+        try {
+            List<Transaction> transactions = transactionRepository.findAll();
+            return ResponseEntity.ok(transactions);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the full stack trace in the console for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
     }
 
     @PostMapping
     public Transaction createTransaction(@RequestBody Transaction transaction) {
         return transactionRepository.save(transaction);
+
     }
 
     @GetMapping("/type/{type}")

@@ -15,7 +15,10 @@ public class Transaction {
     private Type type;
 
     private String category;
-    private BigDecimal value;
+
+    @Column(name = "amount")
+    private Double amount;
+
     private LocalDate date;
     private String description;
 
@@ -36,12 +39,12 @@ public class Transaction {
         this.category = category;
     }
 
-    public BigDecimal getValue() {
-        return value;
+    public Double getAmount() {
+        return this.amount;
     }
 
-    public void setValue(BigDecimal value) {
-        this.value = value;
+    public void setValue(Double value) {
+        this.amount = value;
     }
 
     public LocalDate getDate() {
