@@ -43,8 +43,8 @@ public class Transaction {
         return this.amount;
     }
 
-    public void setValue(Double value) {
-        this.amount = value;
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public LocalDate getDate() {
