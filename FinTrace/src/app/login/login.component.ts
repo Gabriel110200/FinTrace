@@ -6,6 +6,7 @@ import { SharedService } from '../shared/service/shared.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { comparaSenhas } from './validator/login';
+import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
 
 
 @Component({
@@ -89,7 +90,7 @@ export class LoginComponent implements OnInit {
       this.conexaoAPI$ = this.service.cadastrarUsuario(formulario).subscribe(
         (dado) => {
           console.log('Resposta: ', dado)
-          this.toast.info(dado)
+          //this.toast.info(dado)
           this.formLogin.reset()
           this.formLogin.markAsPristine()
           this.cadastro = false
@@ -100,6 +101,7 @@ export class LoginComponent implements OnInit {
       )
 
     }else{
+      console.log('f', formulario)
 
       this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe(
         (dado) => {

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
+import { transacao } from '../model/transacao';
 
 @Component({
   selector: 'app-cadTransacao',
@@ -16,17 +18,11 @@ export class CadTransacaoComponent implements OnInit {
   editar:boolean = this.data.editar ?? null
   datas:number[] = []
   formulario:any = this.data.form 
+  tipoCategoria:categoria[] = this.data.categoria
 
   tipoTransacao:any[] = [
-    {id:'R', nome: 'Receita'},
-    {id:'D', nome: 'Despesa'},
-  ]
-
-  tipoCategoria:any[] = [
-    {id:'C', nome: 'Casa'},
-    {id:'E', nome: 'Escola'},
-    {id:'T', nome: 'Trabalho'},
-    {id:'X', nome: 'Estudo'}
+    {id:'RECEITA', nome: 'Receita'},
+    {id:'DESPESA', nome: 'Despesa'},
   ]
 
   constructor(
@@ -52,7 +48,14 @@ export class CadTransacaoComponent implements OnInit {
   }
 
   enviarTransacao(){
-    this.dialogRef.close(this.cadastro.value)
+    const transacao:transacao = {
+      type: this.cadastro.get('tipoTransacao')?.value,
+      category: this.cadastro.get('categoria')?.value,
+      amount: this.cadastro.get('valor')?.value,
+      date: this.cadastro.get('dataTransacao')?.value,
+      description: this.cadastro.get('descricao')?.value
+    }
+    this.dialogRef.close(transacao)
   }
 
   criaDatas(){

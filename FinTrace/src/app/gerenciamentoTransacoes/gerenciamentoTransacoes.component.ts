@@ -5,6 +5,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TabelaTransacoesComponent } from './tabelaTransacoes/tabelaTransacoes.component';
 import { TransacoesService } from './service/transacoes.service';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
+import { categoria } from '../gerenciamentoCategorias/model/categoria';
 
 @Component({
   selector: 'app-gerenciamentoTransacoes',
@@ -16,16 +19,14 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   pesquisa!:FormGroup
 
   tipoTransacao:any[] = [
-    {id:'R', nome: 'Receita'},
-    {id:'D', nome: 'Despesa'},
+    {id:'RECEITA', nome: 'Receita'},
+    {id:'DESPESA', nome: 'Despesa'},
   ]
 
-  tipoCategoria:any[] = [
-    {id:'C', nome: 'Casa'},
-    {id:'E', nome: 'Escola'},
-    {id:'T', nome: 'Trabalho'},
-    {id:'X', nome: 'Estudo'}
-  ]
+  get$!:Subscription
+  put$!:Subscription
+
+  tipoCategoria!:categoria[]
 
   meses:any[] = [
     'Janeiro',
@@ -51,7 +52,8 @@ export class GerenciamentoTransacoesComponent implements OnInit {
     private dialog: MatDialog,
     private form: FormBuilder,
     private router: Router,
-    protected service: TransacoesService
+    protected service: TransacoesService,
+    private categoriaService: CategoriaService
   ) { }
 
   ngOnInit() {
@@ -65,8 +67,20 @@ export class GerenciamentoTransacoesComponent implements OnInit {
       ano: [null, [Validators.required]]
 
     })
-    this.criaAnos()
-    setTimeout(()=> {this.anos}, 3000)
+
+    setTimeout(()=> {
+      this.listarCategorias()
+      this.criaAnos()
+      this.tabela?.recuperarTransacoes()
+    }, 0)
+  }
+
+  listarCategorias(){
+    this.get$ = this.categoriaService.listarCategorias().subscribe(
+      (dado) => {
+        this.tipoCategoria = dado
+      }
+    )
   }
 
   obtemDespesa(){
@@ -104,6 +118,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
 
   pesquisar(){
     this.tabela?.pesquisar(this.pesquisa.value)
+    this.pesquisa.reset()
   }
 
   resetar(){
@@ -124,13 +139,15 @@ export class GerenciamentoTransacoesComponent implements OnInit {
         height: '507px',
         data: {
           recorrente: acao,
-          acaoTitulo: 'Cadastro'
+          acaoTitulo: 'Cadastro',
+          categoria: this.tipoCategoria
         }
       })
   
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
-          this.tabela.adicionaRegistro(val)
+          console.log('recorrente:',val)
+          this.tabela.adicionaRecorrente(val)
         }
       })
 
@@ -140,7 +157,8 @@ export class GerenciamentoTransacoesComponent implements OnInit {
         height: '507px',
         data: {
           recorrente: null,
-          acaoTitulo: 'acao'
+          acaoTitulo: 'acao',
+          categoria: this.tipoCategoria
         }
       })
   

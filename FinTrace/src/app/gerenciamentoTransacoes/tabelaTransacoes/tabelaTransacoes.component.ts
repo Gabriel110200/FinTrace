@@ -6,6 +6,9 @@ import { TransacoesService } from '../service/transacoes.service';
 import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
 import { MatDialog } from '@angular/material/dialog';
 import { CadTransacaoComponent } from '../cadTransacao/cadTransacao.component';
+import { transacao } from '../model/transacao';
+import { ToastrService } from 'ngx-toastr';
+import { transacaoRecorrente } from '../model/transacaoRec';
 
 @Component({
   selector: 'app-tabelaTransacoes',
@@ -28,6 +31,9 @@ export class TabelaTransacoesComponent implements OnInit {
   end: number = this.limit + this.start
   selectedRowIndex!: number
 
+  get$!:Subscription
+  post$!:Subscription
+
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
 
   @Output()
@@ -38,7 +44,9 @@ export class TabelaTransacoesComponent implements OnInit {
 
   constructor(
     protected service: TransacoesService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private transacoesService: TransacoesService,
+    private toast: ToastrService
   ) { }
 
   ngOnChanges() {
@@ -81,10 +89,24 @@ export class TabelaTransacoesComponent implements OnInit {
     this.dados.paginator = this.paginator
   }
 
-  adicionaRegistro(item: any) {
-    this.lista.push(item)
-    console.log(this.lista)
-    this.atualizaRegistros()
+  adicionaRegistro(item: transacao) {
+    console.log(item)
+    this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+      (dado) => {
+        this.toast.success('Transacao cadastrada com sucesso')
+        this.recuperarTransacoes()
+      }
+    )
+  }
+
+  adicionaRecorrente(item: transacaoRecorrente) {
+    console.log(item)
+    this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(item).subscribe(
+      (dado) => {
+        this.toast.success('Transacao recorrente cadastrada com sucesso')
+        this.recuperarTransacoes()
+      }
+    )
   }
 
   retornaRegistros() {
@@ -107,7 +129,7 @@ export class TabelaTransacoesComponent implements OnInit {
       let listaEstatica:any = []
       const txt = this.lista.forEach(
         (dado) => {
-          if(dado.tipoTransacao == val.tipoTransacao){
+          if(dado.type == val.type){
             listaEstatica.push(val)
           } else {
             listaEstatica.push(dado)
@@ -147,6 +169,27 @@ export class TabelaTransacoesComponent implements OnInit {
 
   reiniciar() {
     this.dados.data = this.dadoOriginal.data
+  }
+
+  recuperarTransacoes(){
+    this.get$ = this.transacoesService.listarTransacoes().subscribe(
+      (dado) => {
+        console.log(dado)
+        this.lista = dado
+        this.recuperarRecorrentes()
+      }
+    )
+  }
+
+  recuperarRecorrentes(){
+    this.get$ = this.transacoesService.listarTransacoesRecorrentes().subscribe(
+      (dado) => {
+        if(dado.length>0){
+          this.lista.push(dado)
+        }
+        this.atualizaRegistros()
+      }
+    )
   }
 
   pesquisar(form: any) {
@@ -210,6 +253,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
   listarDatas(form: any) {
     console.log('passando lista datas')
+    console.log(form)
     const dataInicio = this.retornaDataInicio(form.mes, form.ano).toISOString().substring(0,10)
     const dataFim = this.retornaDataFim(form.mes, form.ano).toISOString().substring(0,10)
     console.log(dataInicio, dataFim)
@@ -218,7 +262,7 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         this.lista.filter(
           (dado) => {
-            return Date.parse(dado.dataTransacao.substring(0, 10)) >= Date.parse(dataInicio) && Date.parse(dado.dataTransacao.substring(0, 10)) <= Date.parse(dataFim)
+            return Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim)
           }
         )
       )
@@ -227,7 +271,7 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         this.lista.filter(
           (dado) => {
-            return Date.parse(dado.dataTransacao.substring(0, 10)) >= Date.parse(form.dataInicio)
+            return Date.parse(dado.date) >= Date.parse(form.dataInicio)
           }
         )
       )
@@ -236,7 +280,7 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         this.lista.filter(
           (dado) => {
-            return Date.parse(dado.dataTransacao.substring(0, 10)) <= Date.parse(form.dataFim)
+            return Date.parse(dado.date) <= Date.parse(form.dataFim)
           }
         )
       )
@@ -251,7 +295,7 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         dadoFiltrado.filter(
           (dado) => {
-            return dado.tipoTransacao == form.transacao
+            return dado.type == form.transacao
           }
         )
       )
@@ -261,7 +305,7 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         this.lista.filter(
           (dado) => {
-            return dado.tipoTransacao == form.transacao
+            return dado.type == form.transacao
           }
         )
       )
@@ -282,14 +326,14 @@ export class TabelaTransacoesComponent implements OnInit {
       console.log('filtro e categoria')
       this.dados.data = dadoFiltrado.filter(
         (dado) => {
-          return dado.categoria == form.categoria
+          return dado.category?.name == form.categoria.name
         }
       )
     } else if (form.categoria) {
       console.log('so categoria')
       this.dados.data = this.lista.filter(
         (dado) => {
-          return dado.categoria == form.categoria
+          return dado.category?.name == form.categoria.name
         }
       )
     } else if (dadoFiltrado) {

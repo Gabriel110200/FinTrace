@@ -23,7 +23,9 @@
   
   <mat-card-content>
 
-    <app-tabelaCategorias></app-tabelaCategorias>
+    <app-tabelaCategorias
+      (registroExcluido)="atualizarTabela()">
+    </app-tabelaCategorias>
 
   </mat-card-content>
 
