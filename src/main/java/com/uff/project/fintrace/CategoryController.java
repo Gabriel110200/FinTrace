@@ -22,7 +22,6 @@ public class CategoryController {
         this.categoryRepository = categoryRepository;
     }
 
-    // Helper method to build consistent response
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", success);
