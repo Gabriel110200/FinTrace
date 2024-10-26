@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { TransacoesService } from '../service/transacoes.service';
 import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
 import { MatDialog } from '@angular/material/dialog';
+import { CadTransacaoComponent } from '../cadTransacao/cadTransacao.component';
 
 @Component({
   selector: 'app-tabelaTransacoes',
@@ -90,10 +91,30 @@ export class TabelaTransacoesComponent implements OnInit {
     return this.dados.data
   }
 
-  editar(id: any) {
-    const dialogRef = this.dialog.open(DialogExcluirComponent);
+  editar(element: any) {
+    const dialogRef = this.dialog.open(CadTransacaoComponent, {
+      width: '700px',
+      height: '507px',
+      data: {
+        recorrente: null,
+        acaoTitulo: 'Atualização',
+        form: element,
+        editar: true
+      }
+    });
   
     dialogRef.afterClosed().subscribe(val=>{
+      let listaEstatica:any = []
+      const txt = this.lista.forEach(
+        (dado) => {
+          if(dado.tipoTransacao == val.tipoTransacao){
+            listaEstatica.push(val)
+          } else {
+            listaEstatica.push(dado)
+          }
+        }
+      )
+      this.lista = listaEstatica
       this.atualizaRegistros()
     })
   }
@@ -110,7 +131,7 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
   excluirForm() {
-    /*this.excluirRegistro$ = this.service.excluirForm481(id, cde).subscribe({
+    /*this.excluirRegistro$ = this.service.excluir().subscribe({
       next: (dado) => {
         console.log('dado:: ', dado)
       },
@@ -142,7 +163,7 @@ export class TabelaTransacoesComponent implements OnInit {
   retornaDataInicio(mes: string, ano: number): Date {
     const meses:any = {
       janeiro: 31,
-      fevereiro: 28, // 29 em anos bissextos
+      fevereiro: 28, 
       março: 31,
       abril: 30,
       maio: 31,
@@ -154,18 +175,15 @@ export class TabelaTransacoesComponent implements OnInit {
       novembro: 30,
       dezembro: 31
     };
-    // O mês começa em 0 no objeto Date (0 = janeiro, 1 = fevereiro, etc.)
+
     const mesIndex = Object.keys(meses).indexOf(mes);
-    
-    // Retorna a primeira data do mês
-    return new Date(ano, mesIndex, 1); // 1º dia do mês
+    return new Date(ano, mesIndex, 1)
   }
 
   retornaDataFim(mes: string, ano: number) {
-    // Mapeia os meses e seus dias
     const meses:any = {
       janeiro: 31,
-      fevereiro: 28, // 29 em anos bissextos
+      fevereiro: 28, 
       março: 31,
       abril: 30,
       maio: 31,
@@ -178,16 +196,13 @@ export class TabelaTransacoesComponent implements OnInit {
       dezembro: 31
     };
   
-  
-    // Verifica se o ano é bissexto
     if (mes.toLowerCase() === 'fevereiro' && this.anoBissexto(ano)) {
-      return new Date(ano, 1, 29); // Fevereiro, 29 dias
+      return new Date(ano, 1, 29)
     }
   
-    return new Date(ano, Object.keys(meses).indexOf(mes.toLowerCase()), meses[mes.toLowerCase()]); // Último dia do mês
+    return new Date(ano, Object.keys(meses).indexOf(mes.toLowerCase()), meses[mes.toLowerCase()])
   }
   
-  // Método auxiliar para verificar se um ano é bissexto
   anoBissexto(ano: number) {
     return (ano % 4 === 0 && ano % 100 !== 0) || (ano % 400 === 0);
   }

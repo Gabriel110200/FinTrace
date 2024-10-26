@@ -13,6 +13,9 @@ export class CadTransacaoComponent implements OnInit {
   acaoTitulo:string = 'Cadastro'
   desabilita:boolean = false
   recorrente = this.data.recorrente ?? null
+  editar:boolean = this.data.editar ?? null
+  datas:number[] = []
+  formulario:any = this.data.form 
 
   tipoTransacao:any[] = [
     {id:'R', nome: 'Receita'},
@@ -42,10 +45,30 @@ export class CadTransacaoComponent implements OnInit {
     })
 
     this.removeData(this.recorrente)
+    this.criaDatas()
+    if(this.editar){
+      this.atualizaCampos()
+    }
   }
 
   enviarTransacao(){
     this.dialogRef.close(this.cadastro.value)
+  }
+
+  criaDatas(){
+    for(let i=1;i<=31;i++){
+      this.datas.push(i)
+    }
+  }
+
+  atualizaCampos(){
+    this.cadastro.patchValue({
+      tipoTransacao: this.formulario.tipoTransacao,
+      categoria: this.formulario.categoria,
+      valor: this.formulario.valor, 
+      dataTransacao: this.formulario.dataTransacao,
+      descricao: this.formulario.descricao,
+    })
   }
 
   removeData(acao:string){
