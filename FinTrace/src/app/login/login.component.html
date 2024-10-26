@@ -1,0 +1,55 @@
+<mat-card class="login-card">
+  <mat-card-header>
+    <mat-card-title>
+      <h2 class="tituloLogin">FinTrace - {{acao}}</h2>
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="formLogin">
+      <mat-grid-list cols="12" rowHeight="100px" gutterSize="10px">
+
+        <mat-grid-tile colspan="12">
+          <mat-form-field floatLabel="always" appearance="outline" hideRequiredMarker="true">
+            <mat-label>Login</mat-label>
+            <input matInput formControlName="login" type="text">
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile colspan="12">
+          <mat-form-field floatLabel="always" appearance="outline" hideRequiredMarker="true">
+            <mat-label>Senha</mat-label>
+            <input matInput formControlName="senha" type={{exibeSenha}}><mat-icon class="icone_visualizar" (click)="mudaExibicao()">{{exibeIcone}}</mat-icon>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile colspan="12" *ngIf="cadastro">
+          <mat-form-field floatLabel="always" appearance="outline" hideRequiredMarker="true">
+            <mat-label>Redigite a senha</mat-label>
+            <input matInput formControlName="senha2" type={{exibeSenha}} (blur)="checaForm()">
+              <mat-icon class="icone_visualizar" (click)="mudaExibicao()">{{exibeIcone}}</mat-icon>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+    </form>
+
+    <mat-grid-list cols="12" rowHeight="50px" gutterSize="10px">
+      <mat-grid-tile colspan="12">
+
+        <div class="ajusteEsquerda">
+          <button mat-raised-button *ngIf="!cadastro" class="textoCadastro" (click)="ativarCadastro()"> Cadastrar</button>
+        </div>
+
+        <div class="ajusteDireita">
+          <button mat-raised-button *ngIf="formLogin.valid" class="textoValido" (click)="enviarDados()"> {{cadastro ? "Cadastrar" : "Entrar" }} </button>
+          <button mat-raised-button disabled *ngIf="!formLogin.valid" class="textoInvalido"> {{cadastro ? "Cadastrar" : "Entrar" }}</button>
+        </div>
+
+      </mat-grid-tile>
+    </mat-grid-list>
+
+  </mat-card-content>
+</mat-card>

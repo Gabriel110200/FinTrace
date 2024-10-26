@@ -1,0 +1,28 @@
+h3{
+    margin: auto;
+    align-self: center;
+}
+
+.receita{
+    color: green;
+}
+
+.despesa{
+    color: red;
+}
+
+.balancoPositivo{
+    color: green;
+}
+
+.balancoAlerta{
+    color:goldenrod
+}
+
+.balancoNulo{
+    color:rgb(0, 78, 161)
+}
+
+.balancoNegativo{
+    color:red
+}

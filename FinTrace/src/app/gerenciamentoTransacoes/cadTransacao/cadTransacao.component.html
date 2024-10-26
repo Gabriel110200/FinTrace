@@ -1,0 +1,94 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <h3>{{acaoTitulo}} de transação {{recorrente}}</h3>
+  </mat-card-header>
+
+  <br>
+
+  <mat-card-content>
+
+    <form [formGroup]="cadastro">
+
+      <mat-grid-list cols="12" rowHeight="120px" gutterSize="10px">
+    
+        <mat-grid-tile colspan="6">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Tipo de transação</mat-label>
+            <mat-select  formControlName="tipoTransacao" >
+              <mat-option *ngFor="let transacao of tipoTransacao" [value]="transacao.id"> {{ transacao.nome }} </mat-option> 
+            </mat-select>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+        <mat-grid-tile colspan="6">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Categoria</mat-label>
+            <mat-select  formControlName="categoria" >
+              <mat-option *ngFor="let categoria of tipoCategoria" [value]="categoria.id"> {{ categoria.nome }} </mat-option> 
+            </mat-select>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+        <mat-grid-tile colspan="6">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Valor</mat-label>
+            <input matInput type="number" formControlName="valor" style="position: absolute;left: 30px;"><ng-container readonly>R$</ng-container>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+        <mat-grid-tile colspan="6" *ngIf="!desabilita">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Data da transação</mat-label>
+            <input matInput type="date" formControlName="dataTransacao">
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+
+        <mat-grid-tile colspan="6" *ngIf="desabilita">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Data</mat-label>
+            <mat-select  formControlName="dataTransacao" >
+              <mat-option *ngFor="let data of datas" [value]="data"> {{ data }} </mat-option> 
+            </mat-select>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+        <mat-grid-tile colspan="12">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Descrição</mat-label>
+            <input matInput type="text" formControlName="descricao">
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+      </mat-grid-list>
+    
+    </form>
+
+    <mat-grid-list cols="12" rowHeight="50px" gutterSize="10px">
+      <mat-grid-tile colspan="12">
+        <div class="ajusteDireita">
+          <button mat-raised-button *ngIf="cadastro.valid" class="textoValido" (click)="enviarTransacao()">Salvar</button>
+          <button mat-raised-button *ngIf="!cadastro.valid" class="textoInvalido" disabled="true">Salvar</button>
+        </div>
+
+      </mat-grid-tile>
+    </mat-grid-list>
+
+  </mat-card-content>
+
+
+
+
+
+
+
+
+
+
+
+
