@@ -2,12 +2,9 @@ Esse projeto utiliza a versão do java 17 então certifique-se que você possui 
 
 Para rodar basta clonar o projeto e abrir o conteúdo da aplicação. Em seguida,enviar requisição post ou get para os endpoints. 
 
-Em seguida, acesse os endpoints: 
+Em seguida, para acessar os endpoints do back da api basta acessar localhost que automaticamente sera redirecionado para o swagger: 
 
-![image](https://github.com/user-attachments/assets/b1b5bdbb-c6bf-4ef6-97b9-f4d67d9aae73)
+![image](https://github.com/user-attachments/assets/a5f35d2b-ea66-4380-bc7b-e290b405a04f)
 
-
-
-![image](https://github.com/user-attachments/assets/45a2ccbc-0415-4769-b858-6b4c7b787822)
 
 
