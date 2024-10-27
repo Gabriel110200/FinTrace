@@ -1,0 +1,17 @@
+<mat-card style="width: 400px;height: 110px;">
+  <mat-grid-list cols="12" rowHeight="40px" gutterSize="1px">
+    <mat-grid-tile colspan="12">
+      {{ texto ? texto : 'Deseja excluir o registro?'}}
+    </mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list cols="12" rowHeight="60px" gutterSize="10px">
+    <mat-grid-tile colspan="4"></mat-grid-tile>
+    <mat-grid-tile colspan="2">
+      <button class="botao" mat-raised-button color="primary" [mat-dialog-close]="true">Sim</button>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2">
+      <button class="botao" mat-raised-button color="warn" [mat-dialog-close]="false">Não</button>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="4"></mat-grid-tile>
+  </mat-grid-list>
+</mat-card>
