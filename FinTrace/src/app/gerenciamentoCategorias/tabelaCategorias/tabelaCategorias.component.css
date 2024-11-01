@@ -1,0 +1,51 @@
+.textoSelecao{
+    /*font-family: 'Silka'!important;*/
+    font-size: 12px;
+}
+
+.mat-column-alteracao{
+    flex: 0 0 30px;
+    width: 10px!important
+}
+
+.container{
+    overflow: auto;
+    height: 400px;
+    width: 100%;
+}
+
+th, td{
+    /*font-family: 'Silka'!important;*/
+    font-size: 12px;
+}
+
+
+::-webkit-scrollbar {
+    width: 5px!important;
+    height: 5px!important;
+}
+
+::-webkit-scrollbar-track{
+    border-left: 5px solid white;
+    border-right: 5px solid white;
+}
+
+ ::-webkit-scrollbar-thumb{
+    background:#001c43!important;
+    border-radius: 5px!important;
+}
+
+.centered-cell {
+    text-align: center;
+    padding-top: 20px
+}
+
+.marcarDespesa{
+    background-color: rgba(255, 0, 0, 0.679);
+    color: white;
+}
+
+.marcarReceita{
+    background-color: rgba(2, 118, 18, 0.679);
+    color: white;
+}
