@@ -92,6 +92,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
   adicionaRegistro(item: transacao) {
     console.log(item)
+    
     this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
       (dado) => {
         this.toast.success('Transacao cadastrada com sucesso')

@@ -15,7 +15,7 @@ constructor(
 
 
   cadastrarUsuario(formulario:Usuario){
-    return this.http.post(`/api/users/register`, formulario)
+    return this.http.post(`/api/users/register`, formulario, { responseType: 'text' })
     .pipe(
       map((val) => val),
       take(1)

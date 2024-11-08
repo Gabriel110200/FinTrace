@@ -9,8 +9,8 @@ import { AuthGuard } from './shared/guard/authguard.guard';
 const routes: Routes = [
   {path:'',component: HomePageComponent, canActivate: [AuthGuard]},
   {path: 'login',component: LoginComponent},
-  {path: 'transacao', loadChildren:()=> import('./gerenciamentoTransacoes/gerenciamentoTransacoes.module').then(m=> m.GerenciamentoTransacoesModule)},
-  {path: 'categoria', loadChildren:()=> import('./gerenciamentoCategorias/gerenciamentoCategorias.module').then(m=> m.GerenciamentoCategoriasModule)},
+  {path: 'transacao', loadChildren:()=> import('./gerenciamentoTransacoes/gerenciamentoTransacoes.module').then(m=> m.GerenciamentoTransacoesModule), canActivate: [AuthGuard]},
+  {path: 'categoria', loadChildren:()=> import('./gerenciamentoCategorias/gerenciamentoCategorias.module').then(m=> m.GerenciamentoCategoriasModule), canActivate: [AuthGuard]},
 ];
 
 @NgModule({
