@@ -18,12 +18,14 @@
 </mat-grid-list>
   
   <mat-card-header>
-    <h3>Minhas Categorias</h3>
+      <br><br>
   </mat-card-header>
   
   <mat-card-content>
 
-    <app-tabelaCategorias></app-tabelaCategorias>
+    <app-tabelaCategorias
+      (registroExcluido)="atualizarTabela()">
+    </app-tabelaCategorias>
 
   </mat-card-content>
 

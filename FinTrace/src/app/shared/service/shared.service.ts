@@ -2,7 +2,7 @@ import { ResponseAPI } from './../model/responseAPI';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Usuario } from '../model/usuario';
-import { map } from 'rxjs';
+import { map, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +13,23 @@ constructor(
   private http: HttpClient
 ) { }
 
-  API= "http://localhost:8081/api"
 
   cadastrarUsuario(formulario:Usuario){
-    return this.http.post(`${this.API}/users/register`, formulario).pipe(
-      map((dado:any) => dado.data)
-    )
+    return this.http.post(`/api/users/register`, formulario)
+    .pipe(
+      map((val) => val),
+      take(1)
+    );
   }
 
   loginUsuario(formulario:Usuario){
-    return this.http.post(`${this.API}/users/login`, formulario).pipe(
-      map((dado:any) => dado.data)
-    )
+    console.log('shared service')
+    console.log(formulario)
+    return this.http.post(`/api/users/login`, formulario)
+    .pipe(
+      map((val) => val),
+      take(1)
+    );
   }
 
   obterUsuario(){

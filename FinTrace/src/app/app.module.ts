@@ -13,6 +13,7 @@ import { registerLocaleData } from '@angular/common';
 
 import localePt from '@angular/common/locales/pt';
 import { SharedModule } from './shared/SharedModule';
+import { HomePageComponent } from './homePage/homePage.component';
 
 registerLocaleData(localePt);
 
@@ -20,7 +21,8 @@ registerLocaleData(localePt);
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,

@@ -1,5 +1,11 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpClient } from "@angular/common/http"
+import { Injectable } from "@angular/core"
+import { map, take } from "rxjs"
+import { categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { ResponseAPIList, ResponseAPI } from "src/app/shared/model/responseAPI"
+import { transacao } from "../model/transacao"
+import { transacaoRecorrente } from "../model/transacaoRec"
+
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +16,11 @@ constructor(
   private http: HttpClient
 ) { }
 
-API= "http://localhost:8081/api"
-
 obterTipoTransacao(transacao:string){
   switch(transacao){
-    case 'R':
+    case 'RECEITA':
       return 'Receita'
-    case 'D':
+    case 'DESPESA':
       return 'Despesa'
   }
   return
@@ -24,24 +28,10 @@ obterTipoTransacao(transacao:string){
 
 obterClasseTransacao(transacao:string){
   switch(transacao){
-    case 'R':
+    case 'RECEITA':
       return 'marcarReceita'
-    case 'D':
+    case 'DESPESA':
       return 'marcarDespesa'
-  }
-  return
-}
-
-obterTipoCategoria(categoria: string){
-  switch(categoria){
-    case 'C':
-      return 'Casa'
-    case 'E':
-      return 'Escola'
-    case 'T':
-      return 'Trabalho'
-    case 'X':
-      return 'Estudo'
   }
   return
 }
@@ -63,10 +53,11 @@ obtemSaldoStatus(valor: number){
 }
 
 retornaTotalReceita(transacoes:any[]){
+  console.log('cheguei')
   let somaR = 0
   transacoes.forEach(transacao => {
-    if (transacao.tipoTransacao === 'R') {
-        somaR += transacao.valor
+    if (transacao.type === 'RECEITA') {
+        somaR += transacao.amount
     }
   })
   return somaR
@@ -75,8 +66,8 @@ retornaTotalReceita(transacoes:any[]){
 retornaTotalDespesa(transacoes:any[]){
   let somaD = 0
   transacoes.forEach(transacao => {
-    if (transacao.tipoTransacao === 'D') {
-        somaD += transacao.valor
+    if (transacao.type === 'DESPESA') {
+        somaD += transacao.amount
     }
   })
   return somaD
@@ -91,4 +82,41 @@ formatarValor(valor: number): string {
   }).format(valor);
 }
 
+listarTransacoes(){
+  return this.http.get<ResponseAPIList<transacao>>(`/api/transactions`)
+  .pipe(
+    map((val) => val.data),
+    take(1)
+  );
 }
+
+cadastrarTransacao(objeto:transacao){
+  return this.http.post<ResponseAPI<categoria>>(`/api/transactions`, objeto)
+  .pipe(
+    map((val) => val.data),
+    take(1)
+  );
+}
+
+
+listarTransacoesRecorrentes(){
+  return this.http.get<ResponseAPIList<transacaoRecorrente>>(`/api/recurrency-transactions`)
+  .pipe(
+    map((val) => val.data),
+    take(1)
+  );
+}
+
+cadastrarTransacoesRecorrentes(objeto:transacaoRecorrente){
+  return this.http.post<ResponseAPI<transacaoRecorrente>>(`/api/recurrency-transactions`, objeto)
+  .pipe(
+    map((val) => val.data),
+    take(1)
+  );
+}
+
+}
+
+
+
+

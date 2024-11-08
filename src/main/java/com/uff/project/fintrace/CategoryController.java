@@ -77,6 +77,7 @@ public class CategoryController {
             if (category.isPresent()) {
                 Category existingCategory = category.get();
                 existingCategory.setName(categoryDetails.getName());
+                existingCategory.setLimit(categoryDetails.getLimit());
                 Category updatedCategory = categoryRepository.save(existingCategory);
                 return buildResponse(updatedCategory, true, null);
             } else {

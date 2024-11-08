@@ -3,6 +3,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
+import { CategoriaService } from '../service/categoria.service';
+import { categoria } from '../model/categoria';
+import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ToastrService } from 'ngx-toastr';
+import { CadCategoriaComponent } from '../cadCategoria/cadCategoria.component';
+import { CadCategoriaLimiteComponent } from '../cadCategoriaLimite/cadCategoriaLimite.component';
 
 @Component({
   selector: 'app-tabelaCategorias',
@@ -12,12 +19,15 @@ import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/trans
 export class TabelaCategoriasComponent implements OnInit {
 
   lista: any[] = [
+  ]
 
+  lista2: any[] = [
   ]
 
   colunasTabela: string[] = ['descricao', 'alteracao']
-  dados = new MatTableDataSource<any>()
-  dadoOriginal = new MatTableDataSource<any>()
+  colunasTabela2: string[] = ['descricao', 'valor', 'alteracao']
+  dados = new MatTableDataSource<categoria[]>()
+  dados2 = new MatTableDataSource<categoria[]>() //mudar o tipo pra categoria nova
   excluirRegistro$!: Subscription
 
   start: number = 0
@@ -25,13 +35,21 @@ export class TabelaCategoriasComponent implements OnInit {
   end: number = this.limit + this.start
   selectedRowIndex!: number
 
+  get$!:Subscription
+  delete$!:Subscription
+  put$!:Subscription
+
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator2!: MatPaginator;
 
   @Output()
   registroExcluido: EventEmitter<number> = new EventEmitter
 
   constructor(
-    protected service: TransacoesService
+    protected service: TransacoesService,
+    private categoriaService: CategoriaService, 
+    private dialog: MatDialog,
+    private toast: ToastrService
   ) { }
 
   ngOnChanges() {
@@ -39,7 +57,6 @@ export class TabelaCategoriasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.atualizaRegistros()
   }
 
   tableScroll(e: any) {
@@ -58,7 +75,7 @@ export class TabelaCategoriasComponent implements OnInit {
   }
 
   getTableData(start: any, end: any) {
-    return this.dadoOriginal.data.filter((value, index) => index > start && index < end)
+    return this.dados.data.filter((value, index) => index > start && index < end)
   }
 
   updateIndex() {
@@ -69,8 +86,10 @@ export class TabelaCategoriasComponent implements OnInit {
 
   atualizaRegistros() {
     this.dados.data = this.lista
-    this.dadoOriginal.data = this.lista
+    this.dados2.data = this.lista
+    //this.dadoOriginal.data = this.lista
     this.dados.paginator = this.paginator
+    this.dados2.paginator = this.paginator2
   }
 
   adicionaRegistro(item: any) {
@@ -83,39 +102,120 @@ export class TabelaCategoriasComponent implements OnInit {
     return this.dados.data
   }
 
-  editar(id: any) {
+  buscaRegistros(){
+    this.get$ = this.categoriaService.listarCategorias().subscribe(
+      (dado) => {
+        this.lista = dado
+        this.atualizaRegistros()
+      }
+    )
+  }
 
+  editar(dado: categoria) {
+    const dialogRef = this.dialog.open(CadCategoriaComponent, {
+      width: '500px',
+      height: '246px',
+      data: {
+        dado: dado
+      }
+    })
 
+    dialogRef.afterClosed().subscribe(val=>{
+      console.log(val)
+      if(val?.id){
+        this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Categoria atualizada com sucesso')
+            this.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    })
+  }
+
+  editarLimite(dado: categoria) {
+    const dialogRef = this.dialog.open(CadCategoriaLimiteComponent, {
+      width: '500px',
+      height: '246px',
+      data: {
+        dado: dado
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(val=>{
+      console.log(val)
+      if(val?.id){
+        console.log('tenho valid')
+        console.log(val, val.id)
+        this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Limite atualizado com sucesso')
+            this.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    })
   }
 
   remover(id: number) {
-    /*const dialogRef = this.dialog.open(DialogExcluirComponent);
+    const dialogRef = this.dialog.open(DialogExcluirComponent);
   
     dialogRef.afterClosed().subscribe(val=>{
 
       if(val){
-      this.excluirForm(id, this.cde);
+      this.excluirForm(id);
     }
-  })*/
+  })
   }
 
-  excluirForm(id: number, cde: number) {
-    /*this.excluirRegistro$ = this.service.excluirForm481(id, cde).subscribe({
+  excluirForm(id: number) {
+    this.delete$ = this.categoriaService.removerCategoria(id).subscribe({
       next: (dado) => {
-        console.log('dado:: ', dado)
-      },
-      complete: () => {
         this.toast.success('Registro Excluído')
         this.registroExcluido.emit(id)
-
-      },
-    })*/
+      }
+    })
 
 
   }
 
+  removerLimiteCategoria(registro: categoria) {
+    const dialogRef = this.dialog.open(DialogExcluirComponent);
+  
+    dialogRef.afterClosed().subscribe(val=>{
+
+      if(val){
+        const remocaoLimite:categoria = {
+          id: registro.id,
+          name: registro.name,
+          limit: 0
+        }
+        console.log('remocao limite: ', remocaoLimite)
+        if(remocaoLimite.id){
+          this.put$ = this.categoriaService.atualizarCategoria(remocaoLimite.id, remocaoLimite).subscribe(
+            (dado)=> {
+              this.toast.success('Limite Removido')
+              this.buscaRegistros()
+            }
+          )
+        }else{
+          this.toast.error('Erro ao remover limite')
+        }
+      }
+    })
+  }
+
+
   reiniciar() {
-    this.dados.data = this.dadoOriginal.data
+    //this.dados.data = this.dadoOriginal.data
   }
 
   pesquisar(form: any) {
