@@ -95,8 +95,8 @@ export class GerenciamentoTransacoesComponent implements OnInit {
 
   obtemReceita(){
     const item = this.tabela?.retornaRegistros()
-    console.log('item>', item)
-    console.log(item?.length > 0)
+    //console.log('item>', item)
+    //console.log(item?.length > 0)
     if(item?.length > 0){
       return this.service.retornaTotalReceita(item)
     }else{
