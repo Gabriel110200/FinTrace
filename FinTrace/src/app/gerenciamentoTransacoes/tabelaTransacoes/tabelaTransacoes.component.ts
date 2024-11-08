@@ -106,6 +106,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
     const totalDespesas = this.service.retornaTotalDespesa(despesas)
     console.log('limite: ',item.category.limit )
+    console.log('despesas: ',totalDespesas )
 
     if((totalDespesas+item.amount)>item.category.limit && item.category.limit!=0){
       this.toast.error('Despesa irá ultrapassar o teto de gastos! Registro não adicionado')
@@ -131,6 +132,13 @@ export class TabelaTransacoesComponent implements OnInit {
 
   adicionaRecorrente(item: transacaoRecorrente) {
     console.log(item);
+    const itemOriginal:transacaoRecorrente = {
+      type: item.type,
+      category: item.category,
+      amount: item.amount,
+      description: item.description,
+      day: item.day
+    }
     const valor = item.amount;
     let podeAdicionarTodas = true;
   
@@ -158,6 +166,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
       const totalDespesas = this.service.retornaTotalDespesa(despesas)
       console.log('limite: ',item.category.limit )
+      console.log('despesas: ',totalDespesas )
       
 
       /*const data = this.service.retornaMes(mesLocal)
@@ -222,7 +231,7 @@ export class TabelaTransacoesComponent implements OnInit {
         }
 
       }
-      this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(item).subscribe(
+      this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(itemOriginal).subscribe(
         (dado) => {
           this.toast.success(`Transações recorrentes cadastradas com sucesso`);
           this.recuperarTransacoes();
