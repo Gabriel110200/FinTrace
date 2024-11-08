@@ -52,8 +52,39 @@ obtemSaldoStatus(valor: number){
   return
 }
 
+retornaMes(mes: string): string {
+  switch (mes) {
+      case '01':
+          return 'janeiro';
+      case '02':
+          return 'fevereiro';
+      case '03':
+          return 'março';
+      case '04':
+          return 'abril';
+      case '05':
+          return 'maio';
+      case '06':
+          return 'junho';
+      case '07':
+          return 'julho';
+      case '08':
+          return 'agosto';
+      case '09':
+          return 'setembro';
+      case '10':
+          return 'outubro';
+      case '11':
+          return 'novembro';
+      case '12':
+          return 'dezembro';
+      default:
+          return 'Mês inválido';
+  }
+}
+
 retornaTotalReceita(transacoes:any[]){
-  console.log('cheguei')
+  //console.log('cheguei')
   let somaR = 0
   transacoes.forEach(transacao => {
     if (transacao.type === 'RECEITA') {

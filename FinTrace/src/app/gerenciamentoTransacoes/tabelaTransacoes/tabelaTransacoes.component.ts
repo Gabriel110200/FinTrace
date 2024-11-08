@@ -92,24 +92,145 @@ export class TabelaTransacoesComponent implements OnInit {
 
   adicionaRegistro(item: transacao) {
     console.log(item)
-    
-    this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
-      (dado) => {
-        this.toast.success('Transacao cadastrada com sucesso')
-        this.recuperarTransacoes()
-      }
+    const data = this.service.retornaMes(item.date.substring(5,7))
+    const ano = +item.date.substring(0,4)
+    const idCategoria = item.category.id
+    console.log(data)
+
+    const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
+    const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
+    const valor = item.amount
+    const despesas = this.dados.data.filter(
+      (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
     )
+
+    const totalDespesas = this.service.retornaTotalDespesa(despesas)
+    console.log('limite: ',item.category.limit )
+
+    if((totalDespesas+item.amount)>item.category.limit && item.category.limit!=0){
+      this.toast.error('Despesa irá ultrapassar o teto de gastos! Registro não adicionado')
+    } else {
+      if ((totalDespesas + item.amount) >= (item.category.limit * 0.8) && item.category.limit!=0) {
+        this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+          (dado) => {
+            this.toast.warning('Atenção! Você já consumiu mais de 80% do Limite estipulado!')
+            this.toast.success('Transacao cadastrada com sucesso')
+            this.recuperarTransacoes()
+          }
+        )
+      } else {
+        this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+          (dado) => {
+            this.toast.success('Transacao cadastrada com sucesso')
+            this.recuperarTransacoes()
+          }
+        )
+      }
+    }
   }
 
   adicionaRecorrente(item: transacaoRecorrente) {
-    console.log(item)
-    this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(item).subscribe(
-      (dado) => {
-        this.toast.success('Transacao recorrente cadastrada com sucesso')
-        this.recuperarTransacoes()
+    console.log(item);
+    const valor = item.amount;
+    let podeAdicionarTodas = true;
+  
+    // Loop para cada mês do ano especificado
+    for (let mes = 1; mes <= 12; mes++) {
+      let mesLocal = ''
+      if(mes<10){
+        mesLocal = `0${mes}`
+      } else {
+        mesLocal = `${mes}`
       }
-    )
+
+      console.log(item)
+      const data = this.service.retornaMes(mesLocal)
+      const ano = 2024
+      const idCategoria = item.category.id
+      console.log(data)
+
+      const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
+      const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
+      const valor = item.amount
+      const despesas = this.dados.data.filter(
+        (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
+      )
+
+      const totalDespesas = this.service.retornaTotalDespesa(despesas)
+      console.log('limite: ',item.category.limit )
+      
+
+      /*const data = this.service.retornaMes(mesLocal)
+
+      console.log('mesLocal: ', data)
+      console.log('ano: ', ano)
+      console.log('return',this.retornaDataInicio(data, ano).toISOString().substring(0, 10))
+      console.log('return',this.retornaDataFim(data, ano).toISOString().substring(0, 10))
+      
+      const dataInicio = this.retornaDataInicio(mesLocal, ano)?.toISOString()?.substring(0, 10);
+      const dataFim = this.retornaDataFim(mesLocal, ano)?.toISOString()?.substring(0, 10);
+  
+      // Filtra as despesas existentes no mês e categoria especificados
+      const despesas = this.dados.data.filter(
+        (dado) => 
+          Date.parse(dado.date) >= Date.parse(dataInicio) &&
+          Date.parse(dado.date) <= Date.parse(dataFim) &&
+          dado.type == 'DESPESA' &&
+          dado.category.id == idCategoria
+      );*/
+  
+      // Soma as despesas do mês
+  
+      // Verifica se a adição da transação ultrapassa o limite
+      if ((totalDespesas + valor) > item.category.limit && item.category.limit!=0) {
+        this.toast.error(`Despesa no mês ${data.toUpperCase()} ultrapassará o teto de gastos! Transação não adicionada`);
+        podeAdicionarTodas = false;
+        break;
+      }
+    }
+  
+    // Se passar em todas as validações, adiciona a transação para cada mês
+    if (podeAdicionarTodas) {
+      for (let mes = 1; mes <= 12; mes++) {
+        let mesLocal = ''
+        if(mes<10){
+          mesLocal = `0${mes}`
+        } else {
+          mesLocal = `${mes}`
+        }
+  
+        console.log(item)
+        const data = this.service.retornaMes(mesLocal)
+        const ano = 2024
+        const idCategoria = item.category.id
+        console.log(data)
+  
+        const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
+        const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
+        const valor = item.amount
+        const despesas = this.dados.data.filter(
+          (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
+        )
+  
+        const totalDespesas = this.service.retornaTotalDespesa(despesas)
+        console.log('limite: ',item.category.limit )
+
+        if ((totalDespesas + valor) >= (item.category.limit * 0.8)  && item.category.limit!=0) {
+          this.toast.warning(`Atenção! No mês de ${data.toUpperCase()}, você já consumiu mais de 80% do Limite estipulado!`);
+        } else {
+         
+        }
+
+      }
+      this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(item).subscribe(
+        (dado) => {
+          this.toast.success(`Transações recorrentes cadastradas com sucesso`);
+          this.recuperarTransacoes();
+        }
+      );
+    }
   }
+  
 
   retornaRegistros() {
     return this.dados.data
@@ -205,6 +326,13 @@ export class TabelaTransacoesComponent implements OnInit {
       this.listarCategoria(form)
     }
   }
+  
+
+
+  
+
+
+  
 
   retornaDataInicio(mes: string, ano: number): Date {
     const meses:any = {
@@ -349,3 +477,7 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
 }
+function swicth(mes: string) {
+  throw new Error('Function not implemented.');
+}
+
