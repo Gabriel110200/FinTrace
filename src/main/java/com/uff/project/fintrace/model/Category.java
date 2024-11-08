@@ -14,6 +14,9 @@ public class Category {
 
     private String name;
 
+    @Column(name = "`limit`")
+    private double limit;
+
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
@@ -46,6 +49,22 @@ public class Category {
 
     public List<Transaction> getTransactions() {
         return transactions;
+    }
+
+    public double getLimit() {
+        return limit;
+    }
+
+    public void setLimit(double limit) {
+        this.limit = limit;
+    }
+
+    public void decreaseLimit(double amount) {
+        if (this.limit >= amount) {
+            this.limit -= amount;
+        } else {
+            this.limit = 0;
+        }
     }
 
     public void setTransactions(List<Transaction> transactions) {
