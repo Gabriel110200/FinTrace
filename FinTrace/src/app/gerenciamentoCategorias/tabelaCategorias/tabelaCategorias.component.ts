@@ -20,9 +20,13 @@ export class TabelaCategoriasComponent implements OnInit {
   lista: any[] = [
   ]
 
+  lista2: any[] = [
+  ]
+
   colunasTabela: string[] = ['descricao', 'alteracao']
+  colunasTabela2: string[] = ['descricao', 'valor', 'alteracao']
   dados = new MatTableDataSource<categoria[]>()
-  dadoOriginal = new MatTableDataSource<categoria[]>()
+  dados2 = new MatTableDataSource<categoria[]>() //mudar o tipo pra categoria nova
   excluirRegistro$!: Subscription
 
   start: number = 0
@@ -35,6 +39,7 @@ export class TabelaCategoriasComponent implements OnInit {
   put$!:Subscription
 
   @ViewChild(MatPaginator, { static: false }) paginator!: MatPaginator;
+  @ViewChild(MatPaginator, { static: false }) paginator2!: MatPaginator;
 
   @Output()
   registroExcluido: EventEmitter<number> = new EventEmitter
@@ -69,7 +74,7 @@ export class TabelaCategoriasComponent implements OnInit {
   }
 
   getTableData(start: any, end: any) {
-    return this.dadoOriginal.data.filter((value, index) => index > start && index < end)
+    return this.dados.data.filter((value, index) => index > start && index < end)
   }
 
   updateIndex() {
@@ -80,8 +85,10 @@ export class TabelaCategoriasComponent implements OnInit {
 
   atualizaRegistros() {
     this.dados.data = this.lista
-    this.dadoOriginal.data = this.lista
+    this.dados2.data = this.lista2
+    //this.dadoOriginal.data = this.lista
     this.dados.paginator = this.paginator
+    this.dados2.paginator = this.paginator2
   }
 
   adicionaRegistro(item: any) {
@@ -152,7 +159,7 @@ export class TabelaCategoriasComponent implements OnInit {
   }
 
   reiniciar() {
-    this.dados.data = this.dadoOriginal.data
+    //this.dados.data = this.dadoOriginal.data
   }
 
   pesquisar(form: any) {

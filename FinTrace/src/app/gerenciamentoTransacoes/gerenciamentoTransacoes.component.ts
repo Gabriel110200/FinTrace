@@ -25,6 +25,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
 
   get$!:Subscription
   put$!:Subscription
+  post$!:Subscription
 
   tipoCategoria!:categoria[]
 
@@ -94,6 +95,8 @@ export class GerenciamentoTransacoesComponent implements OnInit {
 
   obtemReceita(){
     const item = this.tabela?.retornaRegistros()
+    console.log('item>', item)
+    console.log(item?.length > 0)
     if(item?.length > 0){
       return this.service.retornaTotalReceita(item)
     }else{
@@ -147,7 +150,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
           console.log('recorrente:',val)
-          this.tabela.adicionaRecorrente(val)
+          this.tabela?.adicionaRecorrente(val)
         }
       })
 
@@ -164,7 +167,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
-          this.tabela.adicionaRegistro(val)
+          this.tabela?.adicionaRegistro(val)
         }
       })
 

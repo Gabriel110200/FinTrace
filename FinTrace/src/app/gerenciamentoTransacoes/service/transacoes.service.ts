@@ -53,10 +53,11 @@ obtemSaldoStatus(valor: number){
 }
 
 retornaTotalReceita(transacoes:any[]){
+  console.log('cheguei')
   let somaR = 0
   transacoes.forEach(transacao => {
-    if (transacao.tipoTransacao === 'R') {
-        somaR += transacao.valor
+    if (transacao.type === 'RECEITA') {
+        somaR += transacao.amount
     }
   })
   return somaR
@@ -65,8 +66,8 @@ retornaTotalReceita(transacoes:any[]){
 retornaTotalDespesa(transacoes:any[]){
   let somaD = 0
   transacoes.forEach(transacao => {
-    if (transacao.tipoTransacao === 'D') {
-        somaD += transacao.valor
+    if (transacao.type === 'DESPESA') {
+        somaD += transacao.amount
     }
   })
   return somaD

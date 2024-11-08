@@ -84,6 +84,7 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
   atualizaRegistros() {
+    console.log('lista: ', this.lista)
     this.dados.data = this.lista
     this.dadoOriginal.data = this.lista
     this.dados.paginator = this.paginator
@@ -174,7 +175,7 @@ export class TabelaTransacoesComponent implements OnInit {
   recuperarTransacoes(){
     this.get$ = this.transacoesService.listarTransacoes().subscribe(
       (dado) => {
-        console.log(dado)
+        console.log('transacoes: ',dado)
         this.lista = dado
         this.recuperarRecorrentes()
       }
@@ -185,7 +186,8 @@ export class TabelaTransacoesComponent implements OnInit {
     this.get$ = this.transacoesService.listarTransacoesRecorrentes().subscribe(
       (dado) => {
         if(dado.length>0){
-          this.lista.push(dado)
+          console.log('dado: ', dado)
+          this.lista.push(...dado)
         }
         this.atualizaRegistros()
       }
@@ -219,7 +221,7 @@ export class TabelaTransacoesComponent implements OnInit {
       dezembro: 31
     };
 
-    const mesIndex = Object.keys(meses).indexOf(mes);
+    const mesIndex = Object.keys(meses).indexOf(mes.toLowerCase());
     return new Date(ano, mesIndex, 1)
   }
 
@@ -262,6 +264,9 @@ export class TabelaTransacoesComponent implements OnInit {
         form,
         this.lista.filter(
           (dado) => {
+            console.log(dado.date)
+            console.log(dataInicio)
+            console.log(dataFim)
             return Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim)
           }
         )

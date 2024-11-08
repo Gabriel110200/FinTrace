@@ -7,3 +7,4 @@ export interface transacao{
     date: string,
     description: string
 }
+

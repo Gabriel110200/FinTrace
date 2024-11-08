@@ -10,6 +10,7 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CategoriaService } from './service/categoria.service';
 import { ToastrService } from 'ngx-toastr';
+import { CadCategoriaLimiteComponent } from './cadCategoriaLimite/cadCategoriaLimite.component';
 
 @Component({
   selector: 'app-gerenciamentoCategorias',
@@ -155,6 +156,32 @@ export class GerenciamentoCategoriasComponent implements OnInit {
         })
       }
     })    
+  }
+
+  dialogLimiteCategoria(){
+
+    const dialogRef = this.dialog.open(CadCategoriaLimiteComponent, {
+      width: '500px',
+      height: '246px',
+      data: {
+        dado: null
+      }
+    })
+
+    /*dialogRef.afterClosed().subscribe(val=>{
+      if(val){
+        this.post$ = this.categoriaService.cadastrarCategoria(val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Categoria cadastrada com sucesso')
+            this.tabela?.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    })*/ 
   }
 
 

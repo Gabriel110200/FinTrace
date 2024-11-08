@@ -1,0 +1,47 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <h3>Limite de gastos de Categoria</h3>
+  </mat-card-header>
+
+  <br>
+
+  <mat-card-content>
+
+    <form [formGroup]="cadastro">
+
+      <mat-grid-list cols="12" rowHeight="120px" gutterSize="10px">
+      
+        <mat-grid-tile colspan="6">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Categoria</mat-label>
+            <mat-select  formControlName="categoria" >
+              <mat-option *ngFor="let categoria of categorias" [value]="categoria"> {{ categoria.name }} </mat-option> 
+            </mat-select>
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+        <mat-grid-tile colspan="6">
+          <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+            <mat-label>Valor</mat-label>
+            <span matPrefix class="espaco">R$</span>
+            <input matInput type="number" formControlName="valor">
+            <mat-error>Preencha o campo.</mat-error>
+          </mat-form-field>
+        </mat-grid-tile>
+      
+      </mat-grid-list>
+    
+    </form>
+
+    <mat-grid-list cols="12" rowHeight="50px" gutterSize="10px">
+      <mat-grid-tile colspan="12">
+        <div class="ajusteDireita">
+          <button mat-raised-button *ngIf="cadastro.valid" class="textoValido" (click)="enviarCategoria()">Salvar</button>
+          <button mat-raised-button *ngIf="!cadastro.valid" class="textoInvalido" disabled="true">Salvar</button>
+        </div>
+
+      </mat-grid-tile>
+    </mat-grid-list>
+
+  </mat-card-content>

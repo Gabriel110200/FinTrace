@@ -34,7 +34,8 @@
         <mat-grid-tile colspan="6">
           <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
             <mat-label>Valor</mat-label>
-            <input matInput type="number" formControlName="valor" style="position: absolute;left: 30px;"><ng-container readonly>R$</ng-container>
+            <span matPrefix class="espaco">R$</span>
+            <input matInput type="number" formControlName="valor">
             <mat-error>Preencha o campo.</mat-error>
           </mat-form-field>
         </mat-grid-tile>

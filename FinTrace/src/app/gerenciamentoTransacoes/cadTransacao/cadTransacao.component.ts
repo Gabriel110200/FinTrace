@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
 import { transacao } from '../model/transacao';
+import { transacaoRecorrente } from '../model/transacaoRec';
 
 @Component({
   selector: 'app-cadTransacao',
@@ -48,14 +49,26 @@ export class CadTransacaoComponent implements OnInit {
   }
 
   enviarTransacao(){
-    const transacao:transacao = {
-      type: this.cadastro.get('tipoTransacao')?.value,
-      category: this.cadastro.get('categoria')?.value,
-      amount: this.cadastro.get('valor')?.value,
-      date: this.cadastro.get('dataTransacao')?.value,
-      description: this.cadastro.get('descricao')?.value
+    if(this.recorrente){
+      const transacao:transacaoRecorrente = {
+        type: this.cadastro.get('tipoTransacao')?.value,
+        category: this.cadastro.get('categoria')?.value,
+        amount: this.cadastro.get('valor')?.value,
+        day: this.cadastro.get('dataTransacao')?.value,
+        description: this.cadastro.get('descricao')?.value
+      }
+      this.dialogRef.close(transacao)
+
+    }else{
+      const transacao:transacao = {
+        type: this.cadastro.get('tipoTransacao')?.value,
+        category: this.cadastro.get('categoria')?.value,
+        amount: this.cadastro.get('valor')?.value,
+        date: this.cadastro.get('dataTransacao')?.value,
+        description: this.cadastro.get('descricao')?.value
+      }
+      this.dialogRef.close(transacao)
     }
-    this.dialogRef.close(transacao)
   }
 
   criaDatas(){
