@@ -7,12 +7,21 @@ import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { comparaSenhas } from './validator/login';
 import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition('void => *', [
+        style({ opacity: 0 }),
+        animate('1s ease-out', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
 
@@ -64,6 +73,17 @@ export class LoginComponent implements OnInit {
 
     validaSenha?.setValidators([Validators.required]);
     validaSenha?.updateValueAndValidity();
+  }
+
+  ativarLogin(){
+    const validaSenha = this.formLogin.get('senha2')
+    
+    this.formLogin.reset()
+    this.formLogin.markAsPristine()
+    this.cadastro = false
+    this.acao = "Login"
+    validaSenha?.clearValidators()
+    validaSenha?.updateValueAndValidity()
   }
 
   checaForm(){
