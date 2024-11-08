@@ -168,20 +168,20 @@ export class GerenciamentoCategoriasComponent implements OnInit {
       }
     })
 
-    /*dialogRef.afterClosed().subscribe(val=>{
+    dialogRef.afterClosed().subscribe(val=>{
       if(val){
-        this.post$ = this.categoriaService.cadastrarCategoria(val).subscribe({
+        this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
           next: (dado) => {
             console.log(dado),
-            this.toast.success('Categoria cadastrada com sucesso')
-            this.tabela?.buscaRegistros()
+            this.toast.success('Teto da catgoria cadastrado com sucesso')
+            //this.tabela?.buscaRegistros()
           },
           error: (dado) => {
             this.toast.error(dado)
           }
         })
       }
-    })*/ 
+    }) 
   }
 
 

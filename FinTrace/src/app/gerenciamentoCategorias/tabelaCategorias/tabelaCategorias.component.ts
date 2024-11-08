@@ -9,6 +9,7 @@ import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/d
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { CadCategoriaComponent } from '../cadCategoria/cadCategoria.component';
+import { CadCategoriaLimiteComponent } from '../cadCategoriaLimite/cadCategoriaLimite.component';
 
 @Component({
   selector: 'app-tabelaCategorias',
@@ -85,7 +86,7 @@ export class TabelaCategoriasComponent implements OnInit {
 
   atualizaRegistros() {
     this.dados.data = this.lista
-    this.dados2.data = this.lista2
+    this.dados2.data = this.lista
     //this.dadoOriginal.data = this.lista
     this.dados.paginator = this.paginator
     this.dados2.paginator = this.paginator2
@@ -136,6 +137,34 @@ export class TabelaCategoriasComponent implements OnInit {
     })
   }
 
+  editarLimite(dado: categoria) {
+    const dialogRef = this.dialog.open(CadCategoriaLimiteComponent, {
+      width: '500px',
+      height: '246px',
+      data: {
+        dado: dado
+      }
+    })
+
+    dialogRef.afterClosed().subscribe(val=>{
+      console.log(val)
+      if(val?.id){
+        console.log('tenho valid')
+        console.log(val, val.id)
+        this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Limite atualizado com sucesso')
+            this.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    })
+  }
+
   remover(id: number) {
     const dialogRef = this.dialog.open(DialogExcluirComponent);
   
@@ -157,6 +186,33 @@ export class TabelaCategoriasComponent implements OnInit {
 
 
   }
+
+  removerLimiteCategoria(registro: categoria) {
+    const dialogRef = this.dialog.open(DialogExcluirComponent);
+  
+    dialogRef.afterClosed().subscribe(val=>{
+
+      if(val){
+        const remocaoLimite:categoria = {
+          id: registro.id,
+          name: registro.name,
+          limit: 0
+        }
+        console.log('remocao limite: ', remocaoLimite)
+        if(remocaoLimite.id){
+          this.put$ = this.categoriaService.atualizarCategoria(remocaoLimite.id, remocaoLimite).subscribe(
+            (dado)=> {
+              this.toast.success('Limite Removido')
+              this.buscaRegistros()
+            }
+          )
+        }else{
+          this.toast.error('Erro ao remover limite')
+        }
+      }
+    })
+  }
+
 
   reiniciar() {
     //this.dados.data = this.dadoOriginal.data

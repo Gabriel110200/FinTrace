@@ -46,6 +46,7 @@ export class CadCategoriaComponent implements OnInit {
   enviarCategoria(){
     const id = this.cadastro.get('id')?.value ?? null
     const categoriaCadastrada:categoria = {
+      limit: 0,
       name: this.cadastro.get('descricao')?.value
     }
     if(id!=null){

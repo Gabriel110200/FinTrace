@@ -25,11 +25,11 @@
                 <mat-menu #menu="matMenu" xPosition="before">
                   <button mat-menu-item (click)="editar(element)">
                     <mat-icon class="icone">edit</mat-icon>
-                    <span class="textoSelecao">Editar Registro</span>
+                    <span class="textoSelecao">Editar Categoria</span>
                   </button>
                   <button mat-menu-item (click)="remover(element.id)">
                     <mat-icon class="icone">delete</mat-icon>
-                    <span class="textoSelecao">Excluir Registro</span>
+                    <span class="textoSelecao">Excluir Categoria</span>
                   </button>
                 </mat-menu>
             
@@ -71,7 +71,7 @@
         <ng-container matColumnDef="valor">
           <th mat-header-cell *matHeaderCellDef> VALOR </th>
           <td mat-cell *matCellDef="let element">
-              {{element.name}}
+            {{ element.limit ? 'R$ ' + element.limit : 'Limite não estipulado' }}
           </td>
         </ng-container>
       
@@ -84,13 +84,13 @@
                   <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #menu="matMenu" xPosition="before">
-                  <button mat-menu-item (click)="editar(element)">
+                  <button mat-menu-item (click)="editarLimite(element)">
                     <mat-icon class="icone">edit</mat-icon>
-                    <span class="textoSelecao">Editar Registro</span>
+                    <span class="textoSelecao">Adicionar Limite</span>
                   </button>
-                  <button mat-menu-item (click)="remover(element.id)">
+                  <button mat-menu-item (click)="removerLimiteCategoria(element)">
                     <mat-icon class="icone">delete</mat-icon>
-                    <span class="textoSelecao">Excluir Registro</span>
+                    <span class="textoSelecao">Excluir Limite</span>
                   </button>
                 </mat-menu>
             

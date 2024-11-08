@@ -1,4 +1,5 @@
 export interface categoria{
     id?: number,
-    name: string
+    name: string,
+    limit: number
 }
