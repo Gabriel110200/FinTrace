@@ -2,6 +2,7 @@ package com.uff.project.fintrace;
 
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.Transaction;
+import com.uff.project.fintrace.repository.CategoryRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,10 +19,12 @@ import java.util.Map;
 public class TransactionController {
 
     private final TransactionRepository transactionRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository) {
+    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
@@ -51,7 +54,25 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
         try {
+
+            Long categoryId = transaction.getCategory().getId();
+
+            Category category = categoryRepository.findById(categoryId).orElse(null);
+
+            if (category != null) {
+                if (category.getLimit() >= transaction.getAmount()) {
+                    category.setLimit(category.getLimit() - transaction.getAmount());
+                }
+                categoryRepository.save(category);
+                transaction.setCategory(category);
+            }
+
             Transaction savedTransaction = transactionRepository.save(transaction);
+
+            if (transaction.getCategory() != null) {
+                categoryRepository.save(transaction.getCategory());
+            }
+
             return buildResponse(savedTransaction, true, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,28 +80,7 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/type/{type}")
-    public ResponseEntity<?> getTransactionsByType(@PathVariable Transaction.Type type) {
-        try {
-            List<Transaction> transactions = transactionRepository.findByType(type);
-            return buildResponse(transactions, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
-        }
-    }
 
 
-    @GetMapping("/date-range")
-    public ResponseEntity<?> getTransactionsByDateRange(
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate) {
-        try {
-            List<Transaction> transactions = transactionRepository.findByDateBetween(startDate, endDate);
-            return buildResponse(transactions, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
-        }
-    }
+
 }
