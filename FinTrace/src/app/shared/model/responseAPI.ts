@@ -1,4 +1,9 @@
 export interface ResponseAPI<T>{
   sucess:boolean
-  data: T | T[]
+  data: T
+}
+
+export interface ResponseAPIList<T>{
+  sucess:boolean
+  data: T[]
 }

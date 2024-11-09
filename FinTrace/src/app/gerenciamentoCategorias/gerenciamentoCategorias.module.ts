@@ -7,6 +7,7 @@ import { MaterialModule } from '../angular-material/material.module';
 import { GerenciamentoCategoriasRoutingModule } from './gerenciamentoCategorias-routing.module';
 import { TabelaCategoriasComponent } from './tabelaCategorias/tabelaCategorias.component';
 import { CadCategoriaComponent } from './cadCategoria/cadCategoria.component';
+import { CadCategoriaLimiteComponent } from './cadCategoriaLimite/cadCategoriaLimite.component';
 
 @NgModule({
   imports: [
@@ -20,7 +21,8 @@ import { CadCategoriaComponent } from './cadCategoria/cadCategoria.component';
   declarations: [
     GerenciamentoCategoriasComponent,
     TabelaCategoriasComponent,
-    CadCategoriaComponent
+    CadCategoriaComponent,
+    CadCategoriaLimiteComponent
   ]
 })
 export class GerenciamentoCategoriasModule { }

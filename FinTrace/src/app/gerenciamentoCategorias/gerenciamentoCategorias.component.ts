@@ -7,6 +7,10 @@ import { TabelaTransacoesComponent } from '../gerenciamentoTransacoes/tabelaTran
 import { CadCategoriaComponent } from './cadCategoria/cadCategoria.component';
 import { TabelaCategoriasComponent } from './tabelaCategorias/tabelaCategorias.component';
 import { ActivatedRoute, Route, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { CategoriaService } from './service/categoria.service';
+import { ToastrService } from 'ngx-toastr';
+import { CadCategoriaLimiteComponent } from './cadCategoriaLimite/cadCategoriaLimite.component';
 
 @Component({
   selector: 'app-gerenciamentoCategorias',
@@ -16,6 +20,8 @@ import { ActivatedRoute, Route, Router } from '@angular/router';
 export class GerenciamentoCategoriasComponent implements OnInit {
 
   pesquisa!:FormGroup
+  post$!:Subscription
+  put$!:Subscription
 
   tipoTransacao:any[] = [
     {id:'R', nome: 'Receita'},
@@ -53,7 +59,9 @@ export class GerenciamentoCategoriasComponent implements OnInit {
     private dialog: MatDialog,
     private form: FormBuilder,
     private router: Router,
-    protected service: TransacoesService
+    private toast: ToastrService,
+    protected service: TransacoesService,
+    private categoriaService: CategoriaService
   ) { }
 
   ngOnInit() {
@@ -68,7 +76,9 @@ export class GerenciamentoCategoriasComponent implements OnInit {
 
     })
     this.criaAnos()
-    setTimeout(()=> {this.anos}, 3000)
+    setTimeout(()=>{
+      this.tabela?.buscaRegistros()
+    },0)
   }
 
   obtemDespesa(){
@@ -104,6 +114,10 @@ export class GerenciamentoCategoriasComponent implements OnInit {
     }
   }
 
+  atualizarTabela(){
+    this.tabela?.buscaRegistros()
+  }
+
   pesquisar(){
     this.tabela?.pesquisar(this.pesquisa.value)
   }
@@ -122,17 +136,52 @@ export class GerenciamentoCategoriasComponent implements OnInit {
 
     const dialogRef = this.dialog.open(CadCategoriaComponent, {
       width: '500px',
-      height: '246px'
+      height: '246px',
+      data: {
+        dado: null
+      }
     })
 
     dialogRef.afterClosed().subscribe(val=>{
       if(val){
-        this.tabela.adicionaRegistro(val)
+        this.post$ = this.categoriaService.cadastrarCategoria(val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Categoria cadastrada com sucesso')
+            this.tabela?.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    })    
+  }
+
+  dialogLimiteCategoria(){
+
+    const dialogRef = this.dialog.open(CadCategoriaLimiteComponent, {
+      width: '500px',
+      height: '246px',
+      data: {
+        dado: null
       }
     })
 
-
-    
+    dialogRef.afterClosed().subscribe(val=>{
+      if(val){
+        this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
+          next: (dado) => {
+            console.log(dado),
+            this.toast.success('Teto da catgoria cadastrado com sucesso')
+            //this.tabela?.buscaRegistros()
+          },
+          error: (dado) => {
+            this.toast.error(dado)
+          }
+        })
+      }
+    }) 
   }
 
 

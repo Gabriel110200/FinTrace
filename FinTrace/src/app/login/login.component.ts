@@ -6,12 +6,22 @@ import { SharedService } from '../shared/service/shared.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { comparaSenhas } from './validator/login';
+import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
+import { trigger, transition, style, animate } from '@angular/animations';
 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations: [
+    trigger('fadeIn', [
+      transition('void => *', [
+        style({ opacity: 0 }),
+        animate('1s ease-out', style({ opacity: 1 }))
+      ])
+    ])
+  ]
 })
 export class LoginComponent implements OnInit {
 
@@ -65,6 +75,17 @@ export class LoginComponent implements OnInit {
     validaSenha?.updateValueAndValidity();
   }
 
+  ativarLogin(){
+    const validaSenha = this.formLogin.get('senha2')
+    
+    this.formLogin.reset()
+    this.formLogin.markAsPristine()
+    this.cadastro = false
+    this.acao = "Login"
+    validaSenha?.clearValidators()
+    validaSenha?.updateValueAndValidity()
+  }
+
   checaForm(){
     if(this.formLogin.errors && this.formLogin.errors?.['senhasDiferentes']){
       if(this.toast.currentlyActive){
@@ -89,7 +110,7 @@ export class LoginComponent implements OnInit {
       this.conexaoAPI$ = this.service.cadastrarUsuario(formulario).subscribe(
         (dado) => {
           console.log('Resposta: ', dado)
-          this.toast.info(dado)
+          //this.toast.info(dado)
           this.formLogin.reset()
           this.formLogin.markAsPristine()
           this.cadastro = false
@@ -100,6 +121,7 @@ export class LoginComponent implements OnInit {
       )
 
     }else{
+      console.log('f', formulario)
 
       this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe(
         (dado) => {

@@ -1,0 +1,97 @@
+
+.home-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-image: url('/assets/vecteezy_digital-animation-of-business-stock-market-price-chart_2273297.gif');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff; /* Texto branco para contraste */
+  font-family: 'Roboto', sans-serif;
+}
+
+.welcome-card {
+  padding: 2rem;
+  max-width: 500px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  animation: fadeIn 1s ease-in-out;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.welcome-message {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #FFD700; /* Cor dourada */
+  margin-bottom: 10px;
+  animation: slideInLeft 1s ease-out;
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  color: #cfc01e;
+  margin: 10px 0 20px 0;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.menu-button {
+  width: 100%;
+  font-size: 1.1rem;
+  padding: 0.8rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  background-color: #333; /* Fundo preto para contraste */
+  color: #d4b817; /* Texto dourado */
+  border-radius: 6px;
+}
+
+.menu-button:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 8px 15px rgba(255, 215, 0, 0.3); /* Efeito dourado */
+}
+
+.botao-transacoes{
+  color: white!important;
+  background-color: rgb(1, 138, 192)!important;
+}
+
+.botao-cadastro{
+  color: white!important;
+  background-color: rgb(35, 161, 62)!important;
+}
+
+.botao-sair{
+  color: white!important;
+  background-color: rgb(255, 0, 0)!important;
+}
