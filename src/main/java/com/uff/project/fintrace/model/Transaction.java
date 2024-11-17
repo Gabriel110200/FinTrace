@@ -14,6 +14,14 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private Type type;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = true)
     private Category category;
