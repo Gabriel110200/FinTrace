@@ -16,11 +16,6 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/")
-    public String hello(){
-        return "Hello World";
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user)
     {
