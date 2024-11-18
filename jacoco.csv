@@ -1,0 +1,13 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+fintrace,com.uff.project.fintrace,UserController,0,71,0,2,0,17,0,4,0,3
+fintrace,com.uff.project.fintrace,FintraceApplication,5,3,0,0,2,1,1,1,1,1
+fintrace,com.uff.project.fintrace,CategoryController,62,133,2,8,17,28,2,10,0,7
+fintrace,com.uff.project.fintrace,HomeController,2,3,0,0,1,1,1,1,1,1
+fintrace,com.uff.project.fintrace,RecurrencyTransactionController,118,6,4,0,29,3,6,1,4,1
+fintrace,com.uff.project.fintrace,User,0,24,0,0,0,10,0,7,0,7
+fintrace,com.uff.project.fintrace,TransactionController,0,129,2,8,0,29,2,7,0,4
+fintrace,com.uff.project.fintrace.model,Transaction.Type,0,15,0,0,0,2,0,1,0,1
+fintrace,com.uff.project.fintrace.model,RecurrencyTransaction,60,3,0,0,19,1,13,1,13,1
+fintrace,com.uff.project.fintrace.model,Category,29,24,2,0,10,10,5,7,4,7
+fintrace,com.uff.project.fintrace.model,RecurrencyTransaction.Type,0,15,0,0,0,2,0,1,0,1
+fintrace,com.uff.project.fintrace.model,Transaction,20,25,0,0,8,11,6,7,6,7

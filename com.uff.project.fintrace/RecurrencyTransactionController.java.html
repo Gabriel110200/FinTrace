@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RecurrencyTransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace</a> &gt; <span class="el_source">RecurrencyTransactionController.java</span></div><h1>RecurrencyTransactionController.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace;
+
+
+import com.uff.project.fintrace.model.RecurrencyTransaction;
+import com.uff.project.fintrace.repository.RecurrencyTransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/recurrency-transactions&quot;)
+public class RecurrencyTransactionController {
+
+    private final RecurrencyTransactionRepository recurrencyTransactionRepository;
+
+    @Autowired
+<span class="fc" id="L23">    public RecurrencyTransactionController(RecurrencyTransactionRepository recurrencyTransactionRepository) {</span>
+<span class="fc" id="L24">        this.recurrencyTransactionRepository = recurrencyTransactionRepository;</span>
+<span class="fc" id="L25">    }</span>
+
+    private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; buildResponse(Object data, boolean success, String errorMessage) {
+<span class="nc" id="L28">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L29">        response.put(&quot;success&quot;, success);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        if (success) {</span>
+<span class="nc" id="L31">            response.put(&quot;data&quot;, data);</span>
+        } else {
+<span class="nc" id="L33">            response.put(&quot;error&quot;, errorMessage);</span>
+        }
+<span class="nc" id="L35">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PostMapping
+    public ResponseEntity&lt;?&gt; createRecurrencyTransaction(@RequestBody RecurrencyTransaction transactionRequest) {
+        try {
+<span class="nc" id="L41">            List&lt;RecurrencyTransaction&gt; transactions = generateRecurringTransactions(transactionRequest);</span>
+<span class="nc" id="L42">            recurrencyTransactionRepository.saveAll(transactions);</span>
+<span class="nc" id="L43">            return buildResponse(transactions, true, null);</span>
+<span class="nc" id="L44">        } catch (Exception e) {</span>
+<span class="nc" id="L45">            e.printStackTrace();</span>
+<span class="nc" id="L46">            return buildResponse(null, false, e.getMessage());</span>
+        }
+    }
+
+    private List&lt;RecurrencyTransaction&gt; generateRecurringTransactions(RecurrencyTransaction transactionRequest) {
+<span class="nc" id="L51">        List&lt;RecurrencyTransaction&gt; transactions = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L52">        int day = transactionRequest.getDay();</span>
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        for (int month = 1; month &lt;= 12; month++) {</span>
+<span class="nc" id="L55">            LocalDate date = LocalDate.of(2024, month, Math.min(day, LocalDate.of(2024, month, 1).lengthOfMonth()));</span>
+<span class="nc" id="L56">            RecurrencyTransaction transaction = new RecurrencyTransaction(</span>
+<span class="nc" id="L57">                    transactionRequest.getType(),</span>
+<span class="nc" id="L58">                    transactionRequest.getCategory(),</span>
+<span class="nc" id="L59">                    transactionRequest.getAmount(),</span>
+<span class="nc" id="L60">                    transactionRequest.getDescription(),</span>
+                    day
+            );
+<span class="nc" id="L63">            transaction.setDate(date);</span>
+<span class="nc" id="L64">            transactions.add(transaction);</span>
+        }
+
+<span class="nc" id="L67">        return transactions;</span>
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;?&gt; getAllRecurrencyTransactions() {
+        try {
+<span class="nc" id="L73">            List&lt;RecurrencyTransaction&gt; transactions = recurrencyTransactionRepository.findAll();</span>
+<span class="nc" id="L74">            return buildResponse(transactions, true, null);</span>
+<span class="nc" id="L75">        } catch (Exception e) {</span>
+<span class="nc" id="L76">            e.printStackTrace();</span>
+<span class="nc" id="L77">            return buildResponse(null, false, e.getMessage());</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
