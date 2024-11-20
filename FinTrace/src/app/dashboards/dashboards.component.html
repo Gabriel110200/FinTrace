@@ -1,0 +1,27 @@
+<div class="home-container">
+
+  <mat-grid-list cols="12" rowHeight="60px">
+    <mat-grid-tile colspan="12"></mat-grid-tile>
+  </mat-grid-list>
+  
+  <mat-card class="cardCampos" appearance="outlined">
+    <br>
+    <div class="ajustetxte">
+      <button mat-fab class="iconeRetorno" (click)="home()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    </div>
+    <br>
+    <mat-card-content>
+        <app-dashboardDespesas />
+        <app-dashboardFluxoCaixa />
+        <app-dashboardResumo />
+    </mat-card-content>
+  </mat-card>
+  
+  <mat-grid-list cols="12" rowHeight="60px">
+    <mat-grid-tile colspan="12"></mat-grid-tile>
+  </mat-grid-list>
+
+</div>
+

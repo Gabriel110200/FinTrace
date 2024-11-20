@@ -86,6 +86,11 @@
   background-color: rgb(1, 138, 192)!important;
 }
 
+.botao-dashboard{
+  color: white!important;
+  background-color: rgb(224, 200, 17)!important;
+}
+
 .botao-cadastro{
   color: white!important;
   background-color: rgb(35, 161, 62)!important;

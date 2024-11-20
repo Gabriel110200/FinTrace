@@ -1,0 +1,73 @@
+<h1>Resumo Financeiro Mensal</h1>
+<br>
+<mat-grid-list cols="12" rowHeight="100px" gutterSize="5px">
+
+  <mat-grid-tile colspan="3">
+    <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+      <mat-label>Mês</mat-label>
+      <mat-select [(ngModel)]="campo2" name="campo">
+        <mat-option *ngFor="let mes of meses" [value]="mes" (click)="preencherDados(campo2, campo)">{{dashboard.retornaNomeMes(mes)}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
+
+  <mat-grid-tile colspan="3">
+    <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+      <mat-label>Ano</mat-label>
+      <mat-select [(ngModel)]="campo" name="campo">
+        <mat-option *ngFor="let ano of anos" [value]="ano" (click)="preencherDados(campo2, campo)">{{ano}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
+
+
+
+</mat-grid-list>
+
+<br>
+
+<mat-grid-list cols="12" rowHeight="50px" gutterSize="5px">
+
+  <mat-grid-tile colspan="12">
+    <h3>O balanço da sua conta até o mês de {{dashboard.retornaNomeMes(campo2)}} é de <span [class]="retornaFormatacao(totalReceitaTotal - totalDespesaTotal)">{{transacoes.formatarValor(totalReceitaTotal - totalDespesaTotal)}}</span></h3>
+  </mat-grid-tile>
+
+  <mat-grid-tile colspan="12">
+    <h3>Neste mês, a sua receita acumulada é de <span class="textoSucesso">{{transacoes.formatarValor(totalReceitaPeriodo)}}</span> e suas despesas acumuladas são de <span class="textoRisco">{{transacoes.formatarValor(totalDespesaPeriodo)}}</span></h3>
+  </mat-grid-tile>
+
+  <mat-grid-tile colspan="12">
+    <h3>O saldo final da sua conta nesse período é de <span [class]="retornaFormatacao((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo))">{{transacoes.formatarValor((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo))}}</span></h3>
+  </mat-grid-tile>
+
+</mat-grid-list>
+
+<mat-grid-list cols="12" rowHeight="80px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) > 100">
+  <mat-grid-tile colspan="12">
+    <ng-container >
+      <h3>Parabéns, continue mantendo o bom controle financeiro!</h3><mat-icon>sentiment_very_satisfied</mat-icon>
+    </ng-container>
+  </mat-grid-tile>
+</mat-grid-list>
+
+
+
+<mat-grid-list cols="12" rowHeight="200px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) <= 100">
+  <ng-container *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) > 0 ">
+    <h3>Olá! Seu saldo está abaixo de R$100. É importante tomar algumas medidas para melhorar suas finanças e evitar dificuldades:</h3>
+    <ul>
+      <li>Revise seus gastos fixos: Verifique suas assinaturas mensais (plano de celular, streaming, etc.) e cancele aquelas que você não está utilizando regularmente.</li><br>
+      <li>Compre de forma mais consciente: Faça uma lista de compras antes de ir ao mercado e evite compras por impulso. Isso pode fazer uma grande diferença no final do mês!</li><br>
+      <li>Estabeleça metas de economia: Tente poupar uma quantia fixa por semana ou mês, mesmo que pequena. Com o tempo, isso pode ajudar a melhorar seu saldo.</li>
+    </ul>
+  </ng-container>
+
+  <ng-container *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) < 0">
+    <h3>Atenção! Seu saldo está negativo ou zerado, e isso pode gerar dificuldades financeiras a longo prazo:</h3>
+    <ul>
+      <li>Negocie suas dívidas: Entre em contato com os credores para tentar renegociar prazos ou reduzir o valor das parcelas. Isso pode aliviar seu fluxo de caixa e ajudar a regularizar sua situação.</li><br>
+      <li>Revise seus gastos essenciais: Identifique despesas não essenciais que podem ser cortadas ou reduzidas temporariamente, como lazer, alimentação fora de casa, entre outros.</li><br>
+      <li>Considere uma fonte de renda extra: Se possível, procure oportunidades de trabalho temporário, freelances ou venda de itens que não usa mais. Isso pode ajudar a melhorar sua situação financeira no curto prazo.</li><br>
+    </ul>
+  </ng-container>
+</mat-grid-list>

@@ -104,6 +104,31 @@ retornaTotalDespesa(transacoes:any[]){
   return somaD
 }
 
+retornaTotalReceitaPeriodo(transacoes:any[], periodo:string){
+  //console.log('cheguei')
+  let somaR = 0
+  transacoes.forEach(transacao => {
+    if (transacao.type === 'RECEITA' && 
+        transacao.date.substring(5,7)===periodo
+    ) {
+        somaR += transacao.amount
+    }
+  })
+  return somaR
+}
+
+retornaTotalDespesaPeriodo(transacoes:any[], periodo:string){
+  let somaD = 0
+  transacoes.forEach(transacao => {
+    if (transacao.type === 'DESPESA' && 
+        transacao.date.substring(5,7)===periodo
+    ) {
+        somaD += transacao.amount
+    }
+  })
+  return somaD
+}
+
 formatarValor(valor: number): string {
   return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
