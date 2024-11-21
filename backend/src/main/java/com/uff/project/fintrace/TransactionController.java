@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +55,7 @@ public class TransactionController {
     @PostMapping
     public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
         try {
-
             Long categoryId = transaction.getCategory().getId();
-
             Category category = categoryRepository.findById(categoryId).orElse(null);
 
             if (category != null) {
@@ -67,13 +66,37 @@ public class TransactionController {
                 transaction.setCategory(category);
             }
 
-            Transaction savedTransaction = transactionRepository.save(transaction);
+            List<Transaction> recurringTransactions = new ArrayList<>();
+            if (transaction.isRecurring()) {
+                Transaction savedTransaction = transactionRepository.save(transaction);
 
-            if (transaction.getCategory() != null) {
-                categoryRepository.save(transaction.getCategory());
+                LocalDate nextDate = transaction.getDate();
+                for (int i = 1; i <= 11; i++) {
+                    nextDate = nextDate.plusMonths(1);
+
+                    Transaction newTransaction = new Transaction();
+                    newTransaction.setType(transaction.getType());
+                    newTransaction.setCategory(transaction.getCategory());
+                    newTransaction.setAmount(transaction.getAmount());
+                    newTransaction.setDate(nextDate);
+                    newTransaction.setDescription(transaction.getDescription());
+                    newTransaction.setRecurring(false);
+
+                    if (category != null && category.getLimit() >= transaction.getAmount()) {
+                        category.setLimit(category.getLimit() - transaction.getAmount());
+                        categoryRepository.save(category);
+                    }
+                    recurringTransactions.add(newTransaction);
+                }
+                transactionRepository.saveAll(recurringTransactions);
+                recurringTransactions.add(0, savedTransaction);
+
+            } else {
+                Transaction savedTransaction = transactionRepository.save(transaction);
+                return buildResponse(savedTransaction, true, null);
             }
 
-            return buildResponse(savedTransaction, true, null);
+            return buildResponse(recurringTransactions, true, null);
         } catch (Exception e) {
             e.printStackTrace();
             return buildResponse(null, false, e.getMessage());
