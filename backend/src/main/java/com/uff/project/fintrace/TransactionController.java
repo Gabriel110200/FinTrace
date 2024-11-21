@@ -52,27 +52,59 @@ public class TransactionController {
         }
     }
 
+    @GetMapping("/recurring")
+    public ResponseEntity<?> getRecurringTransactions() {
+        try {
+            List<Transaction> recurringTransactions = transactionRepository.findByIsRecurringTrue();
+            return buildResponse(recurringTransactions, true, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return buildResponse(null, false, e.getMessage());
+        }
+    }
+
+    @GetMapping("/non-recurring")
+    public ResponseEntity<?> getNonRecurringTransactions() {
+        try {
+            List<Transaction> nonRecurringTransactions = transactionRepository.findByIsRecurringFalse();
+            return buildResponse(nonRecurringTransactions, true, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return buildResponse(null, false, e.getMessage());
+        }
+    }
+
+
     @PostMapping
     public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
         try {
             Long categoryId = transaction.getCategory().getId();
             Category category = categoryRepository.findById(categoryId).orElse(null);
 
-            if (category != null) {
-                if (category.getLimit() >= transaction.getAmount()) {
-                    category.setLimit(category.getLimit() - transaction.getAmount());
-                }
-                categoryRepository.save(category);
-                transaction.setCategory(category);
+            if (category == null) {
+                return buildResponse(null, false, "Categoria não encontrada");
             }
+
+            if (category.getLimit() < transaction.getAmount()) {
+                return buildResponse(null, false, "Transação excede limite definido!");
+            }
+
+            category.setLimit(category.getLimit() - transaction.getAmount());
+            categoryRepository.save(category);
+            transaction.setCategory(category);
 
             List<Transaction> recurringTransactions = new ArrayList<>();
             if (transaction.isRecurring()) {
+
                 Transaction savedTransaction = transactionRepository.save(transaction);
 
                 LocalDate nextDate = transaction.getDate();
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
+
+                    if (category.getLimit() < transaction.getAmount()) {
+                        return buildResponse(null, false, "Transação excede limite definido!");
+                    }
 
                     Transaction newTransaction = new Transaction();
                     newTransaction.setType(transaction.getType());
@@ -80,18 +112,19 @@ public class TransactionController {
                     newTransaction.setAmount(transaction.getAmount());
                     newTransaction.setDate(nextDate);
                     newTransaction.setDescription(transaction.getDescription());
-                    newTransaction.setRecurring(false);
+                    newTransaction.setRecurring(true);
 
-                    if (category != null && category.getLimit() >= transaction.getAmount()) {
-                        category.setLimit(category.getLimit() - transaction.getAmount());
-                        categoryRepository.save(category);
-                    }
+                    category.setLimit(category.getLimit() - transaction.getAmount());
+                    categoryRepository.save(category);
+
                     recurringTransactions.add(newTransaction);
                 }
-                transactionRepository.saveAll(recurringTransactions);
-                recurringTransactions.add(0, savedTransaction);
 
+                transactionRepository.saveAll(recurringTransactions);
+
+                recurringTransactions.add(0, savedTransaction);
             } else {
+
                 Transaction savedTransaction = transactionRepository.save(transaction);
                 return buildResponse(savedTransaction, true, null);
             }
@@ -102,6 +135,7 @@ public class TransactionController {
             return buildResponse(null, false, e.getMessage());
         }
     }
+
 
 
 
