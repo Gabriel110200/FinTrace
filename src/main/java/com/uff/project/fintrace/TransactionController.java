@@ -86,7 +86,10 @@ public class TransactionController {
             }
 
             if (category.getLimit() < transaction.getAmount()) {
-                return buildResponse(null, false, "Transação excede limite definido!");
+                return ResponseEntity.badRequest().body(Map.of(
+                        "success", false,
+                        "data", "Transação excede limite definido!"
+                ));
             }
 
             category.setLimit(category.getLimit() - transaction.getAmount());
@@ -103,7 +106,10 @@ public class TransactionController {
                     nextDate = nextDate.plusMonths(1);
 
                     if (category.getLimit() < transaction.getAmount()) {
-                        return buildResponse(null, false, "Transação excede limite definido!");
+                        return ResponseEntity.badRequest().body(Map.of(
+                                "success", false,
+                                "data", "Transação excede limite definido!"
+                        ));
                     }
 
                     Transaction newTransaction = new Transaction();
@@ -124,7 +130,6 @@ public class TransactionController {
 
                 recurringTransactions.add(0, savedTransaction);
             } else {
-
                 Transaction savedTransaction = transactionRepository.save(transaction);
                 return buildResponse(savedTransaction, true, null);
             }
@@ -132,9 +137,13 @@ public class TransactionController {
             return buildResponse(recurringTransactions, true, null);
         } catch (Exception e) {
             e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "data", e.getMessage()
+            ));
         }
     }
+
 
 
 
