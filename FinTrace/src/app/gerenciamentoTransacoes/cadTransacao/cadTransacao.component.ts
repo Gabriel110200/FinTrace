@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
 import { transacao } from '../model/transacao';
@@ -37,44 +37,22 @@ export class CadTransacaoComponent implements OnInit {
       tipoTransacao: [null, [Validators.required]],
       categoria: [null, [Validators.required]],
       valor: [null, [Validators.required]], 
-      dataTransacao: [null, [Validators.required]],
+      data: [null, [Validators.required, this.dataValidaValidator]],
       descricao: [null],
     })
-
-    this.removeData(this.recorrente)
-    this.criaDatas()
-    if(this.editar){
-      this.atualizaCampos()
-    }
   }
 
   enviarTransacao(){
-    if(this.recorrente){
-      const transacao:transacaoRecorrente = {
-        type: this.cadastro.get('tipoTransacao')?.value,
-        category: this.cadastro.get('categoria')?.value,
-        amount: this.cadastro.get('valor')?.value,
-        day: this.cadastro.get('dataTransacao')?.value,
-        description: this.cadastro.get('descricao')?.value
-      }
-      this.dialogRef.close(transacao)
-
-    }else{
-      const transacao:transacao = {
-        type: this.cadastro.get('tipoTransacao')?.value,
-        category: this.cadastro.get('categoria')?.value,
-        amount: this.cadastro.get('valor')?.value,
-        date: this.cadastro.get('dataTransacao')?.value,
-        description: this.cadastro.get('descricao')?.value
-      }
-      this.dialogRef.close(transacao)
+    const transacao:transacao = {
+      type: this.cadastro.get('tipoTransacao')?.value,
+      category: this.cadastro.get('categoria')?.value,
+      amount: this.cadastro.get('valor')?.value,
+      date: this.cadastro.get('data')?.value,
+      description: this.cadastro.get('descricao')?.value,
+      recurring: this.recorrente ? true : false
     }
-  }
 
-  criaDatas(){
-    for(let i=1;i<=31;i++){
-      this.datas.push(i)
-    }
+    this.dialogRef.close(transacao)
   }
 
   atualizaCampos(){
@@ -82,19 +60,27 @@ export class CadTransacaoComponent implements OnInit {
       tipoTransacao: this.formulario.tipoTransacao,
       categoria: this.formulario.categoria,
       valor: this.formulario.valor, 
-      dataTransacao: this.formulario.dataTransacao,
+      data: this.formulario.dataTransacao,
       descricao: this.formulario.descricao,
     })
   }
 
-  removeData(acao:string){
-    if(acao=='recorrente'){
-      const data = this.cadastro.get('dataTransacao')
-      this.desabilita = true
-      data?.clearValidators()
-      data?.updateValueAndValidity()
+  dataValidaValidator(control: any) {
+    const value = control.value;
+    if (!value) return null; 
+    
+    const data = new Date(value);
+    const dia = data.getDate();
+    const mes = data.getMonth();
+    const ano = data.getFullYear();
+
+    if (dia !== new Date(ano, mes, dia).getDate()) {
+      return { dataInvalida: true };
     }
+
+    return null;
   }
+
 
 
 }

@@ -27,7 +27,6 @@ export class DashboardFluxoCaixaComponent implements OnInit {
   presente = false
 
   $Transacoes!: Observable<transacao[]>
-  $TransacoesRec!: Observable<transacaoRecorrente[]>
 
   constructor(
     private transacoes: TransacoesService,
@@ -45,16 +44,10 @@ export class DashboardFluxoCaixaComponent implements OnInit {
     this.totalDespesa = []
 
     this.$Transacoes = this.transacoes.listarTransacoes() 
-    this.$TransacoesRec = this.transacoes.listarTransacoesRecorrentes()
 
-    forkJoin([this.$Transacoes, this.$TransacoesRec]).subscribe({
-      next: ([dado1,dado2]) => {
+    forkJoin([this.$Transacoes]).subscribe({
+      next: ([dado1]) => {
         dado1.forEach(
-          (dado) => {
-            montante.push(dado)
-          }
-        )
-        dado2.forEach(
           (dado) => {
             montante.push(dado)
           }

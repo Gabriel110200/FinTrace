@@ -91,7 +91,15 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
   adicionaRegistro(item: transacao) {
-    console.log(item)
+    
+    this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+      (dado) => {
+        this.toast.success('Transacao cadastrada com sucesso')
+        this.recuperarTransacoes()
+      }
+    )
+
+    /*console.log(item)
     const data = this.service.retornaMes(item.date.substring(5,7))
     const ano = +item.date.substring(0,4)
     const idCategoria = item.category.id
@@ -127,11 +135,19 @@ export class TabelaTransacoesComponent implements OnInit {
           }
         )
       }
-    }
+    }*/
   }
 
-  adicionaRecorrente(item: transacaoRecorrente) {
-    console.log(item);
+  adicionaRecorrente(item: transacao) {
+
+    this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+      (dado) => {
+        this.toast.success(`Transações recorrentes cadastradas com sucesso`);
+        this.recuperarTransacoes();
+      }
+    );
+
+    /*console.log(item);
     const itemOriginal:transacaoRecorrente = {
       type: item.type,
       category: item.category,
@@ -140,10 +156,10 @@ export class TabelaTransacoesComponent implements OnInit {
       day: item.day
     }
     const valor = item.amount;
-    let podeAdicionarTodas = true;
+    let podeAdicionarTodas = true;*/
   
     // Loop para cada mês do ano especificado
-    for (let mes = 1; mes <= 12; mes++) {
+    /*for (let mes = 1; mes <= 12; mes++) {
       let mesLocal = ''
       if(mes<10){
         mesLocal = `0${mes}`
@@ -166,7 +182,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
       const totalDespesas = this.service.retornaTotalDespesa(despesas)
       console.log('limite: ',item.category.limit )
-      console.log('despesas: ',totalDespesas )
+      console.log('despesas: ',totalDespesas )*/
       
 
       /*const data = this.service.retornaMes(mesLocal)
@@ -191,15 +207,15 @@ export class TabelaTransacoesComponent implements OnInit {
       // Soma as despesas do mês
   
       // Verifica se a adição da transação ultrapassa o limite
-      if ((totalDespesas + valor) > item.category.limit && item.category.limit!=0) {
+     /* if ((totalDespesas + valor) > item.category.limit && item.category.limit!=0) {
         this.toast.error(`Despesa no mês ${data.toUpperCase()} ultrapassará o teto de gastos! Transação não adicionada`);
         podeAdicionarTodas = false;
         break;
       }
-    }
+    }*/
   
     // Se passar em todas as validações, adiciona a transação para cada mês
-    if (podeAdicionarTodas) {
+    /*if (podeAdicionarTodas) {
       for (let mes = 1; mes <= 12; mes++) {
         let mesLocal = ''
         if(mes<10){
@@ -237,7 +253,7 @@ export class TabelaTransacoesComponent implements OnInit {
           this.recuperarTransacoes();
         }
       );
-    }
+    }*/
   }
   
 
