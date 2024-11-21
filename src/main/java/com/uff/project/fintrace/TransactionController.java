@@ -85,15 +85,18 @@ public class TransactionController {
                 return buildResponse(null, false, "Categoria não encontrada");
             }
 
-            if (category.getLimit() < transaction.getAmount()) {
+            if (transaction.getType() == Transaction.Type.DESPESA && category.getLimit() < transaction.getAmount()) {
                 return ResponseEntity.badRequest().body(Map.of(
                         "success", false,
                         "data", "Transação excede limite definido!"
                 ));
             }
 
-            category.setLimit(category.getLimit() - transaction.getAmount());
-            categoryRepository.save(category);
+            if (transaction.getType() == Transaction.Type.DESPESA) {
+                category.setLimit(category.getLimit() - transaction.getAmount());
+                categoryRepository.save(category);
+            }
+
             transaction.setCategory(category);
 
             List<Transaction> recurringTransactions = new ArrayList<>();
@@ -105,7 +108,7 @@ public class TransactionController {
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
 
-                    if (category.getLimit() < transaction.getAmount()) {
+                    if (transaction.getType() == Transaction.Type.DESPESA && category.getLimit() < transaction.getAmount()) {
                         return ResponseEntity.badRequest().body(Map.of(
                                 "success", false,
                                 "data", "Transação excede limite definido!"
@@ -120,16 +123,18 @@ public class TransactionController {
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
 
-                    category.setLimit(category.getLimit() - transaction.getAmount());
-                    categoryRepository.save(category);
+                    if (transaction.getType() == Transaction.Type.DESPESA) {
+                        category.setLimit(category.getLimit() - transaction.getAmount());
+                        categoryRepository.save(category);
+                    }
 
                     recurringTransactions.add(newTransaction);
                 }
 
                 transactionRepository.saveAll(recurringTransactions);
-
                 recurringTransactions.add(0, savedTransaction);
             } else {
+
                 Transaction savedTransaction = transactionRepository.save(transaction);
                 return buildResponse(savedTransaction, true, null);
             }
@@ -143,6 +148,7 @@ public class TransactionController {
             ));
         }
     }
+
 
 
 
