@@ -171,6 +171,101 @@ cadastrarTransacoesRecorrentes(objeto:transacaoRecorrente){
   );
 }
 
+verificaLimiteGasto(lista:transacao[], insert:boolean){
+  const categorias: any[] = []
+  for(let i=0;i<lista.length;i++){
+    var novo = true
+    if(i == 0){
+      const par = {
+        categoria: lista[i].category.name,
+        tipo: lista[i].type,
+        valor: lista[i].amount,
+        limite: lista[i].category.limit,
+        mes: lista[i].date.substring(5,7),
+        ano: lista[i].date.substring(0,4),
+      }
+      categorias.push(par)
+    } else {
+      for(let j=0; j<categorias.length;j++){
+        if(
+          lista[i].category.name == categorias[j].categoria &&
+          lista[i].type == categorias[j].tipo &&
+          lista[i].date.substring(5,7) == categorias[j].mes &&
+          lista[i].date.substring(0,4) == categorias[j].ano
+         ){
+          novo = false
+          categorias[j].valor += lista[i].amount
+         }
+      }
+      if(novo){
+        const par = {
+          categoria: lista[i].category.name,
+          tipo: lista[i].type,
+          valor: lista[i].amount,
+          limite: lista[i].category.limit,
+          mes: lista[i].date.substring(5,7),
+          ano: lista[i].date.substring(0,4),
+        }
+        categorias.push(par)
+      }
+    }
+  }
+  console.log('minhas categorias: ', categorias)
+  return this.checaDespesas(categorias, insert)
+}
+
+checaDespesas(categorias:any[], insert:boolean){
+  const despesas:any[] = []
+  console.log('checa despesas: ', categorias)
+  categorias.forEach(
+    (dado:any) => {
+      if(dado.tipo == "DESPESA"){
+        despesas.push(dado)
+      }
+    } 
+  )
+
+  if(insert){
+    return this.verificaTransacaoExcedente(despesas)
+  } else {
+    return this.tetoDeGastos(despesas)
+  }
+  
+  //this.tetoDeGastos(despesas)
+}
+
+verificaTransacaoExcedente(despesas:any[]){
+  var possuiExcedente = false 
+  despesas.forEach(
+    (dado) => {
+      if(dado.valor > dado.limite){
+        possuiExcedente = true
+      }
+    }
+  )
+  console.log('Possui excedente? ', possuiExcedente)
+  return possuiExcedente
+
+}
+
+tetoDeGastos(despesas:any[]){
+  const execentes:any = []
+  console.log('minhas despesas: ', despesas)
+  despesas.forEach(
+    (dado) => {
+      if(dado.valor > (dado.limite*0,8)){
+        execentes.push(dado)
+      }
+    }
+  )
+  console.log(execentes)
+  return execentes
+}
+
+
+
+
+
 }
 
 
