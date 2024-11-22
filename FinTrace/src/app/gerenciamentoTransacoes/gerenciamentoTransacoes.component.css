@@ -1,38 +1,36 @@
 h3{
-    margin: auto;
-    align-self: center;
+  margin: auto;
+  align-self: center;
 }
 
 .receita{
-    color: green;
+  color: green;
 }
 
 .despesa{
-    color: red;
+  color: red;
 }
 
 .balancoPositivo{
-    color: green;
+  color: green;
 }
 
 .balancoAlerta{
-    color:goldenrod
+  color:goldenrod
 }
 
 .balancoNulo{
-    color:rgb(0, 78, 161)
+  color:rgb(0, 78, 161)
 }
 
 .balancoNegativo{
-    color:red
+  color:red
 }
 
 .home-container{
-    height: 100vh;
-    background-image: url('/assets/fundo_telas.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    color: #fff; /* Texto branco para contraste */
-    font-family: 'Roboto', sans-serif;
+background-image: url('/assets/fundo_telas.jpg');
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+font-family: 'Roboto', sans-serif;
 }

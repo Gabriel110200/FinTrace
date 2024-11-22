@@ -5,7 +5,7 @@ FROM node:16 AS build
 WORKDIR /app
 
 # Copiar os arquivos package.json e package-lock.json
-COPY frontend/package*.json ./
+COPY FinTrace/package*.json ./
 
 # Instalar as dependências do Angular
 RUN npm install
@@ -22,8 +22,12 @@ FROM nginx:alpine
 # Copiar os arquivos de build para o NGINX
 COPY --from=build /app/dist/fin-trace /usr/share/nginx/html
 
+# Copiar o arquivo de configuração do NGINX com proxy reverso
+COPY FinTrace/nginx.conf /etc/nginx/nginx.conf
+
 # Expor a porta 80 (NGINX)
 EXPOSE 80
 
 # Comando para rodar o NGINX
 CMD ["nginx", "-g", "daemon off;"]
+
