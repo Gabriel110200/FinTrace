@@ -14,7 +14,7 @@ O **FinTrace** é um sistema financeiro completo, desenvolvido para auxiliar o u
 ## 📝 **Links Importantes**
 
 - **Relatório Parcial (1ª Etapa)**: [Clique aqui](https://drive.google.com/file/d/1wT1FZpGLoFbeaffrimQhdKctMlVY-8WB/view?usp=sharing)
-- **Apresentação (1ª Etapa)**: [Clique aqui](https://drive.google.com/file/d/1AT8r_0gVPvF1euOFMqfm7U8bQqKrcDmd/view?usp=sharing)
+- **Apresentação (1ª Etapa)**: [Clique aqui]([https://drive.google.com/file/d/1AT8r_0gVPvF1euOFMqfm7U8bQqKrcDmd/view?usp=sharing](https://www.canva.com/design/DAGXKrjMbuE/0TiIPdEjrfETeFKuYe0pcQ/view?utm_content=DAGXKrjMbuE&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha7d47c96ab))
 - **Aplicação Containerizada**:
   - Backend: [FinTrace Backend no Docker Hub](https://hub.docker.com/r/luhsti/fintrace-backend-1)
   - Frontend: [FinTrace Frontend no Docker Hub](https://hub.docker.com/r/luhsti/fintrace-frontend-1)
