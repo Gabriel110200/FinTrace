@@ -1,5 +1,5 @@
-```markdown
-# 🐾 **Sobre o Projeto**
+
+# **Sobre o Projeto**
 
 O **FinTrace** é um sistema financeiro completo, desenvolvido para auxiliar o usuário na organização e no controle de suas finanças pessoais. Com diversas funcionalidades, o projeto oferece recursos como:
 
