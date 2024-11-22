@@ -85,13 +85,6 @@ public class TransactionController {
                 return buildResponse(null, false, "Categoria não encontrada");
             }
 
-            if (transaction.getType() == Transaction.Type.DESPESA && category.getLimit() < transaction.getAmount()) {
-                return ResponseEntity.badRequest().body(Map.of(
-                        "success", false,
-                        "data", "Transação excede limite definido!"
-                ));
-            }
-
             if (transaction.getType() == Transaction.Type.DESPESA) {
                 category.setLimit(category.getLimit() - transaction.getAmount());
                 categoryRepository.save(category);
@@ -108,12 +101,7 @@ public class TransactionController {
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
 
-                    if (transaction.getType() == Transaction.Type.DESPESA && category.getLimit() < transaction.getAmount()) {
-                        return ResponseEntity.badRequest().body(Map.of(
-                                "success", false,
-                                "data", "Transação excede limite definido!"
-                        ));
-                    }
+
 
                     Transaction newTransaction = new Transaction();
                     newTransaction.setType(transaction.getType());
