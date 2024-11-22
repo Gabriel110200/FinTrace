@@ -55,29 +55,29 @@ obtemSaldoStatus(valor: number){
 retornaMes(mes: string): string {
   switch (mes) {
       case '01':
-          return 'janeiro';
+          return 'Janeiro';
       case '02':
-          return 'fevereiro';
+          return 'Fevereiro';
       case '03':
-          return 'março';
+          return 'Março';
       case '04':
-          return 'abril';
+          return 'Abril';
       case '05':
-          return 'maio';
+          return 'Maio';
       case '06':
-          return 'junho';
+          return 'Junho';
       case '07':
-          return 'julho';
+          return 'Julho';
       case '08':
-          return 'agosto';
+          return 'Agosto';
       case '09':
-          return 'setembro';
+          return 'Setembro';
       case '10':
-          return 'outubro';
+          return 'Outubro';
       case '11':
-          return 'novembro';
+          return 'Novembro';
       case '12':
-          return 'dezembro';
+          return 'Dezembro';
       default:
           return 'Mês inválido';
   }
@@ -238,7 +238,7 @@ verificaTransacaoExcedente(despesas:any[]){
   var possuiExcedente = false 
   despesas.forEach(
     (dado) => {
-      if(dado.valor > dado.limite){
+      if(dado.valor > dado.limite && dado.limite!=0){
         possuiExcedente = true
       }
     }
@@ -253,12 +253,12 @@ tetoDeGastos(despesas:any[]){
   console.log('minhas despesas: ', despesas)
   despesas.forEach(
     (dado) => {
-      if(dado.valor > (dado.limite*0,8)){
+      if(dado.valor > (dado.limite*0.8) && dado.limite!=0){
         execentes.push(dado)
       }
     }
   )
-  console.log(execentes)
+  console.log('excedentes', execentes)
   return execentes
 }
 

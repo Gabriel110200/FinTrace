@@ -9,6 +9,7 @@ import { CadTransacaoComponent } from '../cadTransacao/cadTransacao.component';
 import { transacao } from '../model/transacao';
 import { ToastrService } from 'ngx-toastr';
 import { transacaoRecorrente } from '../model/transacaoRec';
+import { DialogGenericoComponent } from 'src/app/shared/dialogGenerico/dialogGenerico.component';
 
 @Component({
   selector: 'app-tabelaTransacoes',
@@ -163,41 +164,40 @@ export class TabelaTransacoesComponent implements OnInit {
 
   adicionaRecorrente(item: transacao) {
 
-    var transacoesInsert:transacao[] = []
-    var mes = item.date.substring(5,7)
-    var ano = item.date.substring(0,4)
+    var transacoesInsert: transacao[] = []
+    var mes = +item.date.substring(5, 7) 
+    var ano = +item.date.substring(0, 4) 
     
-    for(let i=0;i<=12;i++){
-      if(+mes <= 12){
-        if(+mes < 10){
-          mes = `0${+mes+1}`
-        } else {
-          mes = `${+mes+1}`
+    for (let i = 0; i < 12; i++) { 
+        if (mes > 12) {
+            mes = 1
+            ano++ 
         }
-      } else {
-        mes = `01`
-        ano = `${+ano+1}`
-      }
-
-      const trans:transacao = {
-        type: item.type,
-        category: item.category,
-        amount: item.amount,
-        date: `${ano}-${mes}-01`,
-        description: item.description,
-        recurring: item.recurring
-      }
-
-      transacoesInsert.push(trans)
+    
+        const mesFormatado = mes < 10 ? `0${mes}` : `${mes}` 
+    
+        const trans: transacao = {
+            type: item.type,
+            category: item.category,
+            amount: item.amount,
+            date: `${ano}-${mesFormatado}-01`,
+            description: item.description,
+            recurring: item.recurring
+        }
+    
+        transacoesInsert.push(trans)
+        mes++ 
     }
 
     var dadosPreInsert = [];
     dadosPreInsert.push(...this.lista, ...transacoesInsert);
+
+    console.log('Lista que montei: ', dadosPreInsert)
   
     const valido = this.service.verificaLimiteGasto(dadosPreInsert, true)
 
     if(valido){
-      this.toast.error('Transação recorrente irá ultrapassar o limite de gastos para o mês. Transação não adicionada')
+      this.toast.error('Transação recorrente irá ultrapassar o limite de gastos de um dos meses do período. Transação não adicionada')
     } else {
       this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
         (dado) => {
@@ -390,8 +390,13 @@ export class TabelaTransacoesComponent implements OnInit {
         console.log('meus limites: ', limites)
         console.log('tamanho e limite', limites.length, this.limite)
         if(limites.length > this.limite){
-          alert(limites.value)
           this.limite = limites.length
+          const dialog = this.dialog.open(DialogGenericoComponent, {
+            data:{
+              limites: limites
+            }
+          })
+    
         }
         //this.verificaLimiteGasto()
         this.atualizaRegistros()

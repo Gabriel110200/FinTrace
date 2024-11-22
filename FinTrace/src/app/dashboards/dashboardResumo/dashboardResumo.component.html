@@ -52,9 +52,9 @@
 
 
 
-<mat-grid-list cols="12" rowHeight="200px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) <= 100">
+<mat-grid-list cols="12" rowHeight="240px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) <= 100">
   <ng-container *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) > 0 ">
-    <h3>Olá! Seu saldo está abaixo de R$100. É importante tomar algumas medidas para melhorar suas finanças e evitar dificuldades:</h3>
+    <h3>Seu saldo está abaixo de R$100. É importante tomar algumas medidas para melhorar suas finanças e evitar dificuldades:</h3>
     <ul>
       <li>Revise seus gastos fixos: Verifique suas assinaturas mensais (plano de celular, streaming, etc.) e cancele aquelas que você não está utilizando regularmente.</li><br>
       <li>Compre de forma mais consciente: Faça uma lista de compras antes de ir ao mercado e evite compras por impulso. Isso pode fazer uma grande diferença no final do mês!</li><br>
