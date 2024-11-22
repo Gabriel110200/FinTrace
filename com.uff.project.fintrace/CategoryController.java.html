@@ -38,9 +38,9 @@ public class CategoryController {
         try {
 <span class="fc" id="L39">            List&lt;Category&gt; categories = categoryRepository.findAll();</span>
 <span class="fc" id="L40">            return buildResponse(categories, true, null);</span>
-<span class="nc" id="L41">        } catch (Exception e) {</span>
-<span class="nc" id="L42">            e.printStackTrace();</span>
-<span class="nc" id="L43">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L41">        } catch (Exception e) {</span>
+<span class="fc" id="L42">            e.printStackTrace();</span>
+<span class="fc" id="L43">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 
@@ -49,9 +49,9 @@ public class CategoryController {
         try {
 <span class="fc" id="L50">            Category savedCategory = categoryRepository.save(category);</span>
 <span class="fc" id="L51">            return buildResponse(savedCategory, true, null);</span>
-<span class="nc" id="L52">        } catch (Exception e) {</span>
-<span class="nc" id="L53">            e.printStackTrace();</span>
-<span class="nc" id="L54">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L52">        } catch (Exception e) {</span>
+<span class="fc" id="L53">            e.printStackTrace();</span>
+<span class="fc" id="L54">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 
@@ -59,14 +59,14 @@ public class CategoryController {
     public ResponseEntity&lt;?&gt; getCategoryById(@PathVariable Long id) {
         try {
 <span class="fc" id="L61">            Optional&lt;Category&gt; category = categoryRepository.findById(id);</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">            if (category.isPresent()) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">            if (category.isPresent()) {</span>
 <span class="fc" id="L63">                return buildResponse(category.get(), true, null);</span>
             } else {
-<span class="nc" id="L65">                return buildResponse(null, false, &quot;Category not found&quot;);</span>
+<span class="fc" id="L65">                return buildResponse(null, false, &quot;Category not found&quot;);</span>
             }
-<span class="nc" id="L67">        } catch (Exception e) {</span>
-<span class="nc" id="L68">            e.printStackTrace();</span>
-<span class="nc" id="L69">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L67">        } catch (Exception e) {</span>
+<span class="fc" id="L68">            e.printStackTrace();</span>
+<span class="fc" id="L69">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 
@@ -74,18 +74,18 @@ public class CategoryController {
     public ResponseEntity&lt;?&gt; updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
         try {
 <span class="fc" id="L76">            Optional&lt;Category&gt; category = categoryRepository.findById(id);</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">            if (category.isPresent()) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">            if (category.isPresent()) {</span>
 <span class="fc" id="L78">                Category existingCategory = category.get();</span>
 <span class="fc" id="L79">                existingCategory.setName(categoryDetails.getName());</span>
 <span class="fc" id="L80">                existingCategory.setLimit(categoryDetails.getLimit());</span>
 <span class="fc" id="L81">                Category updatedCategory = categoryRepository.save(existingCategory);</span>
 <span class="fc" id="L82">                return buildResponse(updatedCategory, true, null);</span>
             } else {
-<span class="nc" id="L84">                return buildResponse(null, false, &quot;Category not found&quot;);</span>
+<span class="fc" id="L84">                return buildResponse(null, false, &quot;Category not found&quot;);</span>
             }
-<span class="nc" id="L86">        } catch (Exception e) {</span>
-<span class="nc" id="L87">            e.printStackTrace();</span>
-<span class="nc" id="L88">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L86">        } catch (Exception e) {</span>
+<span class="fc" id="L87">            e.printStackTrace();</span>
+<span class="fc" id="L88">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 
@@ -99,9 +99,9 @@ public class CategoryController {
             } else {
 <span class="fc" id="L100">                return buildResponse(null, false, &quot;Category not found&quot;);</span>
             }
-<span class="nc" id="L102">        } catch (Exception e) {</span>
-<span class="nc" id="L103">            e.printStackTrace();</span>
-<span class="nc" id="L104">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L102">        } catch (Exception e) {</span>
+<span class="fc" id="L103">            e.printStackTrace();</span>
+<span class="fc" id="L104">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 }
