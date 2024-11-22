@@ -17,13 +17,11 @@ public class Category {
     @Column(name = "`limit`")
     private double limit;
 
+
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transaction> transactions;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecurrencyTransaction> recurrencyTransactions;
 
     public Category() {}
 

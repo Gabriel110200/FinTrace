@@ -6,5 +6,6 @@ export interface transacao{
     amount: number,
     date: string,
     description: string
+    recurring: boolean
 }
 

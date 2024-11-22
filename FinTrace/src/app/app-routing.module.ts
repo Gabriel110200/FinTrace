@@ -11,6 +11,7 @@ const routes: Routes = [
   {path: 'login',component: LoginComponent},
   {path: 'transacao', loadChildren:()=> import('./gerenciamentoTransacoes/gerenciamentoTransacoes.module').then(m=> m.GerenciamentoTransacoesModule), canActivate: [AuthGuard]},
   {path: 'categoria', loadChildren:()=> import('./gerenciamentoCategorias/gerenciamentoCategorias.module').then(m=> m.GerenciamentoCategoriasModule), canActivate: [AuthGuard]},
+  {path: 'relatorio', loadChildren:()=> import('./dashboards/dashboards.module').then(m=> m.DashboardsModule), canActivate: [AuthGuard]},
 ];
 
 @NgModule({

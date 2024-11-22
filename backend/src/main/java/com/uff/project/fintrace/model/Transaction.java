@@ -26,6 +26,17 @@ public class Transaction {
     @JoinColumn(name = "category_id", nullable = true)
     private Category category;
 
+    @Column(name = "is_recurring", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isRecurring = false;
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
     @Column(name = "amount")
     private Double amount;
 

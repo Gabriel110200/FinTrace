@@ -31,4 +31,8 @@ export class HomePageComponent implements OnInit {
   categorias(){
     this.router.navigate(['/categoria'])
   }
+
+  relatorio(){
+    this.router.navigate(['/relatorio'])
+  }
 }

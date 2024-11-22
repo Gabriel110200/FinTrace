@@ -123,14 +123,13 @@ export class LoginComponent implements OnInit {
     }else{
       console.log('f', formulario)
 
-      this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe(
-        (dado) => {
+      this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe({
+        next: (dado) => {
           console.log('Resposta: ', dado)
           localStorage.setItem('usuario', JSON.stringify(formulario.username))
           this.router.navigate(['/'])
-
         }
-      )
+      })
     }
   }
 

@@ -108,4 +108,87 @@ public class CategoryTest {
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertEquals("Category not found", responseBody.get("error"));
     }
+
+    @Test
+    void testGetCategoryByIdCategoryNotFound() {
+        when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = categoryController.getCategoryById(2L);
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+        assertEquals("Category not found", responseBody.get("error"));
+    }
+
+    @Test
+    void testGetCategoryByIdExceptionHandling() {
+
+        when(categoryRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = categoryController.getCategoryById(1L);
+
+        assertEquals(500, response.getStatusCodeValue());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
+
+    @Test
+    void testUpdateCategoryCategoryNotFound() {
+
+        when(categoryRepository.findById(2L)).thenReturn(Optional.empty());
+
+        ResponseEntity<?> response = categoryController.updateCategory(2L, category);
+
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
+
+    @Test
+    void testUpdateCategoryExceptionHandling() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = categoryController.updateCategory(1L, category);
+
+        assertEquals(500, response.getStatusCodeValue());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
+
+    @Test
+    void testDeleteCategoryExceptionHandling() {
+
+        when(categoryRepository.findById(1L)).thenThrow(new RuntimeException("Database error"));
+        ResponseEntity<?> response = categoryController.deleteCategory(1L);
+
+        assertEquals(500, response.getStatusCodeValue());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
+
+    @Test
+    void testGetAllCategoriesExceptionHandling() {
+
+        when(categoryRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = categoryController.getAllCategories();
+
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
+
+    @Test
+    void testCreateCategoryExceptionHandling() {
+        when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = categoryController.createCategory(category);
+
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+
+    }
 }

@@ -1,0 +1,11 @@
+button.iconeRetorno{
+    margin-top: 10px;
+}
+
+.home-container{
+    background-image: url('/assets/fundo_telas.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    font-family: 'Roboto', sans-serif;
+}

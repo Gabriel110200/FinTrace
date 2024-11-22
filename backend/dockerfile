@@ -1,0 +1,37 @@
+# Etapa de construção: usar a imagem do OpenJDK 17 com JDK para compilar o aplicativo
+FROM openjdk:17-slim AS build
+
+# Definir o diretório de trabalho no container
+WORKDIR /app
+
+# Instalar Maven (adicionar essas linhas para garantir que o Maven esteja disponível)
+RUN apt-get update && apt-get install -y maven
+
+# Copiar o arquivo pom.xml e fazer o download das dependências
+COPY backend/pom.xml ./ 
+RUN mvn dependency:go-offline
+
+# Copiar o código da aplicação
+COPY backend/src /app/src
+
+# Construir o aplicativo Spring Boot
+RUN mvn clean package -DskipTests
+
+# Etapa final: usar a imagem do OpenJDK 17 com JRE para rodar a aplicação
+FROM openjdk:17-slim
+
+# Garantir que o diretório /app exista
+WORKDIR /app
+
+# Definir a variável de ambiente para o JAR
+ARG JAR_FILE=target/fintrace-0.0.1-SNAPSHOT.jar
+
+# Copiar o JAR gerado da etapa anterior para a imagem final
+COPY --from=build /app/target/fintrace-0.0.1-SNAPSHOT.jar /app/backend.jar
+
+# Expor a porta em que o Spring Boot vai rodar
+EXPOSE 8080
+
+# Comando para rodar a aplicação Spring Boot
+ENTRYPOINT ["java", "-jar", "/app/backend.jar"]
+

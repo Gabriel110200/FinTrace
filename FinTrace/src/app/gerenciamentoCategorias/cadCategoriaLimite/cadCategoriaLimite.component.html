@@ -14,8 +14,8 @@
         <mat-grid-tile colspan="6">
           <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
             <mat-label>Categoria</mat-label>
-            <mat-select  formControlName="categoria" >
-              <mat-option *ngFor="let categoria of categorias" [value]="categoria.id"> {{ categoria.name }} </mat-option> 
+            <mat-select  formControlName="categoria">
+              <mat-option *ngFor="let categoria of categorias" [value]="categoria.id" [disabled]="true"> {{ categoria.name }} </mat-option> 
             </mat-select>
             <mat-error>Preencha o campo.</mat-error>
           </mat-form-field>
