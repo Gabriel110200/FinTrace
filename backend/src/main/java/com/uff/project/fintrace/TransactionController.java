@@ -85,8 +85,9 @@ public class TransactionController {
                 return buildResponse(null, false, "Categoria não encontrada");
             }
 
+
+
             if (transaction.getType() == Transaction.Type.DESPESA) {
-                category.setLimit(category.getLimit() - transaction.getAmount());
                 categoryRepository.save(category);
             }
 
@@ -112,7 +113,6 @@ public class TransactionController {
                     newTransaction.setRecurring(true);
 
                     if (transaction.getType() == Transaction.Type.DESPESA) {
-                        category.setLimit(category.getLimit() - transaction.getAmount());
                         categoryRepository.save(category);
                     }
 
