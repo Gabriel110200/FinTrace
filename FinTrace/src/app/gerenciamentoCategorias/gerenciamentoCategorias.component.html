@@ -1,35 +1,39 @@
-<mat-grid-list cols="12" rowHeight="60px">
-  <mat-grid-tile colspan="12"></mat-grid-tile>
-</mat-grid-list>
+<div class="home-container">
 
-<mat-card class="cardCampos" appearance="outlined">
-
-  <mat-grid-list cols="12" rowHeight="50px">
-    <mat-grid-tile colspan="12">
-      <div class="ajustetxte">
-        <button mat-fab class="iconeRetorno" (click)="home()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="ajustetxtd">
-        <button mat-raised-button (click)="dialogCategoria()" class="botaoTopo">Cadastrar Categorias</button>
-      </div>
-    </mat-grid-tile>
-</mat-grid-list>
+  <mat-grid-list cols="12" rowHeight="60px">
+    <mat-grid-tile colspan="12"></mat-grid-tile>
+  </mat-grid-list>
   
-  <mat-card-header>
-      <br><br>
-  </mat-card-header>
+  <mat-card class="cardCampos" appearance="outlined">
   
-  <mat-card-content>
-
-    <app-tabelaCategorias
-      (registroExcluido)="atualizarTabela()">
-    </app-tabelaCategorias>
-
-  </mat-card-content>
-
-  <mat-card-footer>
-  </mat-card-footer>
-</mat-card>
+    <mat-grid-list cols="12" rowHeight="50px">
+      <mat-grid-tile colspan="12">
+        <div class="ajustetxte">
+          <button mat-fab class="iconeRetorno" (click)="home()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        </div>
+        <div class="ajustetxtd">
+          <button mat-raised-button (click)="dialogCategoria()" class="botaoTopo">Cadastrar Categorias</button>
+        </div>
+      </mat-grid-tile>
+  </mat-grid-list>
+    
+    <mat-card-header>
+        <br><br>
+    </mat-card-header>
+    
+    <mat-card-content>
+  
+      <app-tabelaCategorias
+        (registroExcluido)="atualizarTabela()">
+      </app-tabelaCategorias>
+  
+    </mat-card-content>
+  
+    <mat-card-footer>
+    </mat-card-footer>
+  </mat-card>
+  
+</div>
 

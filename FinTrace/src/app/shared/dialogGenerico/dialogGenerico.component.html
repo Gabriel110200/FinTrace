@@ -1,0 +1,18 @@
+<mat-card class="card-container"> 
+  <div class="alert-title">
+    Atenção, {{usuario}}!
+  </div>
+  <div class="alert-message">
+    As seguintes categorias já consumiram mais de 80% do limite estipulado. 
+    Tenha mais atenção nos gastos!
+  </div>
+
+  <div class="category-list-container">
+    <ul class="category-list">
+      <li *ngFor="let item of limites">
+        Categoria {{item.categoria}} do mês {{transacoes.retornaMes(item.mes)}} do ano de {{item.ano}} - 
+        Consumido: {{transacoes.formatarValor(item.valor)}}/{{transacoes.formatarValor(item.limite)}}  {{((item.valor/item.limite)*100).toFixed(2)}}% 
+      </li>
+    </ul>
+  </div>
+</mat-card>

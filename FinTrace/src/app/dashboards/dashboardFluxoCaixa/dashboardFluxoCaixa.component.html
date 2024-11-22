@@ -1,0 +1,23 @@
+<h1>Fluxo de Caixa</h1>
+<br>
+<mat-grid-list cols="12" rowHeight="100px" gutterSize="5px">
+  <mat-grid-tile colspan="3">
+    <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
+      <mat-label>Ano</mat-label>
+      <mat-select [(ngModel)]="campo" name="campo">
+        <mat-option *ngFor="let ano of anos" [value]="ano">{{ano}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-grid-tile>
+
+  <mat-grid-tile colspan="2">
+      <button mat-raised-button class="textoValido" (click)="listagem(campo)"> Buscar </button>
+  </mat-grid-tile>
+</mat-grid-list>
+
+<br>
+
+
+<div class="card">
+  <p-chart type="bar" [data]="basicData" [options]="basicOptions" />
+</div>
