@@ -54,25 +54,21 @@ public class TransactionController {
 
     @GetMapping("/recurring")
     public ResponseEntity<?> getRecurringTransactions() {
-        try {
-            List<Transaction> recurringTransactions = transactionRepository.findByIsRecurringTrue();
-            return buildResponse(recurringTransactions, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
-        }
+
+        List<Transaction> recurringTransactions = transactionRepository.findByIsRecurringTrue();
+        return buildResponse(recurringTransactions, true, null);
+
     }
 
     @GetMapping("/non-recurring")
     public ResponseEntity<?> getNonRecurringTransactions() {
-        try {
-            List<Transaction> nonRecurringTransactions = transactionRepository.findByIsRecurringFalse();
-            return buildResponse(nonRecurringTransactions, true, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
-        }
+
+        List<Transaction> nonRecurringTransactions = transactionRepository.findByIsRecurringFalse();
+        return buildResponse(nonRecurringTransactions, true, null);
+
     }
+
+
 
 
     @PostMapping
@@ -84,8 +80,6 @@ public class TransactionController {
             if (category == null) {
                 return buildResponse(null, false, "Categoria não encontrada");
             }
-
-
 
             if (transaction.getType() == Transaction.Type.DESPESA) {
                 categoryRepository.save(category);
@@ -101,7 +95,6 @@ public class TransactionController {
                 LocalDate nextDate = transaction.getDate();
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
-
 
 
                     Transaction newTransaction = new Transaction();

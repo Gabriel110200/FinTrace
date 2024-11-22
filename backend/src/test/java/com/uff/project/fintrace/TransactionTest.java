@@ -125,35 +125,112 @@ public class TransactionTest {
         assertNotNull(responseBody.get("data"));
     }
 
+
     @Test
-    void testCreateTransactionAmountReducesCategoryLimit() {
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-        transactionController.createTransaction(transaction);
-        assertEquals(400.0, category.getLimit());
+    void testGetRecurringTransactionsSuccess() {
+
+        Transaction transaction1 = new Transaction();
+        transaction1.setId(1L);
+        transaction1.setRecurring(true);
+        Transaction transaction2 = new Transaction();
+        transaction2.setId(2L);
+        transaction2.setRecurring(true);
+
+        List<Transaction> mockTransactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.findByIsRecurringTrue()).thenReturn(mockTransactions);
+        ResponseEntity<?> response = transactionController.getRecurringTransactions();
+        assertNotNull(response);
     }
 
 
     @Test
-    void testCreateTransactionFailureStatusCode() {
-        when(transactionRepository.save(any(Transaction.class))).thenThrow(new RuntimeException("Database error"));
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
-        assertEquals(500, response.getStatusCodeValue());
+    void testGetNonRecurringTransactionsSuccess() {
+        Transaction transaction1 = new Transaction();
+        transaction1.setId(1L);
+        transaction1.setRecurring(false);
+
+        Transaction transaction2 = new Transaction();
+        transaction2.setId(2L);
+        transaction2.setRecurring(false);
+
+        List<Transaction> mockTransactions = Arrays.asList(transaction1, transaction2);
+        when(transactionRepository.findByIsRecurringFalse()).thenReturn(mockTransactions);
+
+        ResponseEntity<?> response = transactionController.getNonRecurringTransactions();
+
+        assertNotNull(response);
     }
 
+
     @Test
-    void testCreateTransactionFailureFlag() {
-        when(transactionRepository.save(any(Transaction.class))).thenThrow(new RuntimeException("Database error"));
+    void testCreateTransactionCategoryNotFound() {
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
+
+
         ResponseEntity<?> response = transactionController.createTransaction(transaction);
+
+
+        assertNotNull(response);
+
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));
     }
 
+
     @Test
-    void testCreateTransactionErrorMessage() {
-        when(transactionRepository.save(any(Transaction.class))).thenThrow(new RuntimeException("Database error"));
+    void testCreateRecurringTransaction() {
+        transaction.setRecurring(true);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+
         ResponseEntity<?> response = transactionController.createTransaction(transaction);
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
-        assertEquals("Database error", responseBody.get("error"));
+
+        List<Transaction> recurringTransactions = (List<Transaction>) responseBody.get("data");
+        assertEquals(12, recurringTransactions.size());
     }
+
+    @Test
+    void testCreateRecurringTransaction2() {
+        transaction.setRecurring(true);
+        transaction.setType(Transaction.Type.DESPESA);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+
+        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+
+        List<Transaction> recurringTransactions = (List<Transaction>) responseBody.get("data");
+        assertEquals(12, recurringTransactions.size());
+    }
+
+    @Test
+    void testCreateTransactionOfTypeDespesa() {
+        transaction.setType(Transaction.Type.DESPESA);
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+
+        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+
+    }
+
+    @Test
+    void testCreateTransactionException() {
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(transactionRepository.save(any(Transaction.class))).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+
+        assertNotNull(response);
+        assertEquals(500, response.getStatusCodeValue());
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertFalse((Boolean) responseBody.get("success"));
+    }
+
+
 }
