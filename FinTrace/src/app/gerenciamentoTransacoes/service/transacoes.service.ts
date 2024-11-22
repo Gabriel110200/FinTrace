@@ -155,22 +155,6 @@ cadastrarTransacao(objeto:transacao){
 }
 
 
-listarTransacoesRecorrentes(){
-  return this.http.get<ResponseAPIList<transacaoRecorrente>>(`/api/recurrency-transactions`)
-  .pipe(
-    map((val) => val.data),
-    take(1)
-  );
-}
-
-cadastrarTransacoesRecorrentes(objeto:transacaoRecorrente){
-  return this.http.post<ResponseAPI<transacaoRecorrente>>(`/api/recurrency-transactions`, objeto)
-  .pipe(
-    map((val) => val.data),
-    take(1)
-  );
-}
-
 verificaLimiteGasto(lista:transacao[], insert:boolean){
   const categorias: any[] = []
   for(let i=0;i<lista.length;i++){

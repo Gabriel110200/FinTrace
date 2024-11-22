@@ -29,8 +29,8 @@ h3{
 
 .home-container{
 background-image: url('/assets/fundo_telas.jpg');
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
+background-size: cover!important;
+background-position: center!important;
+background-repeat: no-repeat!important;
 font-family: 'Roboto', sans-serif;
 }
