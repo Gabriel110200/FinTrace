@@ -23,8 +23,15 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
           architecture: x64
-      - run: mvn package
-      - run: mkdir staging && cp target/*.jar staging
+      - name: Navigate to backend directory
+        run: cd backend
+      - name: Build Maven package
+        run: mvn package
+        working-directory: backend
+      - name: Prepare artifact
+        run: |
+          mkdir -p staging
+          cp backend/target/*.jar staging
       - uses: actions/upload-artifact@v4
         with:
           name: Package
