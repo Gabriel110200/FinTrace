@@ -85,12 +85,11 @@ public class TransactionController {
                 return buildResponse(null, false, "Categoria não encontrada");
             }
 
-            if (category.getLimit() < transaction.getAmount()) {
-                return buildResponse(null, false, "Transação excede limite definido!");
+            if (transaction.getType() == Transaction.Type.DESPESA) {
+                category.setLimit(category.getLimit() - transaction.getAmount());
+                categoryRepository.save(category);
             }
 
-            category.setLimit(category.getLimit() - transaction.getAmount());
-            categoryRepository.save(category);
             transaction.setCategory(category);
 
             List<Transaction> recurringTransactions = new ArrayList<>();
@@ -102,9 +101,7 @@ public class TransactionController {
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
 
-                    if (category.getLimit() < transaction.getAmount()) {
-                        return buildResponse(null, false, "Transação excede limite definido!");
-                    }
+
 
                     Transaction newTransaction = new Transaction();
                     newTransaction.setType(transaction.getType());
@@ -114,14 +111,15 @@ public class TransactionController {
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
 
-                    category.setLimit(category.getLimit() - transaction.getAmount());
-                    categoryRepository.save(category);
+                    if (transaction.getType() == Transaction.Type.DESPESA) {
+                        category.setLimit(category.getLimit() - transaction.getAmount());
+                        categoryRepository.save(category);
+                    }
 
                     recurringTransactions.add(newTransaction);
                 }
 
                 transactionRepository.saveAll(recurringTransactions);
-
                 recurringTransactions.add(0, savedTransaction);
             } else {
 
@@ -132,9 +130,14 @@ public class TransactionController {
             return buildResponse(recurringTransactions, true, null);
         } catch (Exception e) {
             e.printStackTrace();
-            return buildResponse(null, false, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "success", false,
+                    "data", e.getMessage()
+            ));
         }
     }
+
+
 
 
 
