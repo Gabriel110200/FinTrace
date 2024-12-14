@@ -110,7 +110,7 @@ export class LoginComponent implements OnInit {
       this.conexaoAPI$ = this.service.cadastrarUsuario(formulario).subscribe(
         (dado) => {
           console.log('Resposta: ', dado)
-          //this.toast.info(dado)
+          this.toast.info(dado)
           this.formLogin.reset()
           this.formLogin.markAsPristine()
           this.cadastro = false

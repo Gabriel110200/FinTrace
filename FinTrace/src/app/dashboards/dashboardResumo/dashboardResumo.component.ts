@@ -21,7 +21,6 @@ export class DashboardResumoComponent implements OnInit {
   totalReceitaPeriodo!:number
   totalDespesaPeriodo!:number
   $Transacoes!: Observable<transacao[]>
-  $TransacoesRec!: Observable<transacaoRecorrente[]>
 
   campo:number = +this.ano
   campo2:string = this.mes
@@ -36,16 +35,10 @@ export class DashboardResumoComponent implements OnInit {
   ngOnInit() {
     const montante:any = []
     this.$Transacoes = this.transacoes.listarTransacoes() 
-    this.$TransacoesRec = this.transacoes.listarTransacoesRecorrentes()
 
-    forkJoin([this.$Transacoes, this.$TransacoesRec]).subscribe({
-      next: ([dado1,dado2]) => {
+    forkJoin([this.$Transacoes]).subscribe({
+      next: ([dado1]) => {
         dado1.forEach(
-          (dado) => {
-            montante.push(dado)
-          }
-        )
-        dado2.forEach(
           (dado) => {
             montante.push(dado)
           }

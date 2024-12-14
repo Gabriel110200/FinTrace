@@ -1,27 +1,75 @@
-* Frontend
-  
-O Frontend desse projeto foi construido utilizado o framework Angular
 
-Para rodar o projeto é necessário:
-* Ter o Visual Studio Code
-* Ter o Node.js instado na máquina (https://nodejs.org/en). Estamos utilizando a versão 20.18.0
-* Executar o angular cli no terminal do seu SO (Sistema Operacional), após ter intalado o Node.js, através do comando "npm i @angular/cli@18.1.4" (apenas o conteúdo dentro das aspas)
+# **Sobre o Projeto**
 
-Com o ambiente preparado, para executar o projeto, é necessário abrir a pasta Fintrace pelo Visual Studio Code e no terminal digitar o comando >npm run start
+O **FinTrace** é um sistema financeiro completo, desenvolvido para auxiliar o usuário na organização e no controle de suas finanças pessoais. Com diversas funcionalidades, o projeto oferece recursos como:
 
-Quando o projeto compilar, para utilizar o projeto é necessário abrir o navegador e digitar o endereço "http://localhost:4200"
+- 💳 **Gerenciamento de Transações**: Registro e categorização de despesas e receitas.
+- 📊 **Planejamento de Orçamento**: Controle de limites de gastos.
+- 📈 **Relatórios e Gráficos**: Visualização clara e detalhada das finanças.
+- 🔄 **Exportação e Importação de Dados**: Integração com outras plataformas.
+- 🎯 **Acompanhamento de Metas**: Monitoramento do progresso financeiro.
 
+---
 
+## 📝 **Links Importantes**
 
-* Backend
+- **Relatório Parcial (1ª Etapa)**: [Clique aqui](https://drive.google.com/file/d/1wT1FZpGLoFbeaffrimQhdKctMlVY-8WB/view?usp=sharing)
+- **Apresentação (1ª Etapa)**: [Clique aqui](https://www.canva.com/design/DAGXKrjMbuE/0TiIPdEjrfETeFKuYe0pcQ/view?utm_content=DAGXKrjMbuE&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=ha7d47c96ab)
+- **Aplicação Containerizada**:
+  - Backend: [FinTrace Backend no Docker Hub](https://hub.docker.com/r/luhsti/fintrace-backend-1)
+  - Frontend: [FinTrace Frontend no Docker Hub](https://hub.docker.com/r/luhsti/fintrace-frontend-1)
 
-Esse projeto utiliza a versão do java 17 então certifique-se que você possui sdk do java 17 instalado. 
+---
 
-Para rodar basta clonar o projeto e abrir o conteúdo da aplicação. Em seguida,enviar requisição post ou get para os endpoints. 
+## ⚙️ **Tecnologias Utilizadas**
 
-Em seguida, para acessar os endpoints do back da api basta acessar localhost que automaticamente sera redirecionado para o swagger: 
+### 🌐 **Frontend**
+
+O Frontend foi construído utilizando o framework **Angular**.
+
+#### Para rodar o projeto localmente, siga os passos abaixo:
+
+1. **Instale o Visual Studio Code**.
+2. **Instale o Node.js**: [Baixe a versão mais recente](https://nodejs.org/en). Estamos utilizando a versão **20.18.0**.
+3. **Instale o Angular CLI**: Abra o terminal e execute o comando:
+   ```bash
+   npm i @angular/cli@18.1.4
+   ```
+
+4. **Execute o projeto**:
+   - Abra a pasta do projeto `Fintrace` no Visual Studio Code.
+   - No terminal, execute o comando:
+     ```bash
+     npm run start
+     ```
+
+5. **Acesse o projeto**:
+   - Abra o navegador e acesse a URL: `http://localhost:4200`.
+
+---
+
+### 🖥️ **Backend**
+
+O Backend foi desenvolvido com **Java 17**. Certifique-se de ter o **Java SDK 17** instalado na sua máquina.
+
+#### Para rodar o Backend localmente, siga os passos abaixo:
+
+1. Clone o repositório.
+2. Navegue até a pasta `backend`.
+3. Execute os seguintes comandos em ordem:
+   ```bash
+   mvn clean install
+   mvn spring-boot:run
+   ```
+
+4. **Acesse o Backend**:
+   - Após a compilação, os endpoints estarão disponíveis em: `http://localhost:8080`.
+   - Utilize o **Swagger** para uma melhor visualização da API.
+
+---
+
+## 🖼️ **Imagens**
 
 ![image](https://github.com/user-attachments/assets/a5f35d2b-ea66-4380-bc7b-e290b405a04f)
 
-
-
+---
