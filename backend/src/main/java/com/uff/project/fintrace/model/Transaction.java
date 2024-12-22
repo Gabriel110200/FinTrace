@@ -1,7 +1,7 @@
 package com.uff.project.fintrace.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
+
 import java.time.LocalDate;
 
 @Entity
@@ -20,6 +20,18 @@ public class Transaction {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @ManyToOne

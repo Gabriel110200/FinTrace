@@ -12,6 +12,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 
     List<Transaction> findByCategory(Category category);
 
+    List<Transaction> findByUserId(Long userId);
+
     List<Transaction> findByDateBetween(LocalDate startDate, LocalDate endDate);
 
     List<Transaction> findByIsRecurringTrue();

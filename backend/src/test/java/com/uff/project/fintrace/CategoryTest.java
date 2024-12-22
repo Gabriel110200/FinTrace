@@ -1,6 +1,8 @@
 package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.DTO.CategoryRequest;
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,12 +29,27 @@ public class CategoryTest {
 
     private Category category;
 
+    private CategoryRequest categoryRequest;
+
+    private User user;
+
     @BeforeEach
     void setUp() {
+
+        user = new User();
+        user.setId(1L);
+        user.setUsername("teste");
+
         category = new Category();
         category.setId(1L);
         category.setName("Groceries");
         category.setLimit(1000.0);
+
+        categoryRequest = new CategoryRequest();
+        categoryRequest.setName("Groceries");
+        categoryRequest.setLimit(1000.0);
+
+
     }
 
 
@@ -40,7 +57,7 @@ public class CategoryTest {
     void testGetAllCategoriesReturnsData() {
         List<Category> categories = List.of(category);
         when(categoryRepository.findAll()).thenReturn(categories);
-        ResponseEntity<?> response = categoryController.getAllCategories();
+        ResponseEntity<?> response = categoryController.getAllCategories(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertNotNull(responseBody.get("data"));
     }
@@ -49,7 +66,7 @@ public class CategoryTest {
     @Test
     void testCreateCategoryReturnsData() {
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
-        ResponseEntity<?> response = categoryController.createCategory(category);
+        ResponseEntity<?> response = categoryController.createCategory(categoryRequest);
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertNotNull(responseBody.get("data"));
     }
@@ -174,7 +191,7 @@ public class CategoryTest {
 
         when(categoryRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
-        ResponseEntity<?> response = categoryController.getAllCategories();
+        ResponseEntity<?> response = categoryController.getAllCategories(user.getId());
 
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));
@@ -185,7 +202,7 @@ public class CategoryTest {
     void testCreateCategoryExceptionHandling() {
         when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException("Database error"));
 
-        ResponseEntity<?> response = categoryController.createCategory(category);
+        ResponseEntity<?> response = categoryController.createCategory(categoryRequest);
 
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));

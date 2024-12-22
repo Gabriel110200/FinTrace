@@ -1,6 +1,9 @@
 package com.uff.project.fintrace;
+import com.uff.project.fintrace.DTO.CategoryRequest;
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +19,13 @@ import java.util.Optional;
 public class CategoryController {
 
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public CategoryController(CategoryRepository categoryRepository) {
+    public CategoryController(CategoryRepository categoryRepository,
+                              UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
@@ -34,9 +40,9 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllCategories() {
+    public ResponseEntity<?> getAllCategories(@RequestParam Long userId) {
         try {
-            List<Category> categories = categoryRepository.findAll();
+            List<Category> categories = categoryRepository.findByUserId(userId);
             return buildResponse(categories, true, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,9 +51,20 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+    public ResponseEntity<?> createCategory(@RequestBody CategoryRequest categoryRequest) {
         try {
+
+            User user = userRepository.findById(categoryRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+            Category category = new Category();
+            category.setName(categoryRequest.getName());
+            category.setLimit(categoryRequest.getLimit());
+            category.setUser(user);
+
             Category savedCategory = categoryRepository.save(category);
+
             return buildResponse(savedCategory, true, null);
         } catch (Exception e) {
             e.printStackTrace();
