@@ -4,6 +4,7 @@ import com.uff.project.fintrace.DTO.CategoryRequest;
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,9 @@ public class CategoryTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @InjectMocks
     private CategoryController categoryController;
@@ -56,7 +60,7 @@ public class CategoryTest {
     @Test
     void testGetAllCategoriesReturnsData() {
         List<Category> categories = List.of(category);
-        when(categoryRepository.findAll()).thenReturn(categories);
+        when(categoryRepository.findByUserId(1L)).thenReturn(categories);
         ResponseEntity<?> response = categoryController.getAllCategories(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertNotNull(responseBody.get("data"));
@@ -65,9 +69,15 @@ public class CategoryTest {
 
     @Test
     void testCreateCategoryReturnsData() {
+        categoryRequest.setUserId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
         ResponseEntity<?> response = categoryController.createCategory(categoryRequest);
+
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
         assertNotNull(responseBody.get("data"));
     }
 
@@ -188,24 +198,26 @@ public class CategoryTest {
 
     @Test
     void testGetAllCategoriesExceptionHandling() {
-
-        when(categoryRepository.findAll()).thenThrow(new RuntimeException("Database error"));
+        when(categoryRepository.findByUserId(user.getId())).thenThrow(new RuntimeException("Database error"));
 
         ResponseEntity<?> response = categoryController.getAllCategories(user.getId());
 
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
         assertFalse((Boolean) responseBody.get("success"));
-
     }
 
     @Test
     void testCreateCategoryExceptionHandling() {
+        categoryRequest.setUserId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.save(any(Category.class))).thenThrow(new RuntimeException("Database error"));
 
         ResponseEntity<?> response = categoryController.createCategory(categoryRequest);
 
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
         assertFalse((Boolean) responseBody.get("success"));
-
     }
 }
