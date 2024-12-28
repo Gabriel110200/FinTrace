@@ -2,6 +2,7 @@ package com.uff.project.fintrace.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+
 import java.util.List;
 
 @Entity
@@ -17,6 +18,9 @@ public class Category {
     @Column(name = "`limit`")
     private double limit;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = true)
+    private User user;
 
     @JsonIgnore
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -63,6 +67,14 @@ public class Category {
         } else {
             this.limit = 0;
         }
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public void setTransactions(List<Transaction> transactions) {

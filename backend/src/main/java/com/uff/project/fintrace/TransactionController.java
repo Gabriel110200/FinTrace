@@ -1,9 +1,12 @@
 package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.Transaction;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +24,13 @@ public class TransactionController {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
+    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
@@ -42,9 +47,9 @@ public class TransactionController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllTransactions() {
+    public ResponseEntity<?> getAllTransactions(@RequestParam Long userId) {
         try {
-            List<Transaction> transactions = transactionRepository.findAll();
+            List<Transaction> transactions = transactionRepository.findByUserId(userId);
             return buildResponse(transactions, true, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,42 +77,48 @@ public class TransactionController {
 
 
     @PostMapping
-    public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
+    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest transactionRequest) {
         try {
-            Long categoryId = transaction.getCategory().getId();
-            Category category = categoryRepository.findById(categoryId).orElse(null);
 
-            if (category == null) {
-                return buildResponse(null, false, "Categoria não encontrada");
+            User user = userRepository.findById(transactionRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Category category = null;
+            if (transactionRequest.getCategoryId() != null) {
+                category = categoryRepository.findById(transactionRequest.getCategoryId())
+                        .orElse(null);
+                if (transactionRequest.getCategoryId() != null && category == null) {
+                    return buildResponse(null, false, "Categoria não encontrada");
+                }
             }
 
-            if (transaction.getType() == Transaction.Type.DESPESA) {
-                categoryRepository.save(category);
-            }
 
+            Transaction transaction = new Transaction();
+            transaction.setUser(user);
             transaction.setCategory(category);
+            transaction.setType(transactionRequest.getType());
+            transaction.setAmount(transactionRequest.getAmount());
+            transaction.setDate(transactionRequest.getDate());
+            transaction.setDescription(transactionRequest.getDescription());
+            transaction.setRecurring(transactionRequest.isRecurring());
+
 
             List<Transaction> recurringTransactions = new ArrayList<>();
             if (transaction.isRecurring()) {
-
                 Transaction savedTransaction = transactionRepository.save(transaction);
 
                 LocalDate nextDate = transaction.getDate();
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
 
-
                     Transaction newTransaction = new Transaction();
+                    newTransaction.setUser(user);
+                    newTransaction.setCategory(category);
                     newTransaction.setType(transaction.getType());
-                    newTransaction.setCategory(transaction.getCategory());
                     newTransaction.setAmount(transaction.getAmount());
                     newTransaction.setDate(nextDate);
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
-
-                    if (transaction.getType() == Transaction.Type.DESPESA) {
-                        categoryRepository.save(category);
-                    }
 
                     recurringTransactions.add(newTransaction);
                 }
@@ -115,8 +126,8 @@ public class TransactionController {
                 transactionRepository.saveAll(recurringTransactions);
                 recurringTransactions.add(0, savedTransaction);
             } else {
-
                 Transaction savedTransaction = transactionRepository.save(transaction);
+                savedTransaction.getUser().setPassword("");
                 return buildResponse(savedTransaction, true, null);
             }
 
@@ -129,7 +140,6 @@ public class TransactionController {
             ));
         }
     }
-
 
 
 

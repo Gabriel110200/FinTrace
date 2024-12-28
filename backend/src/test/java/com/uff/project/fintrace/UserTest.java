@@ -1,8 +1,9 @@
 package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.repository.CategoryRepository;
 import com.uff.project.fintrace.repository.UserRepository;
-import com.uff.project.fintrace.UserController;
-import com.uff.project.fintrace.User;
+import com.uff.project.fintrace.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -25,10 +27,15 @@ public class UserTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private CategoryRepository categoryRepository;
+
     @InjectMocks
     private UserController userController;
 
     private User user;
+
+    private Category category;
 
     @BeforeEach
     void setUp() {
@@ -36,23 +43,34 @@ public class UserTest {
         user.setId(1L);
         user.setUsername("testuser");
         user.setPassword("password");
+
+        category = new Category();
     }
 
 
     @Test
     void testRegisterUser() {
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(categoryRepository.saveAll(any(List.class))).thenReturn(List.of());
 
         ResponseEntity<?> response = userController.registerUser(user);
+
         assertEquals(200, response.getStatusCodeValue());
         assertEquals("Usuário registrado com sucesso!", response.getBody());
-
     }
 
     @Test
     void testLogUserSuccess() {
-        when(userRepository.findByUsernameAndPassword("testuser", "password"))
+        when(userRepository.findByUsername("testuser"))
                 .thenReturn(Optional.of(user));
+
+        String hashedPassword = BCrypt.hashpw("password", BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+
+
+        mockStatic(BCrypt.class);
+        when(BCrypt.checkpw("password", hashedPassword)).thenReturn(true);
+
 
         User loginUser = new User();
         loginUser.setUsername("testuser");
@@ -74,7 +92,7 @@ public class UserTest {
 
     @Test
     void testLogUserFailure() {
-        when(userRepository.findByUsernameAndPassword("wronguser", "wrongpassword"))
+        when(userRepository.findByUsername("wronguser"))
                 .thenReturn(Optional.empty());
 
         User loginUser = new User();

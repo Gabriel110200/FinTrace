@@ -1,4 +1,4 @@
-package com.uff.project.fintrace;
+package com.uff.project.fintrace.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;

@@ -1,9 +1,12 @@
 package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.Transaction;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,39 +31,57 @@ public class TransactionTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private TransactionController transactionController;
 
     private Transaction transaction;
+    private TransactionRequest transactionRequest;
     private Category category;
+    private User user;
+
 
     @BeforeEach
     void setUp() {
+
+        user = new User();
+        user.setId(1L);
+        user.setUsername("teste");
+
         category = new Category();
         category.setId(1L);
         category.setName("Compras");
         category.setLimit(500.0);
+        category.setUser(user);
 
         transaction = new Transaction();
         transaction.setId(1L);
         transaction.setAmount(100.0);
         transaction.setCategory(category);
         transaction.setDate(LocalDate.now());
+        transaction.setUser(user);
+
+        transactionRequest = new TransactionRequest();
+        transactionRequest.setAmount(100.0);
+        transactionRequest.setDate(LocalDate.now());
+
     }
 
     @Test
     void testGetAllTransactionsStatusCode() {
         List<Transaction> transactions = List.of(transaction);
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenReturn(transactions);
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         assertEquals(200, response.getStatusCodeValue());
     }
 
     @Test
     void testGetAllTransactionsSuccessFlag() {
         List<Transaction> transactions = List.of(transaction);
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenReturn(transactions);
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertTrue((Boolean) responseBody.get("success"));
     }
@@ -68,8 +89,8 @@ public class TransactionTest {
     @Test
     void testGetAllTransactionsDataIsNotNull() {
         List<Transaction> transactions = List.of(transaction);
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenReturn(transactions);
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertNotNull(responseBody.get("data"));
     }
@@ -77,8 +98,8 @@ public class TransactionTest {
     @Test
     void testGetAllTransactionsDataSize() {
         List<Transaction> transactions = List.of(transaction);
-        when(transactionRepository.findAll()).thenReturn(transactions);
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenReturn(transactions);
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         List<Transaction> data = (List<Transaction>) responseBody.get("data");
         assertEquals(1, data.size());
@@ -86,42 +107,63 @@ public class TransactionTest {
 
     @Test
     void testGetAllTransactionsFailureStatusCode() {
-        when(transactionRepository.findAll()).thenThrow(new RuntimeException("Database error"));
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenThrow(new RuntimeException("Database error"));
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         assertEquals(500, response.getStatusCodeValue());
     }
 
     @Test
     void testGetAllTransactionsFailureFlag() {
-        when(transactionRepository.findAll()).thenThrow(new RuntimeException("Database error"));
-        ResponseEntity<?> response = transactionController.getAllTransactions();
+        when(transactionRepository.findByUserId(user.getId())).thenThrow(new RuntimeException("Database error"));
+        ResponseEntity<?> response = transactionController.getAllTransactions(user.getId());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));
     }
 
     @Test
     void testCreateTransactionStatusCode() {
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
-        assertEquals(200, response.getStatusCodeValue());
+
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
+
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
+        assertTrue((Boolean) responseBody.get("success"));
     }
+
 
     @Test
     void testCreateTransactionSuccessFlag() {
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
         assertTrue((Boolean) responseBody.get("success"));
     }
 
     @Test
     void testCreateTransactionDataIsNotNull() {
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        assertNotNull(responseBody);
         assertNotNull(responseBody.get("data"));
     }
 
@@ -164,73 +206,87 @@ public class TransactionTest {
 
     @Test
     void testCreateTransactionCategoryNotFound() {
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
 
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.empty());
 
-
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
-
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
 
         assertNotNull(response);
-
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));
     }
 
-
     @Test
     void testCreateRecurringTransaction() {
-        transaction.setRecurring(true);
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
+        transactionRequest.setRecurring(true);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
-        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
 
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         List<Transaction> recurringTransactions = (List<Transaction>) responseBody.get("data");
         assertEquals(12, recurringTransactions.size());
     }
 
     @Test
     void testCreateRecurringTransaction2() {
-        transaction.setRecurring(true);
-        transaction.setType(Transaction.Type.DESPESA);
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
+        transactionRequest.setRecurring(true);
+        transactionRequest.setType(Transaction.Type.DESPESA);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
-        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
 
+        Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         List<Transaction> recurringTransactions = (List<Transaction>) responseBody.get("data");
         assertEquals(12, recurringTransactions.size());
     }
 
     @Test
     void testCreateTransactionOfTypeDespesa() {
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
         transaction.setType(Transaction.Type.DESPESA);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCodeValue());
-
     }
 
     @Test
     void testCreateTransactionException() {
+        transactionRequest.setUserId(1L);
+        transactionRequest.setCategoryId(1L);
 
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
         when(transactionRepository.save(any(Transaction.class))).thenThrow(new RuntimeException("Database error"));
 
-        ResponseEntity<?> response = transactionController.createTransaction(transaction);
+        ResponseEntity<?> response = transactionController.createTransaction(transactionRequest);
 
         assertNotNull(response);
         assertEquals(500, response.getStatusCodeValue());
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
         assertFalse((Boolean) responseBody.get("success"));
     }
+
 
 
 }
