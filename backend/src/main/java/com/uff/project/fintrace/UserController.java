@@ -1,8 +1,10 @@
 package com.uff.project.fintrace;
 
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.FeatureFlag;
 import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.FeatureFlagRepository;
 import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,10 @@ public class UserController {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private FeatureFlagRepository featureFlagsRepository;
+
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/register")
@@ -31,6 +37,20 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         createDefaultCategories(user);
+
+        FeatureFlag featureA = new FeatureFlag();
+        featureA.setName("Feature A");
+        featureA.setType(1);
+        featureA.setActive(true);
+        featureA.setUser(user);
+
+        FeatureFlag featureB = new FeatureFlag();
+        featureB.setName("Feature B");
+        featureB.setType(2);
+        featureB.setActive(false);
+        featureB.setUser(user);
+
+        featureFlagsRepository.saveAll(List.of(featureA, featureB));
 
         return ResponseEntity.ok("Usuário registrado com sucesso!");
     }
