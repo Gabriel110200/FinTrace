@@ -2,6 +2,7 @@ package com.uff.project.fintrace;
 
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.FeatureFlagRepository;
 import com.uff.project.fintrace.repository.UserRepository;
 import com.uff.project.fintrace.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,9 @@ public class UserTest {
     @Mock
     private CategoryRepository categoryRepository;
 
+    @Mock
+    private FeatureFlagRepository featureFlagsRepository;
+
     @InjectMocks
     private UserController userController;
 
@@ -52,6 +56,7 @@ public class UserTest {
     void testRegisterUser() {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(categoryRepository.saveAll(any(List.class))).thenReturn(List.of());
+        when(featureFlagsRepository.saveAll(any(List.class))).thenReturn(List.of());
 
         ResponseEntity<?> response = userController.registerUser(user);
 

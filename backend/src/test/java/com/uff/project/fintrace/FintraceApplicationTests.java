@@ -12,10 +12,5 @@ class FintraceApplicationTests {
 	void contextLoads() {
 	}
 
-	@Test
-	void simpleTest() {
-		// A very basic test to check if your test setup works
-		assertEquals(true, true);
-	}
 
 }
