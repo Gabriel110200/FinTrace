@@ -1,4 +1,6 @@
-import { HttpClient } from "@angular/common/http"
+import { cadTransacao } from './../model/transacao';
+import { SharedService } from './../../shared/service/shared.service';
+import { HttpClient, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core"
 import { map, take } from "rxjs"
 import { categoria } from "src/app/gerenciamentoCategorias/model/categoria"
@@ -12,8 +14,11 @@ import { transacaoRecorrente } from "../model/transacaoRec"
 })
 export class TransacoesService {
 
+userId:number = +this.shared.obterId()
+
 constructor(
-  private http: HttpClient
+  private http: HttpClient,
+  private shared: SharedService
 ) { }
 
 obterTipoTransacao(transacao:string){
@@ -108,7 +113,7 @@ retornaTotalReceitaPeriodo(transacoes:any[], periodo:string){
   //console.log('cheguei')
   let somaR = 0
   transacoes.forEach(transacao => {
-    if (transacao.type === 'RECEITA' && 
+    if (transacao.type === 'RECEITA' &&
         transacao.date.substring(5,7)===periodo
     ) {
         somaR += transacao.amount
@@ -120,7 +125,7 @@ retornaTotalReceitaPeriodo(transacoes:any[], periodo:string){
 retornaTotalDespesaPeriodo(transacoes:any[], periodo:string){
   let somaD = 0
   transacoes.forEach(transacao => {
-    if (transacao.type === 'DESPESA' && 
+    if (transacao.type === 'DESPESA' &&
         transacao.date.substring(5,7)===periodo
     ) {
         somaD += transacao.amount
@@ -139,14 +144,18 @@ formatarValor(valor: number): string {
 }
 
 listarTransacoes(){
-  return this.http.get<ResponseAPIList<transacao>>(`/api/transactions`)
+  const PARAMS = new HttpParams().set('userId', this.userId)
+
+  return this.http.get<ResponseAPIList<transacao>>(`/api/transactions`, {
+    params: PARAMS
+  })
   .pipe(
     map((val) => val.data),
     take(1)
   );
 }
 
-cadastrarTransacao(objeto:transacao){
+cadastrarTransacao(objeto:cadTransacao){
   return this.http.post<ResponseAPI<categoria>>(`/api/transactions`, objeto)
   .pipe(
     map((val) => val.data),
@@ -206,7 +215,7 @@ checaDespesas(categorias:any[], insert:boolean){
       if(dado.tipo == "DESPESA"){
         despesas.push(dado)
       }
-    } 
+    }
   )
 
   if(insert){
@@ -214,12 +223,12 @@ checaDespesas(categorias:any[], insert:boolean){
   } else {
     return this.tetoDeGastos(despesas)
   }
-  
+
   //this.tetoDeGastos(despesas)
 }
 
 verificaTransacaoExcedente(despesas:any[]){
-  var possuiExcedente = false 
+  var possuiExcedente = false
   despesas.forEach(
     (dado) => {
       if(dado.valor > dado.limite && dado.limite!=0){
