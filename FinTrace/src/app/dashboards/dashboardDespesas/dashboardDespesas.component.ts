@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { single } from './data';
 import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
 import { transacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
 import { forkJoin, Observable } from 'rxjs';
 import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/transacaoRec';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-dashboardDespesas',
@@ -11,6 +13,8 @@ import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/trans
   styleUrls: ['./dashboardDespesas.component.css']
 })
 export class DashboardDespesasComponent implements OnInit{
+
+  @ViewChild('chart') chartElement!: ElementRef;
 
   basicData: any;
   basicOptions: any;

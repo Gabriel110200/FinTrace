@@ -9,3 +9,18 @@ button.iconeRetorno{
     background-repeat: no-repeat;
     font-family: 'Roboto', sans-serif;
 }
+
+.botaoDownload{
+    background-color: black!important;
+    color: white!important;
+    position:absolute;
+    top:20px;
+    left: -200px;
+    width: 180px;
+    font-size:12px;
+  }
+
+  .pdf-content {
+    background-color: white; /* Fundo branco */
+    color: black;            /* Garante que o texto seja visível */
+  }
