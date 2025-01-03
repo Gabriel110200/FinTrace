@@ -27,14 +27,24 @@ constructor(
     console.log(formulario)
     return this.http.post(`/api/users/login`, formulario)
     .pipe(
-      map((val) => val),
+      map((val:any) => val.data),
       take(1)
     );
   }
 
-  obterUsuario(){
+  obterDados(){
     const user = localStorage.getItem('usuario')
     return JSON.parse(user!)
+  }
+
+  obterUsuario(){
+    const usr = this.obterDados()
+    return usr.username
+  }
+
+  obterId(){
+    const usr = this.obterDados()
+    return usr.id
   }
 
 }
