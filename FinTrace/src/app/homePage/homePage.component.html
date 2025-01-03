@@ -4,20 +4,25 @@
     <p class="intro-text">Gerencie suas finanças com facilidade e eficiência no FinTrace!</p>
     <mat-divider></mat-divider>
 
-    <!-- Menu com botões de navegação -->
-    <div class="button-container">
-      <button mat-raised-button color="primary" class="botao-transacoes" (click)="transacoes()">
-        Transações
-      </button>
-      <button mat-raised-button color="accent" class="botao-cadastro" (click)="categorias()">
-        Categorias
-      </button>
-      <button mat-raised-button color="accent" class="botao-dashboard" (click)="relatorio()">
-        Relatórios
-      </button>
-      <button mat-raised-button color="warn" class="botao-sair" (click)="logout()">
-        Logout
-      </button>
+    <div *ngIf="!carregando">
+      <div class="button-container">
+        <button mat-raised-button color="primary" class="botao-transacoes" (click)="transacoes()">
+          Transações
+        </button>
+        <button mat-raised-button color="accent" class="botao-cadastro" (click)="categorias()">
+          Categorias
+        </button>
+        <button mat-raised-button color="accent" class="botao-dashboard" (click)="relatorio()">
+          Relatórios
+        </button>
+        <button mat-raised-button color="accent" class="botao-metas" (click)="metas()" *ngIf="possuiCredencial('Feature A')">
+          Minhas Metas
+        </button>
+        <button mat-raised-button color="warn" class="botao-sair" (click)="logout()">
+          Logout
+        </button>
+      </div>
     </div>
+
   </mat-card>
 </div>
