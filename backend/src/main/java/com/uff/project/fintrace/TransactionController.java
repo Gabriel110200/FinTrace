@@ -1,5 +1,7 @@
 package com.uff.project.fintrace;
 
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.uff.project.fintrace.DTO.TransactionCsvDto;
 import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
 import com.uff.project.fintrace.model.Transaction;
@@ -9,9 +11,12 @@ import com.uff.project.fintrace.repository.TransactionRepository;
 import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +79,47 @@ public class TransactionController {
     }
 
 
+
+    @PostMapping(value = "/import-transaction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> importTransactions(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        try {
+
+            userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+            List<TransactionCsvDto> csvTransactions = new CsvToBeanBuilder<TransactionCsvDto>(
+                    new InputStreamReader(file.getInputStream()))
+                    .withType(TransactionCsvDto.class)
+                    .build()
+                    .parse();
+
+
+            for (TransactionCsvDto csvDto : csvTransactions) {
+                TransactionRequest transactionRequest = new TransactionRequest();
+                transactionRequest.setUserId(userId);
+                transactionRequest.setDescription(csvDto.getDescription());
+                transactionRequest.setAmount(csvDto.getAmount());
+                transactionRequest.setDate(LocalDate.parse(csvDto.getDate()));
+                transactionRequest.setRecurring(Boolean.parseBoolean(csvDto.getIsRecurring().toLowerCase()));
+                transactionRequest.setType(Transaction.Type.valueOf(csvDto.getType().toUpperCase()));
+
+                if (csvDto.getCategoryId() != null && !csvDto.getCategoryId().isEmpty()) {
+                    transactionRequest.setCategoryId(Long.parseLong(csvDto.getCategoryId()));
+                }
+
+                ResponseEntity<?> response = createTransaction(transactionRequest);
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    return response;
+                }
+            }
+
+            return buildResponse(null, true, "Transações importadas com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Falha ao importar transação: " + e.getMessage());
+        }
+    }
 
 
     @PostMapping
