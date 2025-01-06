@@ -10,10 +10,12 @@ import com.uff.project.fintrace.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -34,6 +36,7 @@ public class TransactionTest {
     @Mock
     private UserRepository userRepository;
 
+    @Spy
     @InjectMocks
     private TransactionController transactionController;
 
@@ -45,6 +48,7 @@ public class TransactionTest {
 
     @BeforeEach
     void setUp() {
+
 
         user = new User();
         user.setId(1L);
@@ -68,6 +72,43 @@ public class TransactionTest {
         transactionRequest.setDate(LocalDate.now());
 
     }
+
+    @Test
+    void testImportTransactions_Success() throws Exception {
+
+        Long userId = 1L;
+        String csvContent = """
+        description,amount,date,type,isRecurring,categoryId
+        Salário,150.00,2024-01-10,RECEITA,false,1
+        Teste bill,75.50,2024-01-15,DESPESA,true,2
+        """;
+        InputStream csvStream = new ByteArrayInputStream(csvContent.getBytes());
+        MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getInputStream()).thenReturn(csvStream);
+
+        User mockUser = new User();
+        mockUser.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
+
+        doReturn(ResponseEntity.ok("Transaction created"))
+                .when(transactionController)
+                .createTransaction(any(TransactionRequest.class));
+
+        ResponseEntity<?> response = transactionController.importTransactions(mockFile, userId);
+
+        assertEquals(200, response.getStatusCodeValue());
+        verify(userRepository, times(1)).findById(userId);
+
+        ArgumentCaptor<TransactionRequest> captor = ArgumentCaptor.forClass(TransactionRequest.class);
+        verify(transactionController, times(2)).createTransaction(captor.capture());
+
+        List<TransactionRequest> capturedRequests = captor.getAllValues();
+
+        assertEquals(2, capturedRequests.size());
+        assertEquals("Salário", capturedRequests.get(0).getDescription());
+
+    }
+
 
     @Test
     void testGetAllTransactionsStatusCode() {
