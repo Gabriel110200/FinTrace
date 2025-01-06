@@ -18,7 +18,7 @@ export class CadTransacaoComponent implements OnInit {
   recorrente = this.data.recorrente ?? null
   editar:boolean = this.data.editar ?? null
   datas:number[] = []
-  formulario:any = this.data.form 
+  formulario:any = this.data.form
   tipoCategoria:categoria[] = this.data.categoria
 
   tipoTransacao:any[] = [
@@ -36,7 +36,7 @@ export class CadTransacaoComponent implements OnInit {
     this.cadastro = this.form.group({
       tipoTransacao: [null, [Validators.required]],
       categoria: [null, [Validators.required]],
-      valor: [null, [Validators.required]], 
+      valor: [null, [Validators.required]],
       data: [null, [Validators.required, this.dataValidaValidator]],
       descricao: [null],
     })
@@ -59,7 +59,7 @@ export class CadTransacaoComponent implements OnInit {
     this.cadastro.patchValue({
       tipoTransacao: this.formulario.tipoTransacao,
       categoria: this.formulario.categoria,
-      valor: this.formulario.valor, 
+      valor: this.formulario.valor,
       data: this.formulario.dataTransacao,
       descricao: this.formulario.descricao,
     })
@@ -67,8 +67,8 @@ export class CadTransacaoComponent implements OnInit {
 
   dataValidaValidator(control: any) {
     const value = control.value;
-    if (!value) return null; 
-    
+    if (!value) return null;
+
     const data = new Date(value);
     const dia = data.getDate();
     const mes = data.getMonth();

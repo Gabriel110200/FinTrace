@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { SharedService } from './../../shared/service/shared.service';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, take } from 'rxjs';
 import { categoria } from '../model/categoria';
@@ -10,12 +11,19 @@ import { Usuario } from 'src/app/shared/model/usuario';
 })
 export class CategoriaService {
 
+  userId:number = +this.shared.obterId()
+
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private shared: SharedService
   ) { }
 
   listarCategorias(){
-    return this.http.get<ResponseAPIList<categoria>>(`/api/categories`)
+    const PARAMS = new HttpParams().set('userId', this.userId)
+
+    return this.http.get<ResponseAPIList<categoria>>(`/api/categories`, {
+      params: PARAMS
+    })
     .pipe(
       map((val) => val.data),
       take(1)

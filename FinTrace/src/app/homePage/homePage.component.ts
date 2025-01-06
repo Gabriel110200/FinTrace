@@ -1,5 +1,7 @@
+import { FeatureFlag } from './../shared/model/featureFlag';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { SharedService } from '../shared/service/shared.service';
 
 @Component({
@@ -10,6 +12,9 @@ import { SharedService } from '../shared/service/shared.service';
 export class HomePageComponent implements OnInit {
 
   usuario:string = this.sharedService.obterUsuario()
+  flags$!:Subscription
+  flags!:FeatureFlag[]
+  carregando!:boolean
 
   constructor(
     private sharedService: SharedService,
@@ -17,6 +22,13 @@ export class HomePageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.carregando = true
+    this.flags$ = this.sharedService.obterFeaturesUsuario().subscribe(
+      (dado) => {
+        this.flags = dado
+        this.carregando = false
+      }
+    )
   }
 
   logout(){
@@ -34,5 +46,26 @@ export class HomePageComponent implements OnInit {
 
   relatorio(){
     this.router.navigate(['/relatorio'])
+  }
+
+  metas(){
+    this.router.navigate(['/metas'])
+  }
+
+  possuiCredencial(feature:string){
+    console.log(this.flags)
+    const ff = this.flags.filter(
+      (dado) => {
+        return dado.name == feature
+      }
+    )
+
+    console.log(ff)
+
+    if(ff.length > 0){
+      return ff[0].active
+    } else {
+      return false
+    }
   }
 }

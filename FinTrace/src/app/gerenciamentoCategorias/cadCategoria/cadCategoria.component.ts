@@ -1,3 +1,4 @@
+import { SharedService } from './../../shared/service/shared.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -16,12 +17,14 @@ export class CadCategoriaComponent implements OnInit {
   cadastro!:FormGroup
   acaoTitulo:string = 'Cadastro'
   service$!:Subscription
-  categoriaCadastrada = this.data.dado 
+  categoriaCadastrada = this.data.dado
+  userId:number = + this.shared.obterId()
 
   constructor(
     private form: FormBuilder,
     private dialogRef: MatDialogRef<CadTransacaoComponent>,
     private categoriaService: CategoriaService,
+    private shared: SharedService,
     @Inject(MAT_DIALOG_DATA) public data:any,
   ) { }
 
@@ -47,7 +50,8 @@ export class CadCategoriaComponent implements OnInit {
     const id = this.cadastro.get('id')?.value ?? null
     const categoriaCadastrada:categoria = {
       limit: 0,
-      name: this.cadastro.get('descricao')?.value
+      name: this.cadastro.get('descricao')?.value,
+      userId: this.userId
     }
     if(id!=null){
       categoriaCadastrada.id = id

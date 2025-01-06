@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit {
 
   ativarLogin(){
     const validaSenha = this.formLogin.get('senha2')
-    
+
     this.formLogin.reset()
     this.formLogin.markAsPristine()
     this.cadastro = false
@@ -126,7 +126,7 @@ export class LoginComponent implements OnInit {
       this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe({
         next: (dado) => {
           console.log('Resposta: ', dado)
-          localStorage.setItem('usuario', JSON.stringify(formulario.username))
+          localStorage.setItem('usuario', JSON.stringify(dado))
           this.router.navigate(['/'])
         }
       })
