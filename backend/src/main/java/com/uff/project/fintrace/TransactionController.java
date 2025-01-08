@@ -2,9 +2,11 @@ package com.uff.project.fintrace;
 
 import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.Goal;
 import com.uff.project.fintrace.model.Transaction;
 import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.GoalRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
 import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +27,14 @@ public class TransactionController {
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final GoalRepository goalRepository;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, UserRepository userRepository) {
+    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, UserRepository userRepository, GoalRepository goalRepository) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
+        this.goalRepository = goalRepository;
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
@@ -87,20 +91,35 @@ public class TransactionController {
             if (transactionRequest.getCategoryId() != null) {
                 category = categoryRepository.findById(transactionRequest.getCategoryId())
                         .orElse(null);
-                if (transactionRequest.getCategoryId() != null && category == null) {
-                    return buildResponse(null, false, "Categoria não encontrada");
+                if (category == null) {
+                    return buildResponse(null, false, "Categoria não encontrada!");
                 }
+            }
+
+            Goal goal = null;
+            if (transactionRequest.getGoalId() != null && transactionRequest.getType() == Transaction.Type.RECEITA) {
+                goal = goalRepository.findById(transactionRequest.getGoalId()).orElse(null);
+                if (goal == null) {
+                    return buildResponse(null, false, "Meta não encontrada!");
+                }
+
+                goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                goalRepository.save(goal);
+
             }
 
 
             Transaction transaction = new Transaction();
             transaction.setUser(user);
             transaction.setCategory(category);
+
             transaction.setType(transactionRequest.getType());
             transaction.setAmount(transactionRequest.getAmount());
             transaction.setDate(transactionRequest.getDate());
             transaction.setDescription(transactionRequest.getDescription());
             transaction.setRecurring(transactionRequest.isRecurring());
+            transaction.setGoal(goal);
+
 
 
             List<Transaction> recurringTransactions = new ArrayList<>();
@@ -120,6 +139,13 @@ public class TransactionController {
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
 
+                    if(goal!=null && newTransaction.getType()== Transaction.Type.RECEITA )
+                    {
+                        goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                        goalRepository.save(goal);
+                        newTransaction.setGoal(goal);
+                    }
+
                     recurringTransactions.add(newTransaction);
                 }
 
@@ -127,9 +153,9 @@ public class TransactionController {
                 recurringTransactions.add(0, savedTransaction);
             } else {
                 Transaction savedTransaction = transactionRepository.save(transaction);
-                savedTransaction.getUser().setPassword("");
                 return buildResponse(savedTransaction, true, null);
             }
+
 
             return buildResponse(recurringTransactions, true, null);
         } catch (Exception e) {

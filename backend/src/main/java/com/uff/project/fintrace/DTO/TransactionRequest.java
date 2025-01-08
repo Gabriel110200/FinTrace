@@ -12,6 +12,15 @@ public class TransactionRequest {
     private LocalDate date;
     private String description;
     private boolean isRecurring;
+    public Long goalId;
+
+    public Long getGoalId() {
+        return goalId;
+    }
+
+    public void setGoalId(Long goalId) {
+        this.goalId = goalId;
+    }
 
     public Long getUserId() {
         return userId;
