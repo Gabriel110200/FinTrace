@@ -26,9 +26,10 @@ public class Transaction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public User getUser() {
-        return user;
-    }
+    @ManyToOne
+    @JoinColumn(name="goal_id",nullable = true)
+    private Goal goal;
+
 
     public void setUser(User user) {
         this.user = user;
@@ -95,6 +96,12 @@ public class Transaction {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
+    public void setGoal(Goal goal) {
+        this.goal = goal;
+    }
+
 
     public enum Type {
         RECEITA, DESPESA
