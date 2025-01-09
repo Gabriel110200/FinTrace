@@ -143,13 +143,21 @@ public class TransactionController {
             }
 
             Goal goal = null;
-            if (transactionRequest.getGoalId() != null && transactionRequest.getType() == Transaction.Type.RECEITA) {
+            if (transactionRequest.getGoalId() != null  ) {
                 goal = goalRepository.findById(transactionRequest.getGoalId()).orElse(null);
                 if (goal == null) {
                     return buildResponse(null, false, "Meta não encontrada!");
                 }
 
-                goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                if(transactionRequest.getType() == Transaction.Type.RECEITA)
+                {
+                    goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                }
+                else
+                {
+                    goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());
+                }
+
                 goalRepository.save(goal);
 
             }
@@ -185,9 +193,18 @@ public class TransactionController {
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
 
-                    if(goal!=null && newTransaction.getType()== Transaction.Type.RECEITA )
+                    if(goal!=null )
                     {
-                        goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+
+                        if(transactionRequest.getType() == Transaction.Type.RECEITA)
+                        {
+                            goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                        }
+                        else
+                        {
+                            goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());
+                        }
+
                         goalRepository.save(goal);
                         newTransaction.setGoal(goal);
                     }
