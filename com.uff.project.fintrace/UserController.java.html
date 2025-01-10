@@ -1,53 +1,95 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace</a> &gt; <span class="el_source">UserController.java</span></div><h1>UserController.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace;
 
+import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.FeatureFlag;
+import com.uff.project.fintrace.model.User;
+import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.FeatureFlagRepository;
 import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.List;
 
 @RestController
 @RequestMapping(&quot;/api/users&quot;)
-<span class="fc" id="L14">public class UserController {</span>
+<span class="fc" id="L21">public class UserController {</span>
 
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private FeatureFlagRepository featureFlagsRepository;
+
+
+<span class="fc" id="L33">    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();</span>
+
     @PostMapping(&quot;/register&quot;)
-    public ResponseEntity&lt;?&gt; registerUser(@RequestBody User user)
-    {
-<span class="fc" id="L22">        User savedUser = userRepository.save(user);</span>
-<span class="fc" id="L23">        return ResponseEntity.ok(&quot;Usuário registrado com sucesso!&quot;);</span>
+    public ResponseEntity&lt;?&gt; registerUser(@RequestBody User user) {
+<span class="fc" id="L37">        user.setPassword(passwordEncoder.encode(user.getPassword()));</span>
+<span class="fc" id="L38">        userRepository.save(user);</span>
+<span class="fc" id="L39">        createDefaultCategories(user);</span>
+
+<span class="fc" id="L41">        FeatureFlag featureA = new FeatureFlag();</span>
+<span class="fc" id="L42">        featureA.setName(&quot;Feature A&quot;);</span>
+<span class="fc" id="L43">        featureA.setType(1);</span>
+<span class="fc" id="L44">        featureA.setActive(true);</span>
+<span class="fc" id="L45">        featureA.setUser(user);</span>
+
+<span class="fc" id="L47">        FeatureFlag featureB = new FeatureFlag();</span>
+<span class="fc" id="L48">        featureB.setName(&quot;Feature B&quot;);</span>
+<span class="fc" id="L49">        featureB.setType(2);</span>
+<span class="fc" id="L50">        featureB.setActive(false);</span>
+<span class="fc" id="L51">        featureB.setUser(user);</span>
+
+<span class="fc" id="L53">        featureFlagsRepository.saveAll(List.of(featureA, featureB));</span>
+
+<span class="fc" id="L55">        return ResponseEntity.ok(&quot;Usuário registrado com sucesso!&quot;);</span>
     }
 
+    private void createDefaultCategories(User user) {
+<span class="fc" id="L59">        Category salaryCategory = new Category();</span>
+<span class="fc" id="L60">        salaryCategory.setName(&quot;Salário&quot;);</span>
+<span class="fc" id="L61">        salaryCategory.setUser(user);</span>
+
+<span class="fc" id="L63">        Category genericCategory = new Category();</span>
+<span class="fc" id="L64">        genericCategory.setName(&quot;Genérico&quot;);</span>
+<span class="fc" id="L65">        genericCategory.setUser(user);</span>
+
+<span class="fc" id="L67">        categoryRepository.saveAll(List.of(salaryCategory, genericCategory));</span>
+<span class="fc" id="L68">    }</span>
+
     @PostMapping(&quot;/login&quot;)
-    public ResponseEntity&lt;?&gt; logUser(@RequestBody User loginUser)
-    {
-<span class="fc" id="L29">        Optional&lt;User&gt; user = userRepository.findByUsernameAndPassword(</span>
-<span class="fc" id="L30">                loginUser.getUsername(), loginUser.getPassword());</span>
+    public ResponseEntity&lt;?&gt; logUser(@RequestBody User loginUser) {
+<span class="fc" id="L72">        Optional&lt;User&gt; user = userRepository.findByUsername(loginUser.getUsername());</span>
+<span class="fc" id="L73">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L32">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">        if (user.isPresent()) {</span>
+<span class="fc" id="L76">            User foundUser = user.get();</span>
 
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (user.isPresent()) {</span>
-<span class="fc" id="L35">            User loggedInUser = user.get();</span>
 
-<span class="fc" id="L37">            response.put(&quot;success&quot;, true);</span>
-<span class="fc" id="L38">            response.put(&quot;message&quot;, &quot;Usuário logado com sucesso!&quot;);</span>
-<span class="fc" id="L39">            response.put(&quot;data&quot;, Map.of(</span>
-<span class="fc" id="L40">                    &quot;id&quot;, loggedInUser.getId(),</span>
-<span class="fc" id="L41">                    &quot;username&quot;, loggedInUser.getUsername()</span>
-            ));
-
-<span class="fc" id="L44">            return ResponseEntity.ok(response);</span>
-        } else {
-<span class="fc" id="L46">            response.put(&quot;success&quot;, false);</span>
-<span class="fc" id="L47">            response.put(&quot;message&quot;, &quot;Usuário inválido!&quot;);</span>
-<span class="fc" id="L48">            return ResponseEntity.badRequest().body(response);</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">            if (passwordEncoder.matches(loginUser.getPassword(), foundUser.getPassword())) {</span>
+<span class="fc" id="L80">                response.put(&quot;success&quot;, true);</span>
+<span class="fc" id="L81">                response.put(&quot;message&quot;, &quot;Usuário logado com sucesso!&quot;);</span>
+<span class="fc" id="L82">                response.put(&quot;data&quot;, Map.of(</span>
+<span class="fc" id="L83">                        &quot;id&quot;, foundUser.getId(),</span>
+<span class="fc" id="L84">                        &quot;username&quot;, foundUser.getUsername()</span>
+                ));
+<span class="fc" id="L86">                return ResponseEntity.ok(response);</span>
+            }
         }
 
+<span class="fc" id="L90">        response.put(&quot;success&quot;, false);</span>
+<span class="fc" id="L91">        response.put(&quot;message&quot;, &quot;Usuário inválido!&quot;);</span>
+<span class="fc" id="L92">        return ResponseEntity.badRequest().body(response);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FeatureFlagController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace</a> &gt; <span class="el_source">FeatureFlagController.java</span></div><h1>FeatureFlagController.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace;
+
+import com.uff.project.fintrace.model.FeatureFlag;
+import com.uff.project.fintrace.repository.FeatureFlagRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/feature-flag&quot;)
+<span class="fc" id="L16">public class FeatureFlagController {</span>
+    @Autowired
+    private FeatureFlagRepository featureFlagsRepository;
+
+
+    private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; buildResponse(Object data, boolean success, String errorMessage) {
+<span class="fc" id="L22">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L23">        response.put(&quot;success&quot;, success);</span>
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">        if (success) {</span>
+<span class="fc" id="L25">            response.put(&quot;data&quot;, data);</span>
+        } else {
+<span class="nc" id="L27">            response.put(&quot;error&quot;, errorMessage);</span>
+        }
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        return ResponseEntity.status(success ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR).body(response);</span>
+    }
+
+
+
+    @GetMapping(&quot;/{userId}&quot;)
+    public ResponseEntity&lt;?&gt; getAllFeatureFlagsByUser(@PathVariable Long userId) {
+<span class="fc" id="L36">        List&lt;FeatureFlag&gt; featureFlags = featureFlagsRepository.findByUserId(userId);</span>
+<span class="fc" id="L37">        return buildResponse(featureFlags, true, null);</span>
+    }
+
+    @PutMapping(&quot;/{id}&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; updateFeatureFlagStatus(@PathVariable Long id, @RequestParam boolean isActive) {
+<span class="fc" id="L42">        FeatureFlag featureFlag = featureFlagsRepository.findById(id)</span>
+<span class="pc" id="L43">                .orElseThrow(() -&gt; new RuntimeException(&quot;FeatureFlag não existe&quot;));</span>
+
+<span class="fc" id="L45">        featureFlag.setActive(isActive);</span>
+<span class="fc" id="L46">        featureFlagsRepository.save(featureFlag);</span>
+<span class="fc" id="L47">        return buildResponse(&quot;Flag atualizada&quot;,true,null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

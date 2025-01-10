@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionCsvDto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace.DTO</a> &gt; <span class="el_source">TransactionCsvDto.java</span></div><h1>TransactionCsvDto.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace.DTO;
+
+import com.opencsv.bean.CsvBindByName;
+
+
+<span class="fc" id="L6">public class TransactionCsvDto {</span>
+
+    @CsvBindByName(column = &quot;description&quot;)
+    private String description;
+
+    @CsvBindByName(column = &quot;amount&quot;)
+    private Double amount;
+
+    @CsvBindByName(column = &quot;date&quot;)
+    private String date;
+
+    @CsvBindByName(column = &quot;type&quot;)
+    private String type;
+
+    @CsvBindByName(column = &quot;isRecurring&quot;)
+    private String isRecurring;
+
+    public String getCategoryId() {
+<span class="fc" id="L24">        return categoryId;</span>
+    }
+
+    public void setCategoryId(String categoryId) {
+<span class="fc" id="L28">        this.categoryId = categoryId;</span>
+<span class="fc" id="L29">    }</span>
+
+    @CsvBindByName(column = &quot;categoryId&quot;)
+    private String categoryId;
+
+    public String getType() {
+<span class="fc" id="L35">        return type;</span>
+    }
+
+    public void setType(String type) {
+<span class="fc" id="L39">        this.type = type;</span>
+<span class="fc" id="L40">    }</span>
+
+    public String getIsRecurring() {
+<span class="fc" id="L43">        return isRecurring;</span>
+    }
+
+    public void setIsRecurring(String isRecurring) {
+<span class="fc" id="L47">        this.isRecurring = isRecurring;</span>
+<span class="fc" id="L48">    }</span>
+
+    public Double getAmount() {
+<span class="fc" id="L51">        return amount;</span>
+    }
+
+    public void setAmount(Double amount) {
+<span class="fc" id="L55">        this.amount = amount;</span>
+<span class="fc" id="L56">    }</span>
+
+
+    public String getDate() {
+<span class="fc" id="L60">        return date;</span>
+    }
+
+    public void setDate(String date) {
+<span class="fc" id="L64">        this.date = date;</span>
+<span class="fc" id="L65">    }</span>
+
+    public String getDescription() {
+<span class="fc" id="L68">        return description;</span>
+    }
+
+    public void setDescription(String description) {
+<span class="fc" id="L72">        this.description = description;</span>
+<span class="fc" id="L73">    }</span>
+
+
+
+    @Override
+    public String toString() {
+<span class="nc" id="L79">        return &quot;SimpleTransactionCsvDto{&quot; +</span>
+                &quot;description='&quot; + description + '\'' +
+                '}';
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace</a> &gt; <span class="el_source">AccountController.java</span></div><h1>AccountController.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace;
+
+import com.uff.project.fintrace.DTO.AccountRequest;
+import com.uff.project.fintrace.model.Account;
+import com.uff.project.fintrace.model.User;
+import com.uff.project.fintrace.repository.AccountRepository;
+import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+@RequestMapping(&quot;/api/accounts&quot;)
+public class AccountController {
+
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+
+    @Autowired
+    public AccountController(AccountRepository accountRepository,
+<span class="nc" id="L28">                              UserRepository userRepository) {</span>
+<span class="nc" id="L29">        this.accountRepository = accountRepository;</span>
+<span class="nc" id="L30">        this.userRepository = userRepository;</span>
+<span class="nc" id="L31">    }</span>
+
+
+
+
+    private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; buildResponse(Object data, boolean success, String errorMessage) {
+<span class="nc" id="L37">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L38">        response.put(&quot;success&quot;, success);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (success) {</span>
+<span class="nc" id="L40">            response.put(&quot;data&quot;, data);</span>
+        } else {
+<span class="nc" id="L42">            response.put(&quot;error&quot;, errorMessage);</span>
+        }
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        return ResponseEntity.status(success ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR).body(response);</span>
+    }
+
+    @PostMapping(&quot;/create&quot;)
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; createAccount(@RequestBody AccountRequest request) {
+        try {
+<span class="nc" id="L50">            User user = userRepository.findById(request.getUserId())</span>
+<span class="nc" id="L51">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Usuário não encontrado!&quot;));</span>
+
+<span class="nc" id="L53">            Account account = new Account();</span>
+<span class="nc" id="L54">            account.setName(request.getName());</span>
+<span class="nc" id="L55">            account.setAmount(request.getAmount());</span>
+<span class="nc" id="L56">            account.setUser(user);</span>
+
+<span class="nc" id="L58">            Account savedAccount = accountRepository.save(account);</span>
+<span class="nc" id="L59">            return buildResponse(savedAccount, true, null);</span>
+<span class="nc" id="L60">        } catch (Exception e) {</span>
+<span class="nc" id="L61">            return buildResponse(null, false, e.getMessage());</span>
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getAllAccounts(@RequestParam Long userId) {
+<span class="nc" id="L67">        List&lt;Account&gt; accounts = accountRepository.findByUserId(userId);</span>
+<span class="nc" id="L68">        return buildResponse(accounts,true,null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

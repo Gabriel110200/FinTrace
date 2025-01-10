@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">fintrace</a> &gt; <a href="index.source.html" class="el_package">com.uff.project.fintrace</a> &gt; <span class="el_source">TransactionController.java</span></div><h1>TransactionController.java</h1><pre class="source lang-java linenums">package com.uff.project.fintrace;
 
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.uff.project.fintrace.DTO.TransactionCsvDto;
+import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.Goal;
 import com.uff.project.fintrace.model.Transaction;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.GoalRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,115 +31,204 @@ public class TransactionController {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final GoalRepository goalRepository;
 
     @Autowired
-<span class="fc" id="L26">    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {</span>
-<span class="fc" id="L27">        this.transactionRepository = transactionRepository;</span>
-<span class="fc" id="L28">        this.categoryRepository = categoryRepository;</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc" id="L38">    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, UserRepository userRepository, GoalRepository goalRepository) {</span>
+<span class="fc" id="L39">        this.transactionRepository = transactionRepository;</span>
+<span class="fc" id="L40">        this.categoryRepository = categoryRepository;</span>
+<span class="fc" id="L41">        this.userRepository = userRepository;</span>
+<span class="fc" id="L42">        this.goalRepository = goalRepository;</span>
+<span class="fc" id="L43">    }</span>
 
     private ResponseEntity&lt;Map&lt;String, Object&gt;&gt; buildResponse(Object data, boolean success, String errorMessage) {
-<span class="fc" id="L32">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L33">        response.put(&quot;success&quot;, success);</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (success) {</span>
-<span class="fc" id="L35">            response.put(&quot;data&quot;, data);</span>
+<span class="fc" id="L46">        Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L47">        response.put(&quot;success&quot;, success);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (success) {</span>
+<span class="fc" id="L49">            response.put(&quot;data&quot;, data);</span>
         } else {
-<span class="fc" id="L37">            response.put(&quot;error&quot;, errorMessage);</span>
+<span class="fc" id="L51">            response.put(&quot;error&quot;, errorMessage);</span>
         }
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        return ResponseEntity.status(success ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR).body(response);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        return ResponseEntity.status(success ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR).body(response);</span>
     }
 
 
 
     @GetMapping
-    public ResponseEntity&lt;?&gt; getAllTransactions() {
+    public ResponseEntity&lt;?&gt; getAllTransactions(@RequestParam Long userId) {
         try {
-<span class="fc" id="L47">            List&lt;Transaction&gt; transactions = transactionRepository.findAll();</span>
-<span class="fc" id="L48">            return buildResponse(transactions, true, null);</span>
-<span class="fc" id="L49">        } catch (Exception e) {</span>
-<span class="fc" id="L50">            e.printStackTrace();</span>
-<span class="fc" id="L51">            return buildResponse(null, false, e.getMessage());</span>
+<span class="fc" id="L61">            List&lt;Transaction&gt; transactions = transactionRepository.findByUserId(userId);</span>
+<span class="fc" id="L62">            return buildResponse(transactions, true, null);</span>
+<span class="fc" id="L63">        } catch (Exception e) {</span>
+<span class="fc" id="L64">            e.printStackTrace();</span>
+<span class="fc" id="L65">            return buildResponse(null, false, e.getMessage());</span>
         }
     }
 
     @GetMapping(&quot;/recurring&quot;)
     public ResponseEntity&lt;?&gt; getRecurringTransactions() {
 
-<span class="fc" id="L58">        List&lt;Transaction&gt; recurringTransactions = transactionRepository.findByIsRecurringTrue();</span>
-<span class="fc" id="L59">        return buildResponse(recurringTransactions, true, null);</span>
+<span class="fc" id="L72">        List&lt;Transaction&gt; recurringTransactions = transactionRepository.findByIsRecurringTrue();</span>
+<span class="fc" id="L73">        return buildResponse(recurringTransactions, true, null);</span>
 
     }
 
     @GetMapping(&quot;/non-recurring&quot;)
     public ResponseEntity&lt;?&gt; getNonRecurringTransactions() {
 
-<span class="fc" id="L66">        List&lt;Transaction&gt; nonRecurringTransactions = transactionRepository.findByIsRecurringFalse();</span>
-<span class="fc" id="L67">        return buildResponse(nonRecurringTransactions, true, null);</span>
+<span class="fc" id="L80">        List&lt;Transaction&gt; nonRecurringTransactions = transactionRepository.findByIsRecurringFalse();</span>
+<span class="fc" id="L81">        return buildResponse(nonRecurringTransactions, true, null);</span>
 
     }
 
 
 
-
-    @PostMapping
-    public ResponseEntity&lt;?&gt; createTransaction(@RequestBody Transaction transaction) {
+    @PostMapping(value = &quot;/import-transaction&quot;, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity&lt;?&gt; importTransactions(@RequestParam(&quot;file&quot;) MultipartFile file, @RequestParam(&quot;userId&quot;) Long userId) {
         try {
-<span class="fc" id="L77">            Long categoryId = transaction.getCategory().getId();</span>
-<span class="fc" id="L78">            Category category = categoryRepository.findById(categoryId).orElse(null);</span>
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (category == null) {</span>
-<span class="fc" id="L81">                return buildResponse(null, false, &quot;Categoria não encontrada&quot;);</span>
-            }
-
-<span class="fc bfc" id="L84" title="All 2 branches covered.">            if (transaction.getType() == Transaction.Type.DESPESA) {</span>
-<span class="fc" id="L85">                categoryRepository.save(category);</span>
-            }
-
-<span class="fc" id="L88">            transaction.setCategory(category);</span>
-
-<span class="fc" id="L90">            List&lt;Transaction&gt; recurringTransactions = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">            if (transaction.isRecurring()) {</span>
-
-<span class="fc" id="L93">                Transaction savedTransaction = transactionRepository.save(transaction);</span>
-
-<span class="fc" id="L95">                LocalDate nextDate = transaction.getDate();</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">                for (int i = 1; i &lt;= 11; i++) {</span>
-<span class="fc" id="L97">                    nextDate = nextDate.plusMonths(1);</span>
+<span class="fc" id="L91">            userRepository.findById(userId)</span>
+<span class="pc" id="L92">                    .orElseThrow(() -&gt; new RuntimeException(&quot;Usuário não encontrado&quot;));</span>
 
 
-<span class="fc" id="L100">                    Transaction newTransaction = new Transaction();</span>
-<span class="fc" id="L101">                    newTransaction.setType(transaction.getType());</span>
-<span class="fc" id="L102">                    newTransaction.setCategory(transaction.getCategory());</span>
-<span class="fc" id="L103">                    newTransaction.setAmount(transaction.getAmount());</span>
-<span class="fc" id="L104">                    newTransaction.setDate(nextDate);</span>
-<span class="fc" id="L105">                    newTransaction.setDescription(transaction.getDescription());</span>
-<span class="fc" id="L106">                    newTransaction.setRecurring(true);</span>
+<span class="fc" id="L95">            List&lt;TransactionCsvDto&gt; csvTransactions = new CsvToBeanBuilder&lt;TransactionCsvDto&gt;(</span>
+<span class="fc" id="L96">                    new InputStreamReader(file.getInputStream()))</span>
+<span class="fc" id="L97">                    .withType(TransactionCsvDto.class)</span>
+<span class="fc" id="L98">                    .build()</span>
+<span class="fc" id="L99">                    .parse();</span>
 
-<span class="fc bfc" id="L108" title="All 2 branches covered.">                    if (transaction.getType() == Transaction.Type.DESPESA) {</span>
-<span class="fc" id="L109">                        categoryRepository.save(category);</span>
-                    }
 
-<span class="fc" id="L112">                    recurringTransactions.add(newTransaction);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">            for (TransactionCsvDto csvDto : csvTransactions) {</span>
+<span class="fc" id="L103">                TransactionRequest transactionRequest = new TransactionRequest();</span>
+<span class="fc" id="L104">                transactionRequest.setUserId(userId);</span>
+<span class="fc" id="L105">                transactionRequest.setDescription(csvDto.getDescription());</span>
+<span class="fc" id="L106">                transactionRequest.setAmount(csvDto.getAmount());</span>
+<span class="fc" id="L107">                transactionRequest.setDate(LocalDate.parse(csvDto.getDate()));</span>
+<span class="fc" id="L108">                transactionRequest.setRecurring(Boolean.parseBoolean(csvDto.getIsRecurring().toLowerCase()));</span>
+<span class="fc" id="L109">                transactionRequest.setType(Transaction.Type.valueOf(csvDto.getType().toUpperCase()));</span>
+
+<span class="pc bpc" id="L111" title="2 of 4 branches missed.">                if (csvDto.getCategoryId() != null &amp;&amp; !csvDto.getCategoryId().isEmpty()) {</span>
+<span class="fc" id="L112">                    transactionRequest.setCategoryId(Long.parseLong(csvDto.getCategoryId()));</span>
                 }
 
-<span class="fc" id="L115">                transactionRepository.saveAll(recurringTransactions);</span>
-<span class="fc" id="L116">                recurringTransactions.add(0, savedTransaction);</span>
-<span class="fc" id="L117">            } else {</span>
+<span class="fc" id="L115">                ResponseEntity&lt;?&gt; response = createTransaction(transactionRequest);</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">                if (!response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L117">                    return response;</span>
+                }
+<span class="fc" id="L119">            }</span>
 
-<span class="fc" id="L119">                Transaction savedTransaction = transactionRepository.save(transaction);</span>
-<span class="fc" id="L120">                return buildResponse(savedTransaction, true, null);</span>
-            }
-
-<span class="fc" id="L123">            return buildResponse(recurringTransactions, true, null);</span>
-<span class="fc" id="L124">        } catch (Exception e) {</span>
-<span class="fc" id="L125">            e.printStackTrace();</span>
-<span class="fc" id="L126">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(</span>
-<span class="fc" id="L127">                    &quot;success&quot;, false,</span>
-<span class="fc" id="L128">                    &quot;data&quot;, e.getMessage()</span>
-            ));
+<span class="fc" id="L121">            return buildResponse(null, true, &quot;Transações importadas com sucesso!&quot;);</span>
+<span class="nc" id="L122">        } catch (Exception e) {</span>
+<span class="nc" id="L123">            e.printStackTrace();</span>
+<span class="nc" id="L124">            return ResponseEntity.status(500).body(&quot;Falha ao importar transação: &quot; + e.getMessage());</span>
         }
     }
 
+
+    @PostMapping
+    public ResponseEntity&lt;?&gt; createTransaction(@RequestBody TransactionRequest transactionRequest) {
+        try {
+
+<span class="fc" id="L133">            User user = userRepository.findById(transactionRequest.getUserId())</span>
+<span class="pc" id="L134">                    .orElseThrow(() -&gt; new RuntimeException(&quot;User not found&quot;));</span>
+
+<span class="fc" id="L136">            Category category = null;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">            if (transactionRequest.getCategoryId() != null) {</span>
+<span class="fc" id="L138">                category = categoryRepository.findById(transactionRequest.getCategoryId())</span>
+<span class="fc" id="L139">                        .orElse(null);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                if (category == null) {</span>
+<span class="fc" id="L141">                    return buildResponse(null, false, &quot;Categoria não encontrada!&quot;);</span>
+                }
+            }
+
+<span class="fc" id="L145">            Goal goal = null;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">            if (transactionRequest.getGoalId() != null  ) {</span>
+<span class="nc" id="L147">                goal = goalRepository.findById(transactionRequest.getGoalId()).orElse(null);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                if (goal == null) {</span>
+<span class="nc" id="L149">                    return buildResponse(null, false, &quot;Meta não encontrada!&quot;);</span>
+                }
+
+<span class="nc bnc" id="L152" title="All 2 branches missed.">                if(transactionRequest.getType() == Transaction.Type.RECEITA)</span>
+                {
+<span class="nc" id="L154">                    goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());</span>
+                }
+                else
+                {
+<span class="nc" id="L158">                    goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());</span>
+                }
+
+<span class="nc" id="L161">                goalRepository.save(goal);</span>
+
+            }
+
+
+<span class="fc" id="L166">            Transaction transaction = new Transaction();</span>
+<span class="fc" id="L167">            transaction.setUser(user);</span>
+<span class="fc" id="L168">            transaction.setCategory(category);</span>
+
+<span class="fc" id="L170">            transaction.setType(transactionRequest.getType());</span>
+<span class="fc" id="L171">            transaction.setAmount(transactionRequest.getAmount());</span>
+<span class="fc" id="L172">            transaction.setDate(transactionRequest.getDate());</span>
+<span class="fc" id="L173">            transaction.setDescription(transactionRequest.getDescription());</span>
+<span class="fc" id="L174">            transaction.setRecurring(transactionRequest.isRecurring());</span>
+<span class="fc" id="L175">            transaction.setGoal(goal);</span>
+
+
+
+<span class="fc" id="L179">            List&lt;Transaction&gt; recurringTransactions = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">            if (transaction.isRecurring()) {</span>
+<span class="fc" id="L181">                Transaction savedTransaction = transactionRepository.save(transaction);</span>
+
+<span class="fc" id="L183">                LocalDate nextDate = transaction.getDate();</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">                for (int i = 1; i &lt;= 11; i++) {</span>
+<span class="fc" id="L185">                    nextDate = nextDate.plusMonths(1);</span>
+
+<span class="fc" id="L187">                    Transaction newTransaction = new Transaction();</span>
+<span class="fc" id="L188">                    newTransaction.setUser(user);</span>
+<span class="fc" id="L189">                    newTransaction.setCategory(category);</span>
+<span class="fc" id="L190">                    newTransaction.setType(transaction.getType());</span>
+<span class="fc" id="L191">                    newTransaction.setAmount(transaction.getAmount());</span>
+<span class="fc" id="L192">                    newTransaction.setDate(nextDate);</span>
+<span class="fc" id="L193">                    newTransaction.setDescription(transaction.getDescription());</span>
+<span class="fc" id="L194">                    newTransaction.setRecurring(true);</span>
+
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">                    if(goal!=null )</span>
+                    {
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                        if(transactionRequest.getType() == Transaction.Type.RECEITA)</span>
+                        {
+<span class="nc" id="L201">                            goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());</span>
+                        }
+                        else
+                        {
+<span class="nc" id="L205">                            goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());</span>
+                        }
+
+<span class="nc" id="L208">                        goalRepository.save(goal);</span>
+<span class="nc" id="L209">                        newTransaction.setGoal(goal);</span>
+                    }
+
+<span class="fc" id="L212">                    recurringTransactions.add(newTransaction);</span>
+                }
+
+<span class="fc" id="L215">                transactionRepository.saveAll(recurringTransactions);</span>
+<span class="fc" id="L216">                recurringTransactions.add(0, savedTransaction);</span>
+<span class="fc" id="L217">            } else {</span>
+<span class="fc" id="L218">                Transaction savedTransaction = transactionRepository.save(transaction);</span>
+<span class="fc" id="L219">                return buildResponse(savedTransaction, true, null);</span>
+            }
+
+
+<span class="fc" id="L223">            return buildResponse(recurringTransactions, true, null);</span>
+<span class="fc" id="L224">        } catch (Exception e) {</span>
+<span class="fc" id="L225">            e.printStackTrace();</span>
+<span class="fc" id="L226">            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(</span>
+<span class="fc" id="L227">                    &quot;success&quot;, false,</span>
+<span class="fc" id="L228">                    &quot;data&quot;, e.getMessage()</span>
+            ));
+        }
+    }
 
 
 
