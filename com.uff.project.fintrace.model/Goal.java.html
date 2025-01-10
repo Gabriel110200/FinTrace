@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-<span class="nc" id="L8">public class Goal {</span>
+<span class="fc" id="L8">public class Goal {</span>
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ import java.util.List;
     @Column(nullable = false)
     private Double currentValue;
 
-<span class="nc" id="L27">    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true)</span>
+<span class="fc" id="L27">    @OneToMany(cascade = CascadeType.DETACH, orphanRemoval = true)</span>
     @JoinColumn(name = &quot;goal_id&quot;)
     private List&lt;Transaction&gt; transactions = new ArrayList&lt;&gt;(); // transactionsArray
 
@@ -34,32 +34,32 @@ import java.util.List;
     }
 
     public void setId(Long id) {
-<span class="nc" id="L37">        this.id = id;</span>
-<span class="nc" id="L38">    }</span>
+<span class="fc" id="L37">        this.id = id;</span>
+<span class="fc" id="L38">    }</span>
 
     public String getDescription() {
 <span class="nc" id="L41">        return description;</span>
     }
 
     public void setDescription(String description) {
-<span class="nc" id="L45">        this.description = description;</span>
-<span class="nc" id="L46">    }</span>
+<span class="fc" id="L45">        this.description = description;</span>
+<span class="fc" id="L46">    }</span>
 
     public Double getNecessaryValue() {
 <span class="nc" id="L49">        return necessaryValue;</span>
     }
 
     public void setNecessaryValue(Double necessaryValue) {
-<span class="nc" id="L53">        this.necessaryValue = necessaryValue;</span>
-<span class="nc" id="L54">    }</span>
+<span class="fc" id="L53">        this.necessaryValue = necessaryValue;</span>
+<span class="fc" id="L54">    }</span>
 
     public Double getCurrentValue() {
 <span class="nc" id="L57">        return currentValue;</span>
     }
 
     public void setCurrentValue(Double currentValue) {
-<span class="nc" id="L61">        this.currentValue = currentValue;</span>
-<span class="nc" id="L62">    }</span>
+<span class="fc" id="L61">        this.currentValue = currentValue;</span>
+<span class="fc" id="L62">    }</span>
 
     public List&lt;Transaction&gt; getTransactions() {
 <span class="nc" id="L65">        return transactions;</span>
@@ -70,8 +70,8 @@ import java.util.List;
 <span class="nc" id="L70">    }</span>
 
     public void setUser(User user) {
-<span class="nc" id="L73">        this.user = user;</span>
-<span class="nc" id="L74">    }</span>
+<span class="fc" id="L73">        this.user = user;</span>
+<span class="fc" id="L74">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

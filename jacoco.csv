@@ -1,5 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-fintrace,com.uff.project.fintrace,GoalController,121,0,6,0,29,0,8,0,5,0
+fintrace,com.uff.project.fintrace,GoalController,0,121,0,6,0,29,0,8,0,5
 fintrace,com.uff.project.fintrace,CategoryController,5,223,0,10,0,52,1,12,1,7
 fintrace,com.uff.project.fintrace,HomeController,5,0,0,0,2,0,2,0,2,0
 fintrace,com.uff.project.fintrace,FeatureFlagController,11,62,2,2,1,13,3,4,1,4
@@ -12,12 +12,12 @@ fintrace,com.uff.project.fintrace.model,FeatureFlag,15,23,0,0,5,11,5,6,5,6
 fintrace,com.uff.project.fintrace.model,Transaction,6,57,0,0,2,25,2,15,2,15
 fintrace,com.uff.project.fintrace.model,Transaction.Type,0,15,0,0,0,2,0,1,0,1
 fintrace,com.uff.project.fintrace.model,User,0,24,0,0,0,10,0,7,0,7
-fintrace,com.uff.project.fintrace.model,Goal,47,0,0,0,19,0,12,0,12,0
+fintrace,com.uff.project.fintrace.model,Goal,19,28,0,0,7,12,6,6,6,6
 fintrace,com.uff.project.fintrace.model,Category,32,28,2,0,11,12,6,8,5,8
 fintrace,com.uff.project.fintrace.model,SecurityConfig,23,0,0,0,6,0,4,0,4,0
 fintrace,com.uff.project.fintrace.DTO,TransactionRequest,4,55,0,0,2,23,1,16,1,16
 fintrace,com.uff.project.fintrace.DTO,CategoryRequest,0,24,0,0,0,10,0,7,0,7
 fintrace,com.uff.project.fintrace.DTO,TransactionCsvDto,4,45,0,0,1,19,1,13,1,13
-fintrace,com.uff.project.fintrace.DTO,UpdateGoalRequest,10,0,0,0,4,0,3,0,3,0
+fintrace,com.uff.project.fintrace.DTO,UpdateGoalRequest,7,3,0,0,3,1,2,1,2,1
 fintrace,com.uff.project.fintrace.DTO,AccountRequest,24,0,0,0,10,0,7,0,7,0
-fintrace,com.uff.project.fintrace.DTO,GoalRequest,24,0,0,0,10,0,7,0,7,0
+fintrace,com.uff.project.fintrace.DTO,GoalRequest,0,24,0,0,0,10,0,7,0,7
