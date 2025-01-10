@@ -15,7 +15,7 @@ export class DashboardFluxoCaixaComponent implements OnInit {
 
   basicData: any;
   basicOptions: any;
-  campo:number = 2024
+  campo:number = 2025
 
   rotulos:string[] = []
   valores:number[] = []
@@ -34,7 +34,7 @@ export class DashboardFluxoCaixaComponent implements OnInit {
   ){}
 
   ngOnInit() {
-    this.listagem(2024)
+    this.listagem(2025)
     //this.populaTabela([])
   }
 
@@ -43,7 +43,7 @@ export class DashboardFluxoCaixaComponent implements OnInit {
     this.totalReceita = []
     this.totalDespesa = []
 
-    this.$Transacoes = this.transacoes.listarTransacoes() 
+    this.$Transacoes = this.transacoes.listarTransacoes()
 
     forkJoin([this.$Transacoes]).subscribe({
       next: ([dado1]) => {

@@ -3,10 +3,10 @@
   <mat-grid-list cols="12" rowHeight="60px">
     <mat-grid-tile colspan="12"></mat-grid-tile>
   </mat-grid-list>
-  
-  
+
+
   <mat-card class="cardCampos" appearance="outlined">
-  
+
     <mat-grid-list cols="12" rowHeight="50px">
         <mat-grid-tile colspan="12">
           <div class="ajustetxte">
@@ -15,62 +15,73 @@
             </button>
           </div>
           <div class="ajustetxtd">
+
+              <input type="file" style="display: none;"
+              [accept]="requiredFileType"
+              (change)="onFileSelected($event)" #fileUpload>
+
+              <button mat-fab aria-label="Example icon button with a delete icon" (click)="fileUpload.click()"
+              class="anexo" matTooltip="Adicionar Transações via .csv">
+                <mat-icon>attach_file</mat-icon>
+              </button>
+
+
             <button mat-raised-button (click)="dialogTransacao('Cadastro')" class="botaoTopo">Cadastrar Transação</button>
             <button mat-raised-button (click)="dialogTransacao('recorrente')" class="botaoTopo">Cadastrar Transação Recorrente</button>
           </div>
         </mat-grid-tile>
     </mat-grid-list>
-    
+
     <mat-card-header>
       <h3>Histórico de transação</h3>
     </mat-card-header>
-    
+
     <mat-card-content>
-  
+
       <form [formGroup]="pesquisa">
-  
+
         <mat-grid-list cols="12" rowHeight="120px" gutterSize="10px">
-  
+
           <mat-grid-tile colspan="3">
             <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
               <mat-label>Tipo de transação</mat-label>
               <mat-select  formControlName="transacao" >
-                <mat-option *ngFor="let transacao of tipoTransacao" [value]="transacao.id"> {{ transacao.nome }} </mat-option> 
+                <mat-option *ngFor="let transacao of tipoTransacao" [value]="transacao.id"> {{ transacao.nome }} </mat-option>
               </mat-select>
               <mat-error>Preencha o campo.</mat-error>
             </mat-form-field>
           </mat-grid-tile>
-  
+
           <mat-grid-tile colspan="3">
             <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
               <mat-label>Categoria</mat-label>
               <mat-select  formControlName="categoria" >
-                <mat-option *ngFor="let categoria of tipoCategoria" [value]="categoria"> {{ categoria.name }} </mat-option> 
+                <mat-option *ngFor="let categoria of tipoCategoria" [value]="categoria"> {{ categoria.name }} </mat-option>
               </mat-select>
               <mat-error>Preencha o campo.</mat-error>
             </mat-form-field>
           </mat-grid-tile>
-  
+
           <mat-grid-tile colspan="3">
             <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
               <mat-label>Mês</mat-label>
               <mat-select  formControlName="mes" >
-                <mat-option *ngFor="let mes of meses" [value]="mes"> {{ mes }} </mat-option> 
+                <mat-option *ngFor="let mes of meses" [value]="mes"> {{ mes }} </mat-option>
               </mat-select>
               <mat-error>Preencha o campo.</mat-error>
             </mat-form-field>
           </mat-grid-tile>
-  
+
           <mat-grid-tile colspan="3">
             <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
               <mat-label>Ano</mat-label>
               <mat-select  formControlName="ano" >
-                <mat-option *ngFor="let ano of anos" [value]="ano"> {{ ano }} </mat-option> 
+                <mat-option *ngFor="let ano of anos" [value]="ano"> {{ ano }} </mat-option>
               </mat-select>
               <mat-error>Preencha o campo.</mat-error>
             </mat-form-field>
           </mat-grid-tile>
-  
+
           <!--mat-grid-tile colspan="3">
             <mat-form-field floatLabel="always" appearance="outline" class="namebox" hideRequiredMarker="true">
               <mat-label>Data da fim</mat-label>
@@ -78,9 +89,9 @@
               <mat-error>Preencha o campo.</mat-error>
             </mat-form-field>
           </mat-grid-tile-->
-  
+
         </mat-grid-list>
-  
+
         <mat-grid-list cols="12" rowHeight="40px" gutterSize="5px">
           <mat-grid-tile colspan="12">
             <div class="ajustetxte">
@@ -95,38 +106,38 @@
             </div>
           </mat-grid-tile>
         </mat-grid-list>
-  
+
       </form>
       <br>
-  
-      
+
+
       <app-tabelaTransacoes></app-tabelaTransacoes>
-  
-  
-  
-  
+
+
+
+
     </mat-card-content>
-  
+
     <mat-card-footer>
       <mat-grid-list cols="12" rowHeight="120px" gutterSize="10px">
-  
+
         <mat-grid-tile colspan="1"></mat-grid-tile>
-  
+
         <mat-grid-tile colspan="3" class="receita">
          <mat-icon>arrow_upward</mat-icon> Receita: {{service.formatarValor(obtemReceita()) }}
         </mat-grid-tile>
-        
+
         <mat-grid-tile colspan="3" class="despesa">
           <mat-icon>arrow_downward</mat-icon> Despesa: {{service.formatarValor(obtemDespesa())}}
         </mat-grid-tile>
-  
-        
+
+
         <mat-grid-tile colspan="3" class={{service.obtemSaldoStatus(obtemSaldo())}}>
           <mat-icon>payments</mat-icon>Saldo: {{service.formatarValor(obtemSaldo())}}
         </mat-grid-tile>
-  
+
         <mat-grid-tile colspan="2"></mat-grid-tile>
-  
+
       </mat-grid-list>
     </mat-card-footer>
   </mat-card>
@@ -134,8 +145,8 @@
   <mat-grid-list cols="12" rowHeight="75px">
     <mat-grid-tile colspan="12"></mat-grid-tile>
   </mat-grid-list>
-  
-  
+
+
 
 </div>
 

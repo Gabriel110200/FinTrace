@@ -1,0 +1,38 @@
+h3{
+  margin: auto;
+  align-self: center;
+}
+
+.receita{
+  color: green;
+}
+
+.despesa{
+  color: red;
+}
+
+.balancoPositivo{
+  color: green;
+}
+
+.balancoAlerta{
+  color:goldenrod
+}
+
+.balancoNulo{
+  color:rgb(0, 78, 161)
+}
+
+.balancoNegativo{
+  color:red
+}
+
+.home-container{
+  height: 100vh;
+  background-image: url('/assets/fundo_telas.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff; /* Texto branco para contraste */
+  font-family: 'Roboto', sans-serif;
+}

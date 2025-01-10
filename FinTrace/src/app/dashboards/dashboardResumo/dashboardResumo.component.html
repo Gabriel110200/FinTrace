@@ -33,17 +33,17 @@
     <mat-grid-tile colspan="12">
       <h3>O balanço da sua conta até o mês de {{dashboard.retornaNomeMes(campo2)}} é de <span [class]="retornaFormatacao(totalReceitaTotal - totalDespesaTotal)">{{transacoes.formatarValor(totalReceitaTotal - totalDespesaTotal)}}</span></h3>
     </mat-grid-tile>
-  
+
     <mat-grid-tile colspan="12">
       <h3>Neste mês, a sua receita acumulada é de <span class="textoSucesso">{{transacoes.formatarValor(totalReceitaPeriodo)}}</span> e suas despesas acumuladas são de <span class="textoRisco">{{transacoes.formatarValor(totalDespesaPeriodo)}}</span></h3>
     </mat-grid-tile>
-  
+
     <mat-grid-tile colspan="12">
       <h3>O saldo final da sua conta nesse período é de <span [class]="retornaFormatacao((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo))">{{transacoes.formatarValor((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo))}}</span></h3>
     </mat-grid-tile>
-  
+
   </mat-grid-list>
-  
+
   <mat-grid-list cols="12" rowHeight="80px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) > 100">
     <mat-grid-tile colspan="12">
       <ng-container >
@@ -51,9 +51,9 @@
       </ng-container>
     </mat-grid-tile>
   </mat-grid-list>
-  
-  
-  
+
+
+
   <mat-grid-list cols="12" rowHeight="240px" gutterSize="5px" *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) <= 100">
     <ng-container *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) > 0 ">
       <h3>Seu saldo está abaixo de R$100. É importante tomar algumas medidas para melhorar suas finanças e evitar dificuldades:</h3>
@@ -63,7 +63,7 @@
         <li>Estabeleça metas de economia: Tente poupar uma quantia fixa por semana ou mês, mesmo que pequena. Com o tempo, isso pode ajudar a melhorar seu saldo.</li>
       </ul>
     </ng-container>
-  
+
     <ng-container *ngIf="((totalReceitaTotal+totalReceitaPeriodo) - (totalDespesaTotal+totalDespesaPeriodo)) < 0">
       <h3>Atenção! Seu saldo está negativo ou zerado, e isso pode gerar dificuldades financeiras a longo prazo:</h3>
       <ul>

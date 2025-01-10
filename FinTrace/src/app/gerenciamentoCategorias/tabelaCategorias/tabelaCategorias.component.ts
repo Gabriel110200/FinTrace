@@ -47,7 +47,7 @@ export class TabelaCategoriasComponent implements OnInit {
 
   constructor(
     protected service: TransacoesService,
-    private categoriaService: CategoriaService, 
+    private categoriaService: CategoriaService,
     private dialog: MatDialog,
     private toast: ToastrService
   ) { }
@@ -167,7 +167,7 @@ export class TabelaCategoriasComponent implements OnInit {
 
   remover(id: number) {
     const dialogRef = this.dialog.open(DialogExcluirComponent);
-  
+
     dialogRef.afterClosed().subscribe(val=>{
 
       if(val){
@@ -183,13 +183,11 @@ export class TabelaCategoriasComponent implements OnInit {
         this.registroExcluido.emit(id)
       }
     })
-
-
   }
 
   removerLimiteCategoria(registro: categoria) {
     const dialogRef = this.dialog.open(DialogExcluirComponent);
-  
+
     dialogRef.afterClosed().subscribe(val=>{
 
       if(val){
@@ -246,7 +244,7 @@ export class TabelaCategoriasComponent implements OnInit {
     };
     // O mês começa em 0 no objeto Date (0 = janeiro, 1 = fevereiro, etc.)
     const mesIndex = Object.keys(meses).indexOf(mes);
-    
+
     // Retorna a primeira data do mês
     return new Date(ano, mesIndex, 1); // 1º dia do mês
   }
@@ -267,21 +265,21 @@ export class TabelaCategoriasComponent implements OnInit {
       novembro: 30,
       dezembro: 31
     };
-  
-  
+
+
     // Verifica se o ano é bissexto
     if (mes.toLowerCase() === 'fevereiro' && this.anoBissexto(ano)) {
       return new Date(ano, 1, 29); // Fevereiro, 29 dias
     }
-  
+
     return new Date(ano, Object.keys(meses).indexOf(mes.toLowerCase()), meses[mes.toLowerCase()]); // Último dia do mês
   }
-  
+
   // Método auxiliar para verificar se um ano é bissexto
   anoBissexto(ano: number) {
     return (ano % 4 === 0 && ano % 100 !== 0) || (ano % 400 === 0);
   }
-  
+
 
   listarDatas(form: any) {
     console.log('passando lista datas')

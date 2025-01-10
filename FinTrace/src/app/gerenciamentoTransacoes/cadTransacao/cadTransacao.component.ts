@@ -2,8 +2,10 @@ import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
+import { Metas } from 'src/app/gerenciamentoMetas/model/Metas';
 import { transacao } from '../model/transacao';
 import { transacaoRecorrente } from '../model/transacaoRec';
+import { TransacoesService } from '../service/transacoes.service';
 
 @Component({
   selector: 'app-cadTransacao',
@@ -18,8 +20,10 @@ export class CadTransacaoComponent implements OnInit {
   recorrente = this.data.recorrente ?? null
   editar:boolean = this.data.editar ?? null
   datas:number[] = []
+  moedas: string[] = this.service.obterMoedas()
   formulario:any = this.data.form
-  tipoCategoria:categoria[] = this.data.categoria
+  tipoCategoria:categoria[] = this.data.categoria ?? []
+  tipoMeta:Metas[] = this.data.metas ?? []
 
   tipoTransacao:any[] = [
     {id:'RECEITA', nome: 'Receita'},
@@ -29,20 +33,28 @@ export class CadTransacaoComponent implements OnInit {
   constructor(
     private form: FormBuilder,
     private dialogRef: MatDialogRef<CadTransacaoComponent>,
+    private service: TransacoesService,
     @Inject(MAT_DIALOG_DATA) public data:any,
   ) { }
 
   ngOnInit() {
     this.cadastro = this.form.group({
       tipoTransacao: [null, [Validators.required]],
+      moeda: [null],
       categoria: [null, [Validators.required]],
       valor: [null, [Validators.required]],
       data: [null, [Validators.required, this.dataValidaValidator]],
       descricao: [null],
     })
+
+    this.cadastro.patchValue({
+      moeda: "Real (BRL)"
+    })
   }
 
   enviarTransacao(){
+    const moeda = this.cadastro.get('moeda')?.value
+
     const transacao:transacao = {
       type: this.cadastro.get('tipoTransacao')?.value,
       category: this.cadastro.get('categoria')?.value,
@@ -51,6 +63,8 @@ export class CadTransacaoComponent implements OnInit {
       description: this.cadastro.get('descricao')?.value,
       recurring: this.recorrente ? true : false
     }
+
+    transacao.amount = this.service.realizaCotacao(transacao.amount,moeda)
 
     this.dialogRef.close(transacao)
   }
