@@ -1,14 +1,15 @@
-import { ToastrService } from 'ngx-toastr';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { CadTransacaoComponent } from './cadTransacao/cadTransacao.component';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TabelaTransacoesComponent } from './tabelaTransacoes/tabelaTransacoes.component';
-import { TransacoesService } from './service/transacoes.service';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
-import { categoria } from '../gerenciamentoCategorias/model/categoria';
+import { Component, OnInit, Input, ViewChild } from "@angular/core";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
+import { ToastrService } from "ngx-toastr";
+import { Subscription } from "rxjs";
+import { Categoria } from "../gerenciamentoCategorias/model/categoria";
+import { CategoriaService } from "../gerenciamentoCategorias/service/categoria.service";
+import { CadTransacaoComponent } from "./cadTransacao/cadTransacao.component";
+import { TransacoesService } from "./service/transacoes.service";
+import { TabelaTransacoesComponent } from "./tabelaTransacoes/tabelaTransacoes.component";
+
 
 @Component({
   selector: 'app-gerenciamentoTransacoes',
@@ -31,7 +32,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   put$!:Subscription
   post$!:Subscription
 
-  tipoCategoria!:categoria[]
+  tipoCategoria!:Categoria[]
 
   fileName = '';
   base64!:string | undefined
@@ -190,31 +191,32 @@ export class GerenciamentoTransacoesComponent implements OnInit {
 
     console.log('debug file', files)
 
-    for (let i = 0; i < files.length; i++) {
-      const file: File = files[i];
+    // Convertendo o FileList para um array para permitir iteração
+    const filesArray = Array.from(files);
+
+    for (const element of filesArray) {
+      const file: File = element;
       this.fileName = file.name;
-      const extensao = this.retornaExtensao(file.name)
+      const extensao = this.retornaExtensao(file.name);
 
       if (file.size > 1000000) {
         this.toast.error(`Arquivo deve ser menor do que 5MB - ${file.name}`);
       }
-      else if(extensao?.toLowerCase() != 'csv'){
+      else if (extensao?.toLowerCase() !== 'csv') {
         this.toast.error(`Extensão do arquivo não suportada - ${file.name}`);
       } else {
-
         const formData = new FormData();
         formData.append('file', file);
 
-        console.log(formData)
+        console.log(formData);
 
         this.post$ = this.service.importarTransacoes(formData).subscribe(
           (dado) => {
-            console.log(dado)
-            this.toast.success('Transações adicionadas com sucesso!')
-            this.tabela?.recuperarTransacoes()
+            console.log(dado);
+            this.toast.success('Transações adicionadas com sucesso!');
+            this.tabela?.recuperarTransacoes();
           }
-        )
-
+        );
       }
     }
   }

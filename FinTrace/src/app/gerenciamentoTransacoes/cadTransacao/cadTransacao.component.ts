@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
-import { Metas } from 'src/app/gerenciamentoMetas/model/Metas';
-import { transacao } from '../model/transacao';
-import { transacaoRecorrente } from '../model/transacaoRec';
-import { TransacoesService } from '../service/transacoes.service';
+import { Component, OnInit, Inject } from "@angular/core"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { Metas } from "src/app/gerenciamentoMetas/model/Metas"
+import { Transacao } from "../model/transacao"
+import { TransacoesService } from "../service/transacoes.service"
+
 
 @Component({
   selector: 'app-cadTransacao',
@@ -22,7 +22,7 @@ export class CadTransacaoComponent implements OnInit {
   datas:number[] = []
   moedas: string[] = this.service.obterMoedas()
   formulario:any = this.data.form
-  tipoCategoria:categoria[] = this.data.categoria ?? []
+  tipoCategoria:Categoria[] = this.data.categoria ?? []
   tipoMeta:Metas[] = this.data.metas ?? []
 
   tipoTransacao:any[] = [
@@ -55,7 +55,7 @@ export class CadTransacaoComponent implements OnInit {
   enviarTransacao(){
     const moeda = this.cadastro.get('moeda')?.value
 
-    const transacao:transacao = {
+    const transacao:Transacao = {
       type: this.cadastro.get('tipoTransacao')?.value,
       category: this.cadastro.get('categoria')?.value,
       amount: this.cadastro.get('valor')?.value,

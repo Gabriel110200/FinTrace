@@ -1,12 +1,10 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { single } from './data';
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { transacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
-import { forkJoin, Observable } from 'rxjs';
-import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/transacaoRec';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { DashboardService } from '../services/dashboard.service';
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Observable, forkJoin } from "rxjs";
+import { Transacao } from "src/app/gerenciamentoTransacoes/model/transacao";
+import { TransacaoRecorrente } from "src/app/gerenciamentoTransacoes/model/transacaoRec";
+import { TransacoesService } from "src/app/gerenciamentoTransacoes/service/transacoes.service";
+import { DashboardService } from "../services/dashboard.service";
+
 
 @Component({
   selector: 'app-dashboardDespesas',
@@ -19,8 +17,8 @@ export class DashboardDespesasComponent implements OnInit{
 
   basicData: any;
   basicOptions: any;
-  $Transacoes!: Observable<transacao[]>
-  $TransacoesRec!: Observable<transacaoRecorrente[]>
+  $Transacoes!: Observable<Transacao[]>
+  $TransacoesRec!: Observable<TransacaoRecorrente[]>
 
   rotulos:string[] = []
   valores:number[] = []
@@ -90,7 +88,7 @@ export class DashboardDespesasComponent implements OnInit{
     })
   }
 
-  retornaCategorias(transacaoes:transacao[]){
+  retornaCategorias(transacaoes:Transacao[]){
 
     for(let i=0;i<transacaoes.length;i++){
       this.presente = false
@@ -130,11 +128,11 @@ export class DashboardDespesasComponent implements OnInit{
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-    for(let i=0;i<item.length;i++){
-      console.log(item[i].nome)
-      console.log(item[i].acumulado)
-      this.rotulos.push(item[i]?.nome)
-      this.valores.push(item[i]?.acumulado)
+    for(const element of item){
+      console.log(element.nome)
+      console.log(element.acumulado)
+      this.rotulos.push(element?.nome)
+      this.valores.push(element?.acumulado)
     }
     this.basicData = {
       labels: this.rotulos,

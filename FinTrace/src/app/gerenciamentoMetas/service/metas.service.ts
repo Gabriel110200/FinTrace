@@ -1,12 +1,12 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { map, take } from 'rxjs';
-import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
-import { transacao, cadTransacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
-import { ResponseAPIList, ResponseAPI } from 'src/app/shared/model/responseAPI';
-import { SharedService } from 'src/app/shared/service/shared.service';
-import { ContasTerceiro } from '../model/contasTerceiro';
-import { Metas, PostMetas } from '../model/Metas';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { map, take } from "rxjs";
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria";
+import { CadTransacao } from "src/app/gerenciamentoTransacoes/model/transacao";
+import { ResponseAPI } from "src/app/shared/model/responseAPI";
+import { SharedService } from "src/app/shared/service/shared.service";
+import { ContasTerceiro } from "../model/contasTerceiro";
+import { Metas, PostMetas } from "../model/Metas";
 
 @Injectable({
   providedIn: 'root'
@@ -56,8 +56,8 @@ removerMeta(id:number){
   );
 }
 
-cadastrarTransacao(objeto:cadTransacao){
-  return this.http.post<ResponseAPI<categoria>>(`/api/transactions`, objeto)
+cadastrarTransacao(objeto:CadTransacao){
+  return this.http.post<ResponseAPI<Categoria>>(`/api/transactions`, objeto)
   .pipe(
     map((val) => val.data),
     take(1)

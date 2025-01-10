@@ -1,16 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { CadTransacaoComponent } from '../gerenciamentoTransacoes/cadTransacao/cadTransacao.component';
-import { TransacoesService } from '../gerenciamentoTransacoes/service/transacoes.service';
-import { TabelaTransacoesComponent } from '../gerenciamentoTransacoes/tabelaTransacoes/tabelaTransacoes.component';
-import { CadCategoriaComponent } from './cadCategoria/cadCategoria.component';
-import { TabelaCategoriasComponent } from './tabelaCategorias/tabelaCategorias.component';
-import { ActivatedRoute, Route, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { CategoriaService } from './service/categoria.service';
-import { ToastrService } from 'ngx-toastr';
-import { CadCategoriaLimiteComponent } from './cadCategoriaLimite/cadCategoriaLimite.component';
+import { Component, OnInit, ViewChild } from "@angular/core"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { MatDialog } from "@angular/material/dialog"
+import { Router } from "@angular/router"
+import { ToastrService } from "ngx-toastr"
+import { Subscription } from "rxjs"
+import { TransacoesService } from "../gerenciamentoTransacoes/service/transacoes.service"
+import { CadCategoriaComponent } from "./cadCategoria/cadCategoria.component"
+import { CadCategoriaLimiteComponent } from "./cadCategoriaLimite/cadCategoriaLimite.component"
+import { CategoriaService } from "./service/categoria.service"
+import { TabelaCategoriasComponent } from "./tabelaCategorias/tabelaCategorias.component"
+
 
 @Component({
   selector: 'app-gerenciamentoCategorias',
@@ -50,7 +49,7 @@ export class GerenciamentoCategoriasComponent implements OnInit {
     'Dezembro',
   ]
 
-  anos:number[] = [] 
+  anos:number[] = []
 
 
   @ViewChild(TabelaCategoriasComponent)tabela!: TabelaCategoriasComponent
@@ -108,7 +107,7 @@ export class GerenciamentoCategoriasComponent implements OnInit {
   criaAnos(){
     const data = new Date()
     const anoAtual = data.getFullYear()
-    
+
     for (let i = 0; i < 20; i++) {
       this.anos.push(anoAtual - i);
     }
@@ -146,7 +145,6 @@ export class GerenciamentoCategoriasComponent implements OnInit {
       if(val){
         this.post$ = this.categoriaService.cadastrarCategoria(val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Categoria cadastrada com sucesso')
             this.tabela?.buscaRegistros()
           },
@@ -155,7 +153,7 @@ export class GerenciamentoCategoriasComponent implements OnInit {
           }
         })
       }
-    })    
+    })
   }
 
   dialogLimiteCategoria(){
@@ -172,7 +170,6 @@ export class GerenciamentoCategoriasComponent implements OnInit {
       if(val){
         this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Teto da catgoria cadastrado com sucesso')
             //this.tabela?.buscaRegistros()
           },
@@ -181,7 +178,7 @@ export class GerenciamentoCategoriasComponent implements OnInit {
           }
         })
       }
-    }) 
+    })
   }
 
 

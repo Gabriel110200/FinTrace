@@ -1,28 +1,26 @@
-import { SharedService } from './../../shared/service/shared.service';
-import { Metas } from './../model/Metas';
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { ProgressSpinnerMode } from '@angular/material/progress-spinner';
-import { MatTableDataSource } from '@angular/material/table';
-import { ToastrService } from 'ngx-toastr';
-import { Subscription, forkJoin } from 'rxjs';
-import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
-import { CategoriaService } from 'src/app/gerenciamentoCategorias/service/categoria.service';
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { MetasService } from '../service/metas.service';
-import { GerMetasComponent } from '../gerMetas/gerMetas.component';
-import { transacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
-import { CadMetasComponent } from '../cadMetas/cadMetas.component';
-import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
-import { ContasTerceiro } from '../model/contasTerceiro';
+import { Component, Input, ViewChild, ElementRef, Output, EventEmitter } from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { MatPaginator } from "@angular/material/paginator";
+import { ProgressSpinnerMode } from "@angular/material/progress-spinner";
+import { MatTableDataSource } from "@angular/material/table";
+import { ToastrService } from "ngx-toastr";
+import { Subscription, forkJoin } from "rxjs";
+import { Transacao } from "src/app/gerenciamentoTransacoes/model/transacao";
+import { DialogExcluirComponent } from "src/app/shared/component/dialogExcluir/dialogExcluir.component";
+import { SharedService } from "src/app/shared/service/shared.service";
+import { CadMetasComponent } from "../cadMetas/cadMetas.component";
+import { GerMetasComponent } from "../gerMetas/gerMetas.component";
+import { ContasTerceiro } from "../model/contasTerceiro";
+import { Metas } from "../model/Metas";
+import { MetasService } from "../service/metas.service";
+
 
 @Component({
   selector: 'app-tabelaMetas',
   templateUrl: './tabelaMetas.component.html',
   styleUrls: ['./tabelaMetas.component.css']
 })
-export class TabelaMetasComponent implements OnInit {
+export class TabelaMetasComponent {
 
   @Input()
   tipoMetas!:Metas[]
@@ -75,8 +73,6 @@ export class TabelaMetasComponent implements OnInit {
     this.atualizaRegistros()
   }
 
-  ngOnInit() {
-  }
 
   tableScroll(e: any) {
     const tableViewHeight = e.target.offsetHeight
@@ -112,9 +108,8 @@ export class TabelaMetasComponent implements OnInit {
     return (((item.currentValue ?? 1)/item.necessaryValue)*100).toFixed(2);
   }
 
-  abrirTabela(transacoes:transacao[]){
-    console.log(transacoes)
-    const dialogRef = this.dialog.open(GerMetasComponent, {
+  abrirTabela(transacoes:Transacao[]){
+    this.dialog.open(GerMetasComponent, {
       width: '1000px',
       height: '400px',
       data: {
@@ -137,7 +132,6 @@ export class TabelaMetasComponent implements OnInit {
       if(val){
         this.post$ = this.service.atualizarMeta(val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Meta atualizada com sucesso!')
             this.atualizacaoMeta.emit(dado)
           },
@@ -205,19 +199,15 @@ export class TabelaMetasComponent implements OnInit {
     )
   }
 
-
-
-  // Método para gerar um filtro diferente baseado no índice
   getFilter(index: number): string {
     const colors = [
-      'hue-rotate(0deg)',    // Sem alteração
-      'hue-rotate(60deg)',   // Tons de azul
-      'hue-rotate(120deg)',  // Tons de verde
-      'hue-rotate(180deg)',  // Tons de amarelo
-      'hue-rotate(240deg)'   // Tons de vermelho
+      'hue-rotate(0deg)',
+      'hue-rotate(60deg)',
+      'hue-rotate(120deg)',
+      'hue-rotate(180deg)',
+      'hue-rotate(240deg)'   
     ];
 
-    // Retorna o filtro baseado no índice, se necessário, use a lógica para mais variações
     return colors[index % colors.length];
   }
 

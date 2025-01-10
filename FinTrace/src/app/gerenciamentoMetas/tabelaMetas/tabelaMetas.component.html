@@ -4,8 +4,8 @@
     <section class="container" tabindex="0">
 
       <table mat-table [dataSource]="dados" (scroll)="tableScroll($event)">
-
-
+        <caption></caption>
+        
         <ng-container matColumnDef="descricao">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element">

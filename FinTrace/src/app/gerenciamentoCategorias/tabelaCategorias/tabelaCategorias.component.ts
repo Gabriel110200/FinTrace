@@ -1,22 +1,23 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { CategoriaService } from '../service/categoria.service';
-import { categoria } from '../model/categoria';
-import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
-import { MatDialog } from '@angular/material/dialog';
-import { ToastrService } from 'ngx-toastr';
-import { CadCategoriaComponent } from '../cadCategoria/cadCategoria.component';
-import { CadCategoriaLimiteComponent } from '../cadCategoriaLimite/cadCategoriaLimite.component';
+import { Component, ViewChild, Output, EventEmitter } from "@angular/core"
+import { MatDialog } from "@angular/material/dialog"
+import { MatPaginator } from "@angular/material/paginator"
+import { MatTableDataSource } from "@angular/material/table"
+import { ToastrService } from "ngx-toastr"
+import { Subscription } from "rxjs"
+import { TransacoesService } from "src/app/gerenciamentoTransacoes/service/transacoes.service"
+import { DialogExcluirComponent } from "src/app/shared/component/dialogExcluir/dialogExcluir.component"
+import { CadCategoriaComponent } from "../cadCategoria/cadCategoria.component"
+import { CadCategoriaLimiteComponent } from "../cadCategoriaLimite/cadCategoriaLimite.component"
+import { Categoria } from "../model/categoria"
+import { CategoriaService } from "../service/categoria.service"
+
 
 @Component({
   selector: 'app-tabelaCategorias',
   templateUrl: './tabelaCategorias.component.html',
   styleUrls: ['./tabelaCategorias.component.css']
 })
-export class TabelaCategoriasComponent implements OnInit {
+export class TabelaCategoriasComponent {
 
   lista: any[] = [
   ]
@@ -26,8 +27,8 @@ export class TabelaCategoriasComponent implements OnInit {
 
   colunasTabela: string[] = ['descricao', 'alteracao']
   colunasTabela2: string[] = ['descricao', 'valor', 'alteracao']
-  dados = new MatTableDataSource<categoria[]>()
-  dados2 = new MatTableDataSource<categoria[]>() //mudar o tipo pra categoria nova
+  dados = new MatTableDataSource<Categoria[]>()
+  dados2 = new MatTableDataSource<Categoria[]>() //mudar o tipo pra categoria nova
   excluirRegistro$!: Subscription
 
   start: number = 0
@@ -54,9 +55,6 @@ export class TabelaCategoriasComponent implements OnInit {
 
   ngOnChanges() {
     this.atualizaRegistros()
-  }
-
-  ngOnInit() {
   }
 
   tableScroll(e: any) {
@@ -111,7 +109,7 @@ export class TabelaCategoriasComponent implements OnInit {
     )
   }
 
-  editar(dado: categoria) {
+  editar(dado: Categoria) {
     const dialogRef = this.dialog.open(CadCategoriaComponent, {
       width: '500px',
       height: '246px',
@@ -125,7 +123,6 @@ export class TabelaCategoriasComponent implements OnInit {
       if(val?.id){
         this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Categoria atualizada com sucesso')
             this.buscaRegistros()
           },
@@ -137,7 +134,7 @@ export class TabelaCategoriasComponent implements OnInit {
     })
   }
 
-  editarLimite(dado: categoria) {
+  editarLimite(dado: Categoria) {
     const dialogRef = this.dialog.open(CadCategoriaLimiteComponent, {
       width: '500px',
       height: '246px',
@@ -153,7 +150,6 @@ export class TabelaCategoriasComponent implements OnInit {
         console.log(val, val.id)
         this.put$ = this.categoriaService.atualizarCategoria(val.id, val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Limite atualizado com sucesso')
             this.buscaRegistros()
           },
@@ -185,13 +181,13 @@ export class TabelaCategoriasComponent implements OnInit {
     })
   }
 
-  removerLimiteCategoria(registro: categoria) {
+  removerLimiteCategoria(registro: Categoria) {
     const dialogRef = this.dialog.open(DialogExcluirComponent);
 
     dialogRef.afterClosed().subscribe(val=>{
 
       if(val){
-        const remocaoLimite:categoria = {
+        const remocaoLimite:Categoria = {
           id: registro.id,
           name: registro.name,
           limit: 0

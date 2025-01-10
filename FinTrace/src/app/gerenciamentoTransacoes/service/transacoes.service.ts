@@ -1,12 +1,10 @@
-import { cadTransacao } from './../model/transacao';
-import { SharedService } from './../../shared/service/shared.service';
 import { HttpClient, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core"
-import { map, switchMap, take } from "rxjs"
-import { categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { map, take } from "rxjs"
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria"
 import { ResponseAPIList, ResponseAPI } from "src/app/shared/model/responseAPI"
-import { transacao } from "../model/transacao"
-import { transacaoRecorrente } from "../model/transacaoRec"
+import { SharedService } from "src/app/shared/service/shared.service"
+import { Transacao, CadTransacao } from "../model/transacao"
 
 
 @Injectable({
@@ -27,8 +25,9 @@ obterTipoTransacao(transacao:string){
       return 'Receita'
     case 'DESPESA':
       return 'Despesa'
+    default:
+      return
   }
-  return
 }
 
 obterClasseTransacao(transacao:string){
@@ -37,8 +36,9 @@ obterClasseTransacao(transacao:string){
       return 'marcarReceita'
     case 'DESPESA':
       return 'marcarDespesa'
+    default:
+      return
   }
-  return
 }
 
 obtemSaldoStatus(valor: number){
@@ -54,7 +54,9 @@ obtemSaldoStatus(valor: number){
   if(valor <= 0){
     return 'balancoNegativo'
   }
-  return
+  else{
+    return
+  }
 }
 
 retornaMes(mes: string): string {
@@ -146,7 +148,7 @@ formatarValor(valor: number): string {
 listarTransacoes(){
   const PARAMS = new HttpParams().set('userId', this.userId)
 
-  return this.http.get<ResponseAPIList<transacao>>(`/api/transactions`, {
+  return this.http.get<ResponseAPIList<Transacao>>(`/api/transactions`, {
     params: PARAMS
   })
   .pipe(
@@ -156,18 +158,18 @@ listarTransacoes(){
   );
 }
 
-cadastrarTransacao(objeto:cadTransacao){
-  return this.http.post<ResponseAPI<categoria>>(`/api/transactions`, objeto)
+cadastrarTransacao(objeto:CadTransacao){
+  return this.http.post<ResponseAPI<Categoria>>(`/api/transactions`, objeto)
   .pipe(
     map((val) => val.data),
     take(1)
   );
 }
 
-verificaLimiteGasto(lista:transacao[], insert:boolean){
+verificaLimiteGasto(lista:Transacao[], insert:boolean){
   const categorias: any[] = []
     for(let i=0;i<lista.length;i++){
-      var novo = true
+      let novo = true
       if(i == 0){
         const par = {
           categoria: lista[i].category.name,
@@ -179,15 +181,15 @@ verificaLimiteGasto(lista:transacao[], insert:boolean){
         }
         categorias.push(par)
       } else {
-        for(let j=0; j<categorias.length;j++){
+        for(const element of categorias){
           if(
-            lista[i].category.name == categorias[j].categoria &&
-            lista[i].type == categorias[j].tipo &&
-            lista[i].date.substring(5,7) == categorias[j].mes &&
-            lista[i].date.substring(0,4) == categorias[j].ano
+            lista[i].category.name == element.categoria &&
+            lista[i].type == element.tipo &&
+            lista[i].date.substring(5,7) == element.mes &&
+            lista[i].date.substring(0,4) == element.ano
            ){
             novo = false
-            categorias[j].valor += lista[i].amount
+            element.valor += lista[i].amount
            }
         }
         if(novo){
@@ -228,7 +230,7 @@ checaDespesas(categorias:any[], insert:boolean){
 }
 
 verificaTransacaoExcedente(despesas:any[]){
-  var possuiExcedente = false
+  let possuiExcedente = false
   despesas.forEach(
     (dado) => {
       if(dado.valor > dado.limite && dado.limite!=0){

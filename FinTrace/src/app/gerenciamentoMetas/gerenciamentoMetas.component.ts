@@ -1,17 +1,17 @@
-import { SharedService } from './../shared/service/shared.service';
-import { Subscription, Observable, forkJoin } from 'rxjs';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
-import { TabelaCategoriasComponent } from '../gerenciamentoCategorias/tabelaCategorias/tabelaCategorias.component';
-import { CadMetasComponent } from './cadMetas/cadMetas.component';
-import { Metas } from './model/Metas';
-import { TabelaMetasComponent } from './tabelaMetas/tabelaMetas.component';
-import { CadTransacaoComponent } from '../gerenciamentoTransacoes/cadTransacao/cadTransacao.component';
-import { MetasService } from './service/metas.service';
-import { cadTransacao } from '../gerenciamentoTransacoes/model/transacao';
+import { Component, OnInit, ViewChild } from "@angular/core"
+import { FormBuilder } from "@angular/forms"
+import { MatDialog } from "@angular/material/dialog"
+import { Router } from "@angular/router"
+import { ToastrService } from "ngx-toastr"
+import { Observable, Subscription, forkJoin } from "rxjs"
+import { CadTransacaoComponent } from "../gerenciamentoTransacoes/cadTransacao/cadTransacao.component"
+import { CadTransacao } from "../gerenciamentoTransacoes/model/transacao"
+import { SharedService } from "../shared/service/shared.service"
+import { CadMetasComponent } from "./cadMetas/cadMetas.component"
+import { Metas } from "./model/Metas"
+import { MetasService } from "./service/metas.service"
+import { TabelaMetasComponent } from "./tabelaMetas/tabelaMetas.component"
+
 
 @Component({
   selector: 'app-gerenciamentoMetas',
@@ -69,7 +69,6 @@ export class GerenciamentoMetasComponent implements OnInit {
       if(val){
         this.post$ = this.service.cadastrarMeta(val).subscribe({
           next: (dado) => {
-            console.log(dado),
             this.toast.success('Nova Meta cadastrada com sucesso')
             this.listarMetas()
           },
@@ -106,7 +105,7 @@ export class GerenciamentoMetasComponent implements OnInit {
         if(val){
           console.log('recorrente:',val)
 
-          const meta: cadTransacao = {
+          const meta: CadTransacao = {
             userId: this.userId,
             categoryId: null,
             type: val.type,
@@ -123,7 +122,6 @@ export class GerenciamentoMetasComponent implements OnInit {
               this.listarMetas()
             }
           )
-          //this.tabela?.adicionaRecorrente(val)
         }
       })
 

@@ -1,4 +1,4 @@
-export interface categoria{
+export interface Categoria{
     id?: number,
     name: string,
     limit: number,

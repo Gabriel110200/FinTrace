@@ -1,14 +1,14 @@
 import { FeatureFlag } from './../model/featureFlag';
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { SharedService } from '../service/shared.service';
-import { map, catchError } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CredenciaisGuard implements CanActivate {
+export class CredenciaisGuard {
 
   constructor(
     private shared: SharedService,

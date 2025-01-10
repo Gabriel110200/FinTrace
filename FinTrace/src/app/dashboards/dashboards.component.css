@@ -21,6 +21,6 @@ button.iconeRetorno{
   }
 
   .pdf-content {
-    background-color: white; /* Fundo branco */
-    color: black;            /* Garante que o texto seja visível */
+    background-color: white;
+    color: black;
   }
