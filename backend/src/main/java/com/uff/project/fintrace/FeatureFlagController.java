@@ -38,7 +38,7 @@ public class FeatureFlagController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateFeatureFlagStatus(@PathVariable Long id, @RequestParam boolean isActive) {
+    public ResponseEntity<Map<String, Object>> updateFeatureFlagStatus(@PathVariable Long id, @RequestParam boolean isActive) {
         FeatureFlag featureFlag = featureFlagsRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("FeatureFlag não existe"));
 
