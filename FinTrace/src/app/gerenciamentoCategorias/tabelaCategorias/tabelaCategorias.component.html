@@ -5,20 +5,21 @@
 
 
       <table mat-table [dataSource]="dados" (scroll)="tableScroll($event)">
-      
-    
+        <caption>Categorias</caption>
+
+
         <ng-container matColumnDef="descricao">
           <th mat-header-cell *matHeaderCellDef> DESCRIÇÃO </th>
           <td mat-cell *matCellDef="let element">
               {{element.name}}
           </td>
         </ng-container>
-      
-      
+
+
         <ng-container matColumnDef="alteracao">
           <th mat-header-cell *matHeaderCellDef>  </th>
           <td mat-cell *matCellDef="let element">
-      
+
               <button mat-icon-button [matMenuTriggerFor]="menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
@@ -32,20 +33,20 @@
                     <span class="textoSelecao">Excluir Categoria</span>
                   </button>
                 </mat-menu>
-            
+
           </td>
         </ng-container>
-    
+
         <tr mat-header-row *matHeaderRowDef="colunasTabela; sticky: true"></tr>
         <tr mat-row *matRowDef="let linhas; columns: colunasTabela;"></tr>
-    
+
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell centered-cell" colspan="6">Não há informações</td>
         </tr>
-      
+
       </table>
-    
-    
+
+
     </section>
 
 
@@ -59,8 +60,9 @@
 
 
       <table mat-table [dataSource]="dados2" (scroll)="tableScroll($event)">
-      
-    
+        <caption></caption>
+
+
         <ng-container matColumnDef="descricao">
           <th mat-header-cell *matHeaderCellDef> NOME </th>
           <td mat-cell *matCellDef="let element">
@@ -74,12 +76,12 @@
             {{ element.limit ? 'R$ ' + element.limit : 'Limite não estipulado' }}
           </td>
         </ng-container>
-      
-      
+
+
         <ng-container matColumnDef="alteracao">
           <th mat-header-cell *matHeaderCellDef>  </th>
           <td mat-cell *matCellDef="let element">
-      
+
               <button mat-icon-button [matMenuTriggerFor]="menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
@@ -93,23 +95,23 @@
                     <span class="textoSelecao">Excluir Limite</span>
                   </button>
                 </mat-menu>
-            
+
           </td>
         </ng-container>
-    
+
         <tr mat-header-row *matHeaderRowDef="colunasTabela2; sticky: true"></tr>
         <tr mat-row *matRowDef="let linhas; columns: colunasTabela2;"></tr>
-    
+
         <tr class="mat-row" *matNoDataRow>
           <td class="mat-cell centered-cell" colspan="6">Não há informações</td>
         </tr>
-      
+
       </table>
-    
-    
+
+
     </section>
 
   </mat-tab>
 
-  
+
 </mat-tab-group>

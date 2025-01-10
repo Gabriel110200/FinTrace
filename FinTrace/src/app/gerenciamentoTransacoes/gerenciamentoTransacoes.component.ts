@@ -1,13 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { CadTransacaoComponent } from './cadTransacao/cadTransacao.component';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { TabelaTransacoesComponent } from './tabelaTransacoes/tabelaTransacoes.component';
-import { TransacoesService } from './service/transacoes.service';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
-import { categoria } from '../gerenciamentoCategorias/model/categoria';
+import { Component, OnInit, Input, ViewChild } from "@angular/core";
+import { FormGroup, FormBuilder, Validators } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
+import { Router } from "@angular/router";
+import { ToastrService } from "ngx-toastr";
+import { Subscription } from "rxjs";
+import { Categoria } from "../gerenciamentoCategorias/model/categoria";
+import { CategoriaService } from "../gerenciamentoCategorias/service/categoria.service";
+import { CadTransacaoComponent } from "./cadTransacao/cadTransacao.component";
+import { TransacoesService } from "./service/transacoes.service";
+import { TabelaTransacoesComponent } from "./tabelaTransacoes/tabelaTransacoes.component";
+
 
 @Component({
   selector: 'app-gerenciamentoTransacoes',
@@ -15,6 +17,9 @@ import { categoria } from '../gerenciamentoCategorias/model/categoria';
   styleUrls: ['./gerenciamentoTransacoes.component.css']
 })
 export class GerenciamentoTransacoesComponent implements OnInit {
+
+  @Input()
+  requiredFileType!:string;
 
   pesquisa!:FormGroup
 
@@ -27,7 +32,11 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   put$!:Subscription
   post$!:Subscription
 
-  tipoCategoria!:categoria[]
+  tipoCategoria!:Categoria[]
+
+  fileName = '';
+  base64!:string | undefined
+  envioArquivo$!: Subscription
 
   meses:any[] = [
     'Janeiro',
@@ -44,7 +53,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
     'Dezembro',
   ]
 
-  anos:number[] = [] 
+  anos:number[] = []
 
 
   @ViewChild(TabelaTransacoesComponent)tabela!: TabelaTransacoesComponent
@@ -54,6 +63,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
     private form: FormBuilder,
     private router: Router,
     protected service: TransacoesService,
+    private toast: ToastrService,
     private categoriaService: CategoriaService
   ) { }
 
@@ -113,7 +123,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   criaAnos(){
     const data = new Date()
     const anoAtual = data.getFullYear()
-    
+
     for (let i = 0; i < 20; i++) {
       this.anos.push(anoAtual - i);
     }
@@ -146,7 +156,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
           categoria: this.tipoCategoria
         }
       })
-  
+
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
           console.log('recorrente:',val)
@@ -164,7 +174,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
           categoria: this.tipoCategoria
         }
       })
-  
+
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
           this.tabela?.adicionaRegistro(val)
@@ -172,9 +182,48 @@ export class GerenciamentoTransacoesComponent implements OnInit {
       })
 
     }
+  }
 
+  onFileSelected(event: any) {
+    console.log('abri file selected')
 
-    
+    const files: FileList = event.target.files;
+
+    console.log('debug file', files)
+
+    // Convertendo o FileList para um array para permitir iteração
+    const filesArray = Array.from(files);
+
+    for (const element of filesArray) {
+      const file: File = element;
+      this.fileName = file.name;
+      const extensao = this.retornaExtensao(file.name);
+
+      if (file.size > 1000000) {
+        this.toast.error(`Arquivo deve ser menor do que 5MB - ${file.name}`);
+      }
+      else if (extensao?.toLowerCase() !== 'csv') {
+        this.toast.error(`Extensão do arquivo não suportada - ${file.name}`);
+      } else {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        console.log(formData);
+
+        this.post$ = this.service.importarTransacoes(formData).subscribe(
+          (dado) => {
+            console.log(dado);
+            this.toast.success('Transações adicionadas com sucesso!');
+            this.tabela?.recuperarTransacoes();
+          }
+        );
+      }
+    }
+  }
+
+  retornaExtensao(nome:string){
+    const ext = nome.split(/[.]/g)
+    return ext[1]
   }
 
 }

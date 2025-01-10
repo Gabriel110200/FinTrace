@@ -1,14 +1,24 @@
 package com.uff.project.fintrace;
 
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.uff.project.fintrace.DTO.TransactionCsvDto;
+import com.uff.project.fintrace.DTO.TransactionRequest;
 import com.uff.project.fintrace.model.Category;
+import com.uff.project.fintrace.model.Goal;
 import com.uff.project.fintrace.model.Transaction;
+import com.uff.project.fintrace.model.User;
 import com.uff.project.fintrace.repository.CategoryRepository;
+import com.uff.project.fintrace.repository.GoalRepository;
 import com.uff.project.fintrace.repository.TransactionRepository;
+import com.uff.project.fintrace.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,11 +31,15 @@ public class TransactionController {
 
     private final TransactionRepository transactionRepository;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final GoalRepository goalRepository;
 
     @Autowired
-    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository) {
+    public TransactionController(TransactionRepository transactionRepository, CategoryRepository categoryRepository, UserRepository userRepository, GoalRepository goalRepository) {
         this.transactionRepository = transactionRepository;
         this.categoryRepository = categoryRepository;
+        this.userRepository = userRepository;
+        this.goalRepository = goalRepository;
     }
 
     private ResponseEntity<Map<String, Object>> buildResponse(Object data, boolean success, String errorMessage) {
@@ -42,9 +56,9 @@ public class TransactionController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllTransactions() {
+    public ResponseEntity<?> getAllTransactions(@RequestParam Long userId) {
         try {
-            List<Transaction> transactions = transactionRepository.findAll();
+            List<Transaction> transactions = transactionRepository.findByUserId(userId);
             return buildResponse(transactions, true, null);
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,43 +84,129 @@ public class TransactionController {
 
 
 
+    @PostMapping(value = "/import-transaction", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> importTransactions(@RequestParam("file") MultipartFile file, @RequestParam("userId") Long userId) {
+        try {
+
+            userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+            List<TransactionCsvDto> csvTransactions = new CsvToBeanBuilder<TransactionCsvDto>(
+                    new InputStreamReader(file.getInputStream()))
+                    .withType(TransactionCsvDto.class)
+                    .build()
+                    .parse();
+
+
+            for (TransactionCsvDto csvDto : csvTransactions) {
+                TransactionRequest transactionRequest = new TransactionRequest();
+                transactionRequest.setUserId(userId);
+                transactionRequest.setDescription(csvDto.getDescription());
+                transactionRequest.setAmount(csvDto.getAmount());
+                transactionRequest.setDate(LocalDate.parse(csvDto.getDate()));
+                transactionRequest.setRecurring(Boolean.parseBoolean(csvDto.getIsRecurring().toLowerCase()));
+                transactionRequest.setType(Transaction.Type.valueOf(csvDto.getType().toUpperCase()));
+
+                if (csvDto.getCategoryId() != null && !csvDto.getCategoryId().isEmpty()) {
+                    transactionRequest.setCategoryId(Long.parseLong(csvDto.getCategoryId()));
+                }
+
+                ResponseEntity<?> response = createTransaction(transactionRequest);
+                if (!response.getStatusCode().is2xxSuccessful()) {
+                    return response;
+                }
+            }
+
+            return buildResponse(null, true, "Transações importadas com sucesso!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Falha ao importar transação: " + e.getMessage());
+        }
+    }
+
 
     @PostMapping
-    public ResponseEntity<?> createTransaction(@RequestBody Transaction transaction) {
+    public ResponseEntity<?> createTransaction(@RequestBody TransactionRequest transactionRequest) {
         try {
-            Long categoryId = transaction.getCategory().getId();
-            Category category = categoryRepository.findById(categoryId).orElse(null);
 
-            if (category == null) {
-                return buildResponse(null, false, "Categoria não encontrada");
+            User user = userRepository.findById(transactionRequest.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            Category category = null;
+            if (transactionRequest.getCategoryId() != null) {
+                category = categoryRepository.findById(transactionRequest.getCategoryId())
+                        .orElse(null);
+                if (category == null) {
+                    return buildResponse(null, false, "Categoria não encontrada!");
+                }
             }
 
-            if (transaction.getType() == Transaction.Type.DESPESA) {
-                categoryRepository.save(category);
+            Goal goal = null;
+            if (transactionRequest.getGoalId() != null  ) {
+                goal = goalRepository.findById(transactionRequest.getGoalId()).orElse(null);
+                if (goal == null) {
+                    return buildResponse(null, false, "Meta não encontrada!");
+                }
+
+                if(transactionRequest.getType() == Transaction.Type.RECEITA)
+                {
+                    goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                }
+                else
+                {
+                    goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());
+                }
+
+                goalRepository.save(goal);
+
             }
 
+
+            Transaction transaction = new Transaction();
+            transaction.setUser(user);
             transaction.setCategory(category);
+
+            transaction.setType(transactionRequest.getType());
+            transaction.setAmount(transactionRequest.getAmount());
+            transaction.setDate(transactionRequest.getDate());
+            transaction.setDescription(transactionRequest.getDescription());
+            transaction.setRecurring(transactionRequest.isRecurring());
+            transaction.setGoal(goal);
+
+
 
             List<Transaction> recurringTransactions = new ArrayList<>();
             if (transaction.isRecurring()) {
-
                 Transaction savedTransaction = transactionRepository.save(transaction);
 
                 LocalDate nextDate = transaction.getDate();
                 for (int i = 1; i <= 11; i++) {
                     nextDate = nextDate.plusMonths(1);
 
-
                     Transaction newTransaction = new Transaction();
+                    newTransaction.setUser(user);
+                    newTransaction.setCategory(category);
                     newTransaction.setType(transaction.getType());
-                    newTransaction.setCategory(transaction.getCategory());
                     newTransaction.setAmount(transaction.getAmount());
                     newTransaction.setDate(nextDate);
                     newTransaction.setDescription(transaction.getDescription());
                     newTransaction.setRecurring(true);
 
-                    if (transaction.getType() == Transaction.Type.DESPESA) {
-                        categoryRepository.save(category);
+                    if(goal!=null )
+                    {
+
+                        if(transactionRequest.getType() == Transaction.Type.RECEITA)
+                        {
+                            goal.setCurrentValue(goal.getCurrentValue() + transactionRequest.getAmount());
+                        }
+                        else
+                        {
+                            goal.setCurrentValue(goal.getCurrentValue() - transactionRequest.getAmount());
+                        }
+
+                        goalRepository.save(goal);
+                        newTransaction.setGoal(goal);
                     }
 
                     recurringTransactions.add(newTransaction);
@@ -115,10 +215,10 @@ public class TransactionController {
                 transactionRepository.saveAll(recurringTransactions);
                 recurringTransactions.add(0, savedTransaction);
             } else {
-
                 Transaction savedTransaction = transactionRepository.save(transaction);
                 return buildResponse(savedTransaction, true, null);
             }
+
 
             return buildResponse(recurringTransactions, true, null);
         } catch (Exception e) {
@@ -129,7 +229,6 @@ public class TransactionController {
             ));
         }
     }
-
 
 
 

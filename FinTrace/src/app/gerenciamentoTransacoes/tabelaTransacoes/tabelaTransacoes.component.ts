@@ -1,15 +1,15 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { Subscription } from 'rxjs';
-import { TransacoesService } from '../service/transacoes.service';
-import { DialogExcluirComponent } from 'src/app/shared/component/dialogExcluir/dialogExcluir.component';
-import { MatDialog } from '@angular/material/dialog';
-import { CadTransacaoComponent } from '../cadTransacao/cadTransacao.component';
-import { transacao } from '../model/transacao';
-import { ToastrService } from 'ngx-toastr';
-import { transacaoRecorrente } from '../model/transacaoRec';
-import { DialogGenericoComponent } from 'src/app/shared/dialogGenerico/dialogGenerico.component';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from "@angular/core"
+import { MatDialog } from "@angular/material/dialog"
+import { MatPaginator } from "@angular/material/paginator"
+import { MatTableDataSource } from "@angular/material/table"
+import { ToastrService } from "ngx-toastr"
+import { Subscription } from "rxjs"
+import { DialogGenericoComponent } from "src/app/shared/dialogGenerico/dialogGenerico.component"
+import { SharedService } from "src/app/shared/service/shared.service"
+import { CadTransacaoComponent } from "../cadTransacao/cadTransacao.component"
+import { Transacao, CadTransacao } from "../model/transacao"
+import { TransacoesService } from "../service/transacoes.service"
+
 
 @Component({
   selector: 'app-tabelaTransacoes',
@@ -26,12 +26,13 @@ export class TabelaTransacoesComponent implements OnInit {
   dados = new MatTableDataSource<any>()
   dadoOriginal = new MatTableDataSource<any>()
   excluirRegistro$!: Subscription
+  userId:number = +this.shared.obterId()
 
   start: number = 0
   limit: number = 10
   end: number = this.limit + this.start
   selectedRowIndex!: number
-  limite = 0 
+  limite = 0
 
   get$!:Subscription
   post$!:Subscription
@@ -46,6 +47,7 @@ export class TabelaTransacoesComponent implements OnInit {
 
   constructor(
     protected service: TransacoesService,
+    private shared: SharedService,
     private dialog: MatDialog,
     private transacoesService: TransacoesService,
     private toast: ToastrService
@@ -92,91 +94,74 @@ export class TabelaTransacoesComponent implements OnInit {
     this.dados.paginator = this.paginator
   }
 
-  adicionaRegistro(item: transacao) {
+  adicionaRegistro(item: Transacao) {
 
-    var dadosPreInsert = [];
+    let dadosPreInsert = [];
     dadosPreInsert.push(...this.lista, item);
 
     console.log('pre: ', dadosPreInsert)
-  
+
     const valido = this.service.verificaLimiteGasto(dadosPreInsert, true)
 
     if(valido){
-      this.toast.error('Transação irá ultrapassar o limite de gastos para o mês. Transação não adicionada')
+      this.toast.error('Transação ultrapassou o limite de gastos para o mês. Tenha atenção nos gastos')
+
+      const transacao:CadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
+        (dado) => {
+          this.toast.success('Transacao cadastrada com sucesso')
+          this.recuperarTransacoes()
+        }
+      )
+
     } else {
       console.log(item)
-      this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+
+      const transacao:CadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
         (dado) => {
           this.toast.success('Transacao cadastrada com sucesso')
           this.recuperarTransacoes()
         }
       )
     }
-
-    /*console.log(item)
-    const data = this.service.retornaMes(item.date.substring(5,7))
-    const ano = +item.date.substring(0,4)
-    const idCategoria = item.category.id
-    console.log(data)
-
-    const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
-    const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
-    const valor = item.amount
-    const despesas = this.dados.data.filter(
-      (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
-    )
-
-    const totalDespesas = this.service.retornaTotalDespesa(despesas)
-    console.log('limite: ',item.category.limit )
-    console.log('despesas: ',totalDespesas )
-
-    if((totalDespesas+item.amount)>item.category.limit && item.category.limit!=0){
-      this.toast.error('Despesa irá ultrapassar o teto de gastos! Registro não adicionado')
-    } else {
-      if ((totalDespesas + item.amount) >= (item.category.limit * 0.8) && item.category.limit!=0) {
-        this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
-          (dado) => {
-            this.toast.warning('Atenção! Você já consumiu mais de 80% do Limite estipulado!')
-            this.toast.success('Transacao cadastrada com sucesso')
-            this.recuperarTransacoes()
-          }
-        )
-      } else {
-        this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
-          (dado) => {
-            this.toast.success('Transacao cadastrada com sucesso')
-            this.recuperarTransacoes()
-          }
-        )
-      }
-    }*/
   }
 
-  /*
-      type: string,
-    category: categoria
-    amount: number,
-    date: string,
-    description: string
-    recurring: boolean
-  
-    */ 
+  adicionaRecorrente(item: Transacao) {
 
-  adicionaRecorrente(item: transacao) {
+    let transacoesInsert: Transacao[] = []
+    let mes = +item.date.substring(5, 7)
+    let ano = +item.date.substring(0, 4)
 
-    var transacoesInsert: transacao[] = []
-    var mes = +item.date.substring(5, 7) 
-    var ano = +item.date.substring(0, 4) 
-    
-    for (let i = 0; i < 12; i++) { 
+    for (let i = 0; i < 12; i++) {
         if (mes > 12) {
             mes = 1
-            ano++ 
+            ano++
         }
-    
-        const mesFormatado = mes < 10 ? `0${mes}` : `${mes}` 
-    
-        const trans: transacao = {
+
+        const mesFormatado = mes < 10 ? `0${mes}` : `${mes}`
+
+        const trans: Transacao = {
             type: item.type,
             category: item.category,
             amount: item.amount,
@@ -184,22 +169,53 @@ export class TabelaTransacoesComponent implements OnInit {
             description: item.description,
             recurring: item.recurring
         }
-    
+
         transacoesInsert.push(trans)
-        mes++ 
+        mes++
     }
 
-    var dadosPreInsert = [];
+    let dadosPreInsert = [];
     dadosPreInsert.push(...this.lista, ...transacoesInsert);
 
     console.log('Lista que montei: ', dadosPreInsert)
-  
+
     const valido = this.service.verificaLimiteGasto(dadosPreInsert, true)
 
     if(valido){
-      this.toast.error('Transação recorrente irá ultrapassar o limite de gastos de um dos meses do período. Transação não adicionada')
+      this.toast.error('Transação ultrapassou o limite de gastos para o mês. Tenha atenção nos gastos')
+
+      const transacao:CadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
+        (dado) => {
+          this.toast.success(`Transações recorrentes cadastradas com sucesso`);
+          this.recuperarTransacoes();
+        }
+      )
+
     } else {
-      this.post$ = this.transacoesService.cadastrarTransacao(item).subscribe(
+
+      const transacao:CadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
         (dado) => {
           this.toast.success(`Transações recorrentes cadastradas com sucesso`);
           this.recuperarTransacoes();
@@ -207,117 +223,8 @@ export class TabelaTransacoesComponent implements OnInit {
       )
     }
 
-
-
-    /*console.log(item);
-    const itemOriginal:transacaoRecorrente = {
-      type: item.type,
-      category: item.category,
-      amount: item.amount,
-      description: item.description,
-      day: item.day
-    }
-    const valor = item.amount;
-    let podeAdicionarTodas = true;*/
-  
-    // Loop para cada mês do ano especificado
-    /*for (let mes = 1; mes <= 12; mes++) {
-      let mesLocal = ''
-      if(mes<10){
-        mesLocal = `0${mes}`
-      } else {
-        mesLocal = `${mes}`
-      }
-
-      console.log(item)
-      const data = this.service.retornaMes(mesLocal)
-      const ano = 2024
-      const idCategoria = item.category.id
-      console.log(data)
-
-      const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
-      const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
-      const valor = item.amount
-      const despesas = this.dados.data.filter(
-        (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
-      )
-
-      const totalDespesas = this.service.retornaTotalDespesa(despesas)
-      console.log('limite: ',item.category.limit )
-      console.log('despesas: ',totalDespesas )*/
-      
-
-      /*const data = this.service.retornaMes(mesLocal)
-
-      console.log('mesLocal: ', data)
-      console.log('ano: ', ano)
-      console.log('return',this.retornaDataInicio(data, ano).toISOString().substring(0, 10))
-      console.log('return',this.retornaDataFim(data, ano).toISOString().substring(0, 10))
-      
-      const dataInicio = this.retornaDataInicio(mesLocal, ano)?.toISOString()?.substring(0, 10);
-      const dataFim = this.retornaDataFim(mesLocal, ano)?.toISOString()?.substring(0, 10);
-  
-      // Filtra as despesas existentes no mês e categoria especificados
-      const despesas = this.dados.data.filter(
-        (dado) => 
-          Date.parse(dado.date) >= Date.parse(dataInicio) &&
-          Date.parse(dado.date) <= Date.parse(dataFim) &&
-          dado.type == 'DESPESA' &&
-          dado.category.id == idCategoria
-      );*/
-  
-      // Soma as despesas do mês
-  
-      // Verifica se a adição da transação ultrapassa o limite
-     /* if ((totalDespesas + valor) > item.category.limit && item.category.limit!=0) {
-        this.toast.error(`Despesa no mês ${data.toUpperCase()} ultrapassará o teto de gastos! Transação não adicionada`);
-        podeAdicionarTodas = false;
-        break;
-      }
-    }*/
-  
-    // Se passar em todas as validações, adiciona a transação para cada mês
-    /*if (podeAdicionarTodas) {
-      for (let mes = 1; mes <= 12; mes++) {
-        let mesLocal = ''
-        if(mes<10){
-          mesLocal = `0${mes}`
-        } else {
-          mesLocal = `${mes}`
-        }
-  
-        console.log(item)
-        const data = this.service.retornaMes(mesLocal)
-        const ano = 2024
-        const idCategoria = item.category.id
-        console.log(data)
-  
-        const dataInicio = this.retornaDataInicio(data, ano).toISOString().substring(0,10)
-        const dataFim = this.retornaDataFim(data, ano).toISOString().substring(0,10)
-        const valor = item.amount
-        const despesas = this.dados.data.filter(
-          (dado) => Date.parse(dado.date) >= Date.parse(dataInicio) && Date.parse(dado.date) <= Date.parse(dataFim) && dado.type == 'DESPESA' && dado.category.id == idCategoria
-        )
-  
-        const totalDespesas = this.service.retornaTotalDespesa(despesas)
-        console.log('limite: ',item.category.limit )
-
-        if ((totalDespesas + valor) >= (item.category.limit * 0.8)  && item.category.limit!=0) {
-          this.toast.warning(`Atenção! No mês de ${data.toUpperCase()}, você já consumiu mais de 80% do Limite estipulado!`);
-        } else {
-         
-        }
-
-      }
-      this.post$ = this.transacoesService.cadastrarTransacoesRecorrentes(itemOriginal).subscribe(
-        (dado) => {
-          this.toast.success(`Transações recorrentes cadastradas com sucesso`);
-          this.recuperarTransacoes();
-        }
-      );
-    }*/
   }
-  
+
 
   retornaRegistros() {
     return this.dados.data
@@ -334,10 +241,10 @@ export class TabelaTransacoesComponent implements OnInit {
         editar: true
       }
     });
-  
+
     dialogRef.afterClosed().subscribe(val=>{
       let listaEstatica:any = []
-      const txt = this.lista.forEach(
+      this.lista.forEach(
         (dado) => {
           if(dado.type == val.type){
             listaEstatica.push(val)
@@ -349,32 +256,6 @@ export class TabelaTransacoesComponent implements OnInit {
       this.lista = listaEstatica
       this.atualizaRegistros()
     })
-  }
-
-  remover(id: number) {
-    const dialogRef = this.dialog.open(DialogExcluirComponent);
-  
-    dialogRef.afterClosed().subscribe(val=>{
-
-      if(val){
-      this.excluirForm();
-    }
-  })
-  }
-
-  excluirForm() {
-    /*this.excluirRegistro$ = this.service.excluir().subscribe({
-      next: (dado) => {
-        console.log('dado:: ', dado)
-      },
-      complete: () => {
-        this.toast.success('Registro Excluído')
-        this.registroExcluido.emit(id)
-
-      },
-    })*/
-
-
   }
 
   reiniciar() {
@@ -391,102 +272,17 @@ export class TabelaTransacoesComponent implements OnInit {
         console.log('tamanho e limite', limites.length, this.limite)
         if(limites.length > this.limite){
           this.limite = limites.length
-          const dialog = this.dialog.open(DialogGenericoComponent, {
+          this.dialog.open(DialogGenericoComponent, {
             data:{
               limites: limites
             }
           })
-    
+
         }
-        //this.verificaLimiteGasto()
         this.atualizaRegistros()
       }
     )
   }
-
- /* verificaLimiteGasto(){
-    const categorias: any[] = []
-    for(let i=0;i<this.lista.length;i++){
-      var novo = true
-      if(i == 0){
-        const par = {
-          categoria: this.lista[i].category.name,
-          tipo: this.lista[i].type,
-          valor: this.lista[i].amount,
-          limite: this.lista[i].category.limit,
-          mes: this.lista[i].date.substring(5,7),
-          ano: this.lista[i].date.substring(0,4),
-        }
-        categorias.push(par)
-      } else {
-        for(let j=0; j<categorias.length;j++){
-          if(
-            this.lista[i].category.name == categorias[j].categoria &&
-            this.lista[i].type == categorias[j].tipo &&
-            this.lista[i].date.substring(5,7) == categorias[j].mes &&
-            this.lista[i].date.substring(0,4) == categorias[j].ano
-           ){
-            novo = false
-            categorias[j].valor += this.lista[i].amount
-           }
-        }
-        if(novo){
-          const par = {
-            categoria: this.lista[i].category.name,
-            tipo: this.lista[i].type,
-            valor: this.lista[i].amount,
-            limite: this.lista[i].category.limit,
-            mes: this.lista[i].date.substring(5,7),
-            ano: this.lista[i].date.substring(0,4),
-          }
-          categorias.push(par)
-        }
-      }
-    }
-    console.log('minhas categorias: ', categorias)
-    this.checaDespesas(categorias)
-  }
-
-  checaDespesas(categorias:any[]){
-    const despesas:any[] = []
-    console.log('checa despesas: ', categorias)
-    categorias.forEach(
-      (dado:any) => {
-        if(dado.tipo == "DESPESA"){
-          despesas.push(dado)
-        }
-      } 
-    )
-
-    this.verificaTransacaoExcedente(despesas)
-    //this.tetoDeGastos(despesas)
-  }
-
-  verificaTransacaoExcedente(despesas:any[]){
-    var possuiExcedente = false 
-    despesas.forEach(
-      (dado) => {
-        if(dado.valor > dado.limite){
-          possuiExcedente = true
-        }
-      }
-    )
-    console.log('Possui excedente? ', possuiExcedente)
-
-  }
-
-  tetoDeGastos(despesas:any[]){
-    const execentes:any = []
-    console.log('minhas despesas: ', despesas)
-    despesas.forEach(
-      (dado) => {
-        if(dado.valor > (dado.limite*0,8)){
-          execentes.push(dado)
-        }
-      }
-    )
-    console.log(execentes)
-  }*/
 
   pesquisar(form: any) {
     console.log('chegamos: ', form)
@@ -498,12 +294,12 @@ export class TabelaTransacoesComponent implements OnInit {
       this.listarCategoria(form)
     }
   }
-    
+
 
   retornaDataInicio(mes: string, ano: number): Date {
     const meses:any = {
       janeiro: 31,
-      fevereiro: 28, 
+      fevereiro: 28,
       março: 31,
       abril: 30,
       maio: 31,
@@ -523,7 +319,7 @@ export class TabelaTransacoesComponent implements OnInit {
   retornaDataFim(mes: string, ano: number) {
     const meses:any = {
       janeiro: 31,
-      fevereiro: 28, 
+      fevereiro: 28,
       março: 31,
       abril: 30,
       maio: 31,
@@ -535,18 +331,18 @@ export class TabelaTransacoesComponent implements OnInit {
       novembro: 30,
       dezembro: 31
     };
-  
+
     if (mes.toLowerCase() === 'fevereiro' && this.anoBissexto(ano)) {
       return new Date(ano, 1, 29)
     }
-  
+
     return new Date(ano, Object.keys(meses).indexOf(mes.toLowerCase()), meses[mes.toLowerCase()])
   }
-  
+
   anoBissexto(ano: number) {
     return (ano % 4 === 0 && ano % 100 !== 0) || (ano % 400 === 0);
   }
-  
+
 
   listarDatas(form: any) {
     console.log('passando lista datas')
@@ -643,7 +439,5 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
 }
-function swicth(mes: string) {
-  throw new Error('Function not implemented.');
-}
+
 

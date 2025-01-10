@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { DashboardService } from '../services/dashboard.service';
-import { forkJoin, Observable, Subscription } from 'rxjs';
-import { transacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
-import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/transacaoRec';
+import { Component, OnInit } from "@angular/core";
+import { Observable, forkJoin } from "rxjs";
+import { Transacao } from "src/app/gerenciamentoTransacoes/model/transacao";
+import { TransacoesService } from "src/app/gerenciamentoTransacoes/service/transacoes.service";
+import { DashboardService } from "../services/dashboard.service";
+
 
 @Component({
   selector: 'app-dashboardResumo',
@@ -20,7 +20,7 @@ export class DashboardResumoComponent implements OnInit {
   totalDespesaTotal!:number
   totalReceitaPeriodo!:number
   totalDespesaPeriodo!:number
-  $Transacoes!: Observable<transacao[]>
+  $Transacoes!: Observable<Transacao[]>
 
   campo:number = +this.ano
   campo2:string = this.mes
@@ -34,7 +34,7 @@ export class DashboardResumoComponent implements OnInit {
 
   ngOnInit() {
     const montante:any = []
-    this.$Transacoes = this.transacoes.listarTransacoes() 
+    this.$Transacoes = this.transacoes.listarTransacoes()
 
     forkJoin([this.$Transacoes]).subscribe({
       next: ([dado1]) => {
@@ -51,32 +51,36 @@ export class DashboardResumoComponent implements OnInit {
   }
 
   preencherDados(mes:string, ano:number){
+    console.log("montante: ", this.Transacoes)
+    console.log("mes: ", mes)
+    console.log("ano: ", ano)
+
     const montante = this.Transacoes.filter(
       (dado) => {
-        //console.log('dado: ', dado)
-        //console.log('p1: ', +dado.date.substring(0,4), this.ano)
-        //console.log('p2: ', +dado.date.substring(5,7), this.mes)
-        return +dado.date.substring(0,4) <= +ano && +dado.date.substring(5,7) < +mes
+        const anoTransacao = +dado.date.substring(0, 4);
+        const mesTransacao = +dado.date.substring(5, 7);
+
+        const mesComparacao = +mes;
+        const anoComparacao = +ano;
+
+        return (anoTransacao < anoComparacao || (anoTransacao === anoComparacao && mesTransacao < mesComparacao))
       }
     )
+
+    console.log("MONTANTEEEEE: ", montante)
+
     const atual = this.Transacoes.filter(
       (dado) => {
-        //console.log('dado: ', dado)
-        //console.log('p1: ', +dado.date.substring(0,4), this.ano)
-        //console.log('p2: ', +dado.date.substring(5,7), this.mes)
         return +dado.date.substring(0,4) === ano && +dado.date.substring(5,7) == +mes
       }
     )
+
+    console.log("ATUAL: ", atual)
 
     this.totalReceitaTotal = this.transacoes.retornaTotalReceita(montante)
     this.totalDespesaTotal = this.transacoes.retornaTotalDespesa(montante)
     this.totalReceitaPeriodo = this.transacoes.retornaTotalReceita(atual)
     this.totalDespesaPeriodo = this.transacoes.retornaTotalDespesa(atual)
-    //console.log(this.totalReceitaTotal)
-    //console.log(this.totalDespesaTotal)
-    //console.log(montante)
-    //console.log(this.totalReceitaPeriodo)
-    //console.log(this.totalDespesaPeriodo)
   }
 
   retornaFormatacao(total:number){

@@ -1,10 +1,10 @@
+import { SharedService } from './../../shared/service/shared.service';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { CadTransacaoComponent } from 'src/app/gerenciamentoTransacoes/cadTransacao/cadTransacao.component';
-import { CategoriaService } from '../service/categoria.service';
 import { Subscription } from 'rxjs';
-import { categoria } from '../model/categoria';
+import { Categoria } from '../model/categoria';
 
 @Component({
   selector: 'app-cadCategoria',
@@ -16,12 +16,13 @@ export class CadCategoriaComponent implements OnInit {
   cadastro!:FormGroup
   acaoTitulo:string = 'Cadastro'
   service$!:Subscription
-  categoriaCadastrada = this.data.dado 
+  categoriaCadastrada = this.data.dado
+  userId:number = + this.shared.obterId()
 
   constructor(
     private form: FormBuilder,
     private dialogRef: MatDialogRef<CadTransacaoComponent>,
-    private categoriaService: CategoriaService,
+    private shared: SharedService,
     @Inject(MAT_DIALOG_DATA) public data:any,
   ) { }
 
@@ -45,9 +46,10 @@ export class CadCategoriaComponent implements OnInit {
 
   enviarCategoria(){
     const id = this.cadastro.get('id')?.value ?? null
-    const categoriaCadastrada:categoria = {
+    const categoriaCadastrada:Categoria = {
       limit: 0,
-      name: this.cadastro.get('descricao')?.value
+      name: this.cadastro.get('descricao')?.value,
+      userId: this.userId
     }
     if(id!=null){
       categoriaCadastrada.id = id

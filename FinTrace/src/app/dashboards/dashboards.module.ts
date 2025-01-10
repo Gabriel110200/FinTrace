@@ -8,7 +8,6 @@ import { MaterialModule } from '../angular-material/material.module';
 import { DashboardDespesasComponent } from './dashboardDespesas/dashboardDespesas.component';
 import { DashboardFluxoCaixaComponent } from './dashboardFluxoCaixa/dashboardFluxoCaixa.component';
 import { DashboardResumoComponent } from './dashboardResumo/dashboardResumo.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ChartModule } from 'primeng/chart';
 
 @NgModule({

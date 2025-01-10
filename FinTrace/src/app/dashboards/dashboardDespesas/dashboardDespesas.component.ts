@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { single } from './data';
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { transacao } from 'src/app/gerenciamentoTransacoes/model/transacao';
-import { forkJoin, Observable } from 'rxjs';
-import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/transacaoRec';
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { Observable, forkJoin } from "rxjs";
+import { Transacao } from "src/app/gerenciamentoTransacoes/model/transacao";
+import { TransacaoRecorrente } from "src/app/gerenciamentoTransacoes/model/transacaoRec";
+import { TransacoesService } from "src/app/gerenciamentoTransacoes/service/transacoes.service";
+import { DashboardService } from "../services/dashboard.service";
+
 
 @Component({
   selector: 'app-dashboardDespesas',
@@ -12,23 +13,53 @@ import { transacaoRecorrente } from 'src/app/gerenciamentoTransacoes/model/trans
 })
 export class DashboardDespesasComponent implements OnInit{
 
+  @ViewChild('chart') chartElement!: ElementRef;
+
   basicData: any;
   basicOptions: any;
-  $Transacoes!: Observable<transacao[]>
-  $TransacoesRec!: Observable<transacaoRecorrente[]>
+  $Transacoes!: Observable<Transacao[]>
+  $TransacoesRec!: Observable<TransacaoRecorrente[]>
 
   rotulos:string[] = []
   valores:number[] = []
   itens:any[] = []
   presente = false
+  meses:any = [
+    {mes: 1, nome: 'Janeiro'},
+    {mes: 2, nome: 'Fevereiro'},
+    {mes: 3, nome: 'Março'},
+    {mes: 4, nome: 'Abril'},
+    {mes: 5, nome: 'Maio'},
+    {mes: 6, nome: 'Junho'},
+    {mes: 7, nome: 'Julho'},
+    {mes: 8, nome: 'Agosto'},
+    {mes: 9, nome: 'Setembro'},
+    {mes: 10, nome: 'Outubro'},
+    {mes: 11, nome: 'Novembro'},
+    {mes: 12, nome: 'Dezembro'},
+  ]
+
+  mes:number = 0
+  campo:number = 2025
+  anos:number[] = this.dashboard.retornaAnos()
+
 
   constructor(
-    private transacoes: TransacoesService
+    private transacoes: TransacoesService,
+    private dashboard: DashboardService
   ){}
 
   ngOnInit() {
+    this.listagem(2025)
+  }
+
+  listagem(ano:number){
+    this.rotulos = []
+    this.valores = []
+    this.itens = []
+
     const montante:any = []
-    this.$Transacoes = this.transacoes.listarTransacoes() 
+    this.$Transacoes = this.transacoes.listarTransacoes()
 
     forkJoin([this.$Transacoes]).subscribe({
       next: ([dado1]) => {
@@ -38,19 +69,27 @@ export class DashboardDespesasComponent implements OnInit{
           }
         )
         console.log(montante)
-        const trans = montante.filter(
-          (dado:any) => {
-            return dado.type == "DESPESA"
-          }
-        )
-        this.retornaCategorias(trans)
+        if(this.mes!=0){
+          const trans = montante.filter(
+            (dado:any) => {
+              return +dado.date.substring(0,4) == ano && +dado.date.substring(5,7) == this.mes && dado.type == "DESPESA"
+            }
+          )
+          this.retornaCategorias(trans)
+        }else{
+          const trans = montante.filter(
+            (dado:any) => {
+              return +dado.date.substring(0,4) == ano && dado.type == "DESPESA"
+            }
+          )
+          this.retornaCategorias(trans)
+        }
       }
     })
-
   }
 
-  retornaCategorias(transacaoes:transacao[]){
-    
+  retornaCategorias(transacaoes:Transacao[]){
+
     for(let i=0;i<transacaoes.length;i++){
       this.presente = false
       if(i==0){
@@ -89,17 +128,17 @@ export class DashboardDespesasComponent implements OnInit{
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-    for(let i=0;i<item.length;i++){
-      console.log(item[i].nome)
-      console.log(item[i].acumulado)
-      this.rotulos.push(item[i]?.nome)
-      this.valores.push(item[i]?.acumulado)
+    for(const element of item){
+      console.log(element.nome)
+      console.log(element.acumulado)
+      this.rotulos.push(element?.nome)
+      this.valores.push(element?.acumulado)
     }
     this.basicData = {
       labels: this.rotulos,
       datasets: [
           {
-              label: 'Despesas',
+              label: this.mes!=0 ? `Despesas do mês ${this.mes} de ${this.campo}` : `Despesas do ano de ${this.campo}`,
               data: this.valores,
               backgroundColor: ['rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)'],
               borderColor: ['rgb(255, 159, 64)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(153, 102, 255)'],

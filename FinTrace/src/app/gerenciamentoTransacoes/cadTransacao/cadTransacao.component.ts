@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { categoria } from 'src/app/gerenciamentoCategorias/model/categoria';
-import { transacao } from '../model/transacao';
-import { transacaoRecorrente } from '../model/transacaoRec';
+import { Component, OnInit, Inject } from "@angular/core"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog"
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { Metas } from "src/app/gerenciamentoMetas/model/Metas"
+import { Transacao } from "../model/transacao"
+import { TransacoesService } from "../service/transacoes.service"
+
 
 @Component({
   selector: 'app-cadTransacao',
@@ -18,8 +20,10 @@ export class CadTransacaoComponent implements OnInit {
   recorrente = this.data.recorrente ?? null
   editar:boolean = this.data.editar ?? null
   datas:number[] = []
-  formulario:any = this.data.form 
-  tipoCategoria:categoria[] = this.data.categoria
+  moedas: string[] = this.service.obterMoedas()
+  formulario:any = this.data.form
+  tipoCategoria:Categoria[] = this.data.categoria ?? []
+  tipoMeta:Metas[] = this.data.metas ?? []
 
   tipoTransacao:any[] = [
     {id:'RECEITA', nome: 'Receita'},
@@ -29,21 +33,29 @@ export class CadTransacaoComponent implements OnInit {
   constructor(
     private form: FormBuilder,
     private dialogRef: MatDialogRef<CadTransacaoComponent>,
+    private service: TransacoesService,
     @Inject(MAT_DIALOG_DATA) public data:any,
   ) { }
 
   ngOnInit() {
     this.cadastro = this.form.group({
       tipoTransacao: [null, [Validators.required]],
+      moeda: [null],
       categoria: [null, [Validators.required]],
-      valor: [null, [Validators.required]], 
+      valor: [null, [Validators.required]],
       data: [null, [Validators.required, this.dataValidaValidator]],
       descricao: [null],
+    })
+
+    this.cadastro.patchValue({
+      moeda: "Real (BRL)"
     })
   }
 
   enviarTransacao(){
-    const transacao:transacao = {
+    const moeda = this.cadastro.get('moeda')?.value
+
+    const transacao:Transacao = {
       type: this.cadastro.get('tipoTransacao')?.value,
       category: this.cadastro.get('categoria')?.value,
       amount: this.cadastro.get('valor')?.value,
@@ -52,6 +64,8 @@ export class CadTransacaoComponent implements OnInit {
       recurring: this.recorrente ? true : false
     }
 
+    transacao.amount = this.service.realizaCotacao(transacao.amount,moeda)
+
     this.dialogRef.close(transacao)
   }
 
@@ -59,7 +73,7 @@ export class CadTransacaoComponent implements OnInit {
     this.cadastro.patchValue({
       tipoTransacao: this.formulario.tipoTransacao,
       categoria: this.formulario.categoria,
-      valor: this.formulario.valor, 
+      valor: this.formulario.valor,
       data: this.formulario.dataTransacao,
       descricao: this.formulario.descricao,
     })
@@ -67,8 +81,8 @@ export class CadTransacaoComponent implements OnInit {
 
   dataValidaValidator(control: any) {
     const value = control.value;
-    if (!value) return null; 
-    
+    if (!value) return null;
+
     const data = new Date(value);
     const dia = data.getDate();
     const mes = data.getMonth();

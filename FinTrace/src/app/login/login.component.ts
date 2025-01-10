@@ -1,13 +1,12 @@
-import { Usuario } from './../shared/model/usuario';
-import { ToastrService } from 'ngx-toastr';
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { SharedService } from '../shared/service/shared.service';
-import { Subscription } from 'rxjs';
-import { Router } from '@angular/router';
-import { comparaSenhas } from './validator/login';
-import { CategoriaService } from '../gerenciamentoCategorias/service/categoria.service';
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate } from "@angular/animations"
+import { Component, OnInit } from "@angular/core"
+import { FormGroup, FormBuilder, Validators } from "@angular/forms"
+import { Router } from "@angular/router"
+import { ToastrService } from "ngx-toastr"
+import { Subscription } from "rxjs"
+import { Usuario } from "../shared/model/usuario"
+import { SharedService } from "../shared/service/shared.service"
+import { comparaSenhas } from "./validator/login"
 
 
 @Component({
@@ -77,7 +76,7 @@ export class LoginComponent implements OnInit {
 
   ativarLogin(){
     const validaSenha = this.formLogin.get('senha2')
-    
+
     this.formLogin.reset()
     this.formLogin.markAsPristine()
     this.cadastro = false
@@ -126,7 +125,7 @@ export class LoginComponent implements OnInit {
       this.conexaoAPI$ = this.service.loginUsuario(formulario).subscribe({
         next: (dado) => {
           console.log('Resposta: ', dado)
-          localStorage.setItem('usuario', JSON.stringify(formulario.username))
+          localStorage.setItem('usuario', JSON.stringify(dado))
           this.router.navigate(['/'])
         }
       })

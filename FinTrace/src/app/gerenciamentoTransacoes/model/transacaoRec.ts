@@ -1,8 +1,8 @@
-import { categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria"
 
-export interface transacaoRecorrente{
+export interface TransacaoRecorrente{
     type: string,
-    category: categoria
+    category: Categoria
     amount: number,
     date?: string,
     description: string

@@ -28,8 +28,8 @@ export class ErroInterceptorService implements HttpInterceptor{
           this.toast.error("Acesso não Autorizado");
         break
 
-        case error.message.includes("400") : 
-        console.log(error.error.data), 
+        case error.message.includes("400") :
+        
         this.toast.error(error.error.data ?? 'Erro ao realizar login. Confira as credenciais e tente novamente');
         ;
         break

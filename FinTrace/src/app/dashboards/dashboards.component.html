@@ -11,12 +11,23 @@
         <mat-icon>arrow_back</mat-icon>
       </button>
     </div>
+    <div class="ajustetxtd">
+      <button mat-raised-button (click)="criarHtMlPDF()" [class.mat-elevation-z8] class="botaoDownload">
+        <mat-icon class="icone">picture_as_pdf</mat-icon>Exportar relatório PDF
+      </button>
+    </div>
     <br>
-    <mat-card-content>
+
+    <div  id="conteudoPDF" #conteudoPDF>
+      
+      <mat-card-content>
         <app-dashboardDespesas />
         <app-dashboardFluxoCaixa />
         <app-dashboardResumo />
-    </mat-card-content>
+      </mat-card-content>
+    
+    </div>
+  
   </mat-card>
   
   <mat-grid-list cols="12" rowHeight="60px">

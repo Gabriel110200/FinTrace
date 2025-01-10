@@ -1,10 +1,10 @@
-import { HttpClient } from "@angular/common/http"
+import { HttpClient, HttpParams } from "@angular/common/http"
 import { Injectable } from "@angular/core"
 import { map, take } from "rxjs"
-import { categoria } from "src/app/gerenciamentoCategorias/model/categoria"
+import { Categoria } from "src/app/gerenciamentoCategorias/model/categoria"
 import { ResponseAPIList, ResponseAPI } from "src/app/shared/model/responseAPI"
-import { transacao } from "../model/transacao"
-import { transacaoRecorrente } from "../model/transacaoRec"
+import { SharedService } from "src/app/shared/service/shared.service"
+import { Transacao, CadTransacao } from "../model/transacao"
 
 
 @Injectable({
@@ -12,8 +12,11 @@ import { transacaoRecorrente } from "../model/transacaoRec"
 })
 export class TransacoesService {
 
+userId:number = +this.shared.obterId()
+
 constructor(
-  private http: HttpClient
+  private http: HttpClient,
+  private shared: SharedService
 ) { }
 
 obterTipoTransacao(transacao:string){
@@ -22,8 +25,9 @@ obterTipoTransacao(transacao:string){
       return 'Receita'
     case 'DESPESA':
       return 'Despesa'
+    default:
+      return
   }
-  return
 }
 
 obterClasseTransacao(transacao:string){
@@ -32,8 +36,9 @@ obterClasseTransacao(transacao:string){
       return 'marcarReceita'
     case 'DESPESA':
       return 'marcarDespesa'
+    default:
+      return
   }
-  return
 }
 
 obtemSaldoStatus(valor: number){
@@ -49,7 +54,9 @@ obtemSaldoStatus(valor: number){
   if(valor <= 0){
     return 'balancoNegativo'
   }
-  return
+  else{
+    return
+  }
 }
 
 retornaMes(mes: string): string {
@@ -108,7 +115,7 @@ retornaTotalReceitaPeriodo(transacoes:any[], periodo:string){
   //console.log('cheguei')
   let somaR = 0
   transacoes.forEach(transacao => {
-    if (transacao.type === 'RECEITA' && 
+    if (transacao.type === 'RECEITA' &&
         transacao.date.substring(5,7)===periodo
     ) {
         somaR += transacao.amount
@@ -120,7 +127,7 @@ retornaTotalReceitaPeriodo(transacoes:any[], periodo:string){
 retornaTotalDespesaPeriodo(transacoes:any[], periodo:string){
   let somaD = 0
   transacoes.forEach(transacao => {
-    if (transacao.type === 'DESPESA' && 
+    if (transacao.type === 'DESPESA' &&
         transacao.date.substring(5,7)===periodo
     ) {
         somaD += transacao.amount
@@ -139,49 +146,31 @@ formatarValor(valor: number): string {
 }
 
 listarTransacoes(){
-  return this.http.get<ResponseAPIList<transacao>>(`/api/transactions`)
+  const PARAMS = new HttpParams().set('userId', this.userId)
+
+  return this.http.get<ResponseAPIList<Transacao>>(`/api/transactions`, {
+    params: PARAMS
+  })
+  .pipe(
+    map((val) => val.data),
+    map((transacoes) => transacoes.filter((dado) => dado.category != null)),
+    take(1)
+  );
+}
+
+cadastrarTransacao(objeto:CadTransacao){
+  return this.http.post<ResponseAPI<Categoria>>(`/api/transactions`, objeto)
   .pipe(
     map((val) => val.data),
     take(1)
   );
 }
 
-cadastrarTransacao(objeto:transacao){
-  return this.http.post<ResponseAPI<categoria>>(`/api/transactions`, objeto)
-  .pipe(
-    map((val) => val.data),
-    take(1)
-  );
-}
-
-
-verificaLimiteGasto(lista:transacao[], insert:boolean){
+verificaLimiteGasto(lista:Transacao[], insert:boolean){
   const categorias: any[] = []
-  for(let i=0;i<lista.length;i++){
-    var novo = true
-    if(i == 0){
-      const par = {
-        categoria: lista[i].category.name,
-        tipo: lista[i].type,
-        valor: lista[i].amount,
-        limite: lista[i].category.limit,
-        mes: lista[i].date.substring(5,7),
-        ano: lista[i].date.substring(0,4),
-      }
-      categorias.push(par)
-    } else {
-      for(let j=0; j<categorias.length;j++){
-        if(
-          lista[i].category.name == categorias[j].categoria &&
-          lista[i].type == categorias[j].tipo &&
-          lista[i].date.substring(5,7) == categorias[j].mes &&
-          lista[i].date.substring(0,4) == categorias[j].ano
-         ){
-          novo = false
-          categorias[j].valor += lista[i].amount
-         }
-      }
-      if(novo){
+    for(let i=0;i<lista.length;i++){
+      let novo = true
+      if(i == 0){
         const par = {
           categoria: lista[i].category.name,
           tipo: lista[i].type,
@@ -191,8 +180,30 @@ verificaLimiteGasto(lista:transacao[], insert:boolean){
           ano: lista[i].date.substring(0,4),
         }
         categorias.push(par)
+      } else {
+        for(const element of categorias){
+          if(
+            lista[i].category.name == element.categoria &&
+            lista[i].type == element.tipo &&
+            lista[i].date.substring(5,7) == element.mes &&
+            lista[i].date.substring(0,4) == element.ano
+           ){
+            novo = false
+            element.valor += lista[i].amount
+           }
+        }
+        if(novo){
+          const par = {
+            categoria: lista[i].category.name,
+            tipo: lista[i].type,
+            valor: lista[i].amount,
+            limite: lista[i].category.limit,
+            mes: lista[i].date.substring(5,7),
+            ano: lista[i].date.substring(0,4),
+          }
+          categorias.push(par)
+        }
       }
-    }
   }
   console.log('minhas categorias: ', categorias)
   return this.checaDespesas(categorias, insert)
@@ -206,7 +217,7 @@ checaDespesas(categorias:any[], insert:boolean){
       if(dado.tipo == "DESPESA"){
         despesas.push(dado)
       }
-    } 
+    }
   )
 
   if(insert){
@@ -214,12 +225,12 @@ checaDespesas(categorias:any[], insert:boolean){
   } else {
     return this.tetoDeGastos(despesas)
   }
-  
+
   //this.tetoDeGastos(despesas)
 }
 
 verificaTransacaoExcedente(despesas:any[]){
-  var possuiExcedente = false 
+  let possuiExcedente = false
   despesas.forEach(
     (dado) => {
       if(dado.valor > dado.limite && dado.limite!=0){
@@ -246,9 +257,48 @@ tetoDeGastos(despesas:any[]){
   return execentes
 }
 
+obterMoedas(){
+  const moedas = [
+    "Real (BRL)",
+    "Dólar Americano (USD)",
+    "Euro (EUR)",
+    "Libra Esterlina (GBP)",
+    "Iene Japonês (JPY)",
+    "Franco Suíço (CHF)"
+  ];
 
+  return moedas
+}
 
+realizaCotacao(valor:number, moeda:string){
+  switch(moeda){
+    case 'Dólar Americano (USD)':
+      return valor*6.07
+    case 'Euro (EUR)':
+      return valor*6.30
+    case 'Libra Esterlina (GBP)':
+      return valor*7.47
+    case 'Iene Japonês (JPY)':
+      return valor*26
+    case 'Franco Suíço (CHF)':
+      return valor*6.70
+    default:
+      return valor
+  }
 
+}
+
+importarTransacoes(objeto:any){
+  const PARAMS = new HttpParams().set('userId', this.userId)
+
+  return this.http.post<ResponseAPI<any>>(`/api/transactions/import-transaction`, objeto, {
+    params: PARAMS
+  })
+  .pipe(
+    map((val) => val.data),
+    take(1)
+  );
+}
 
 }
 

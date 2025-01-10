@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Usuario } from '../model/usuario';
 import { map, take } from 'rxjs';
+import { FeatureFlag } from '../model/featureFlag';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { map, take } from 'rxjs';
 export class SharedService {
 
 constructor(
-  private http: HttpClient
+  private http: HttpClient,
 ) { }
 
 
@@ -27,14 +28,34 @@ constructor(
     console.log(formulario)
     return this.http.post(`/api/users/login`, formulario)
     .pipe(
-      map((val) => val),
+      map((val:any) => val.data),
       take(1)
     );
   }
 
-  obterUsuario(){
+  obterFeaturesUsuario(){
+    const idUser:number = this.obterId()
+
+    return this.http.get<ResponseAPI<FeatureFlag[]>>(`/api/feature-flag/${idUser}`)
+    .pipe(
+      map((val) => val.data),
+      take(1)
+    );
+  }
+
+  obterDados(){
     const user = localStorage.getItem('usuario')
     return JSON.parse(user!)
+  }
+
+  obterUsuario(){
+    const usr = this.obterDados()
+    return usr.username
+  }
+
+  obterId(){
+    const usr = this.obterDados()
+    return usr.id
   }
 
 }
