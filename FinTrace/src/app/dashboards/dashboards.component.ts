@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Route, Router } from '@angular/router';
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -8,16 +8,13 @@ import jsPDF from 'jspdf';
   templateUrl: './dashboards.component.html',
   styleUrls: ['./dashboards.component.css']
 })
-export class DashboardsComponent implements OnInit {
+export class DashboardsComponent {
 
   @ViewChild('conteudoPDF', {static:false}) el!: ElementRef
 
   constructor(
     private router: Router
   ) { }
-
-  ngOnInit() {
-  }
 
   home(){
     this.router.navigate(['/'])

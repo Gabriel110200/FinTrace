@@ -1,10 +1,9 @@
+import { Component, OnInit, ViewChild, Inject } from "@angular/core"
+import { MAT_DIALOG_DATA } from "@angular/material/dialog"
+import { MatPaginator } from "@angular/material/paginator"
+import { MatTableDataSource } from "@angular/material/table"
+import { TransacoesService } from "src/app/gerenciamentoTransacoes/service/transacoes.service"
 
-import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-
-import { TransacoesService } from 'src/app/gerenciamentoTransacoes/service/transacoes.service';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-gerMetas',

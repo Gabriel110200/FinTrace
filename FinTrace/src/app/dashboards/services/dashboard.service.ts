@@ -5,8 +5,6 @@ import { Injectable } from '@angular/core';
 })
 export class DashboardService {
 
-constructor() { }
-
   retornaAnos(){
     let intervalo = []
     const ano = + new Date(Date.now()).toISOString().substring(0,4)
@@ -18,7 +16,6 @@ constructor() { }
 
   retornaMeses(){
     let intervalo = []
-    const ano = + new Date(Date.now()).toISOString().substring(0,4)
     for(let i=1;i<=12;i++){
       if(i<10){
         intervalo.push(`0${i}`)

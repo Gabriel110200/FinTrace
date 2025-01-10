@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { CategoriaService } from '../service/categoria.service';
-import { categoria } from '../model/categoria';
+import { Categoria } from '../model/categoria';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -16,8 +16,8 @@ export class CadCategoriaLimiteComponent implements OnInit {
   cadastro!:FormGroup
   service$!:Subscription
   get$!:Subscription
-  categorias!:categoria[]
-  categoriaCadastrada = this.data.dado 
+  categorias!:Categoria[]
+  categoriaCadastrada = this.data.dado
 
   constructor(
     private form: FormBuilder,
@@ -51,7 +51,7 @@ export class CadCategoriaLimiteComponent implements OnInit {
 
   enviarCategoria(){
     const id = this.categoriaCadastrada.id
-    const categoriaCadastrada:categoria = {
+    const categoriaCadastrada:Categoria = {
       name: this.categoriaCadastrada.name,
       limit: this.cadastro.get('valor')?.value
     }

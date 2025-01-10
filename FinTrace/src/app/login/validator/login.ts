@@ -2,7 +2,7 @@ import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angu
 
 export function comparaSenhas(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-        // Verifica se o controle é um FormGroup
+
         const form = control as FormGroup;
 
         const senha = form.get("senha")?.value;
