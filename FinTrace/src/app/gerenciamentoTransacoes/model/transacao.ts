@@ -12,11 +12,12 @@ export interface transacao{
 
 export interface cadTransacao{
   userId: number,
-  categoryId: number | undefined,
+  categoryId: number | undefined | null,
   type: string,
   amount: number,
   date: string,
   description: string,
+  goalId: number | undefined | null,
   recurring: boolean
 }
 

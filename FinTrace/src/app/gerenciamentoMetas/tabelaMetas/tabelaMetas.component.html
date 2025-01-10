@@ -1,0 +1,118 @@
+<mat-tab-group>
+  <mat-tab label="Minhas Metas">
+
+    <section class="container" tabindex="0">
+
+      <table mat-table [dataSource]="dados" (scroll)="tableScroll($event)">
+
+
+        <ng-container matColumnDef="descricao">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            <mat-grid-list cols="12" rowHeight="20px">
+              <mat-grid-tile colspan="12"><h1> {{element.description}} </h1></mat-grid-tile>
+            </mat-grid-list>
+
+            <mat-grid-list cols="12" rowHeight="160px">
+              <mat-grid-tile colspan="12">
+                <mat-progress-spinner
+                  class="example-margin"
+                  [mode]="mode"
+                  [value]="calculaPorcentagem(element)">
+                </mat-progress-spinner>
+              </mat-grid-tile>
+            </mat-grid-list>
+
+            <mat-grid-list cols="12" rowHeight="40px">
+              <mat-grid-tile colspan="12"><h1> R$ {{element.currentValue}} | R$ {{element.necessaryValue}} </h1></mat-grid-tile>
+            </mat-grid-list>
+
+
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="descricao2">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let element">
+            Você alcançou {{calculaPorcentagem(element)}}% do seu objetivo!
+          </td>
+        </ng-container>
+
+
+        <ng-container matColumnDef="alteracao">
+          <th mat-header-cell *matHeaderCellDef style="height: 0px!important;">  </th>
+          <td mat-cell *matCellDef="let element">
+
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu" xPosition="before">
+              <button mat-menu-item (click)="atualizarMeta(element)">
+                <mat-icon class="icone">edit</mat-icon>
+                <span class="textoSelecao">Atualizar Meta</span>
+              </button>
+              <button mat-menu-item (click)="abrirTabela(element.transactions)">
+                <mat-icon class="icone">file_open</mat-icon>
+                <span class="textoSelecao">Visualizar histórico de transacoes da meta</span>
+              </button>
+              <button mat-menu-item (click)="remover(element.id)">
+                <mat-icon class="icone">delete</mat-icon>
+                <span class="textoSelecao">Excluir Categoria</span>
+              </button>
+            </mat-menu>
+
+
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="colunasTabela; sticky: true"></tr>
+        <tr mat-row *matRowDef="let linhas; columns: colunasTabela;"></tr>
+
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell centered-cell" colspan="6">Não há informações</td>
+        </tr>
+
+      </table>
+
+
+    </section>
+  </mat-tab>
+
+  <mat-tab label="Minhas Contas">
+
+    <section class="container" tabindex="0">
+
+      <div *ngIf="contasRecuperadas.length > 0">
+        <mat-grid-list cols="12" rowHeight="250px" gutterSize="10px">
+          <mat-grid-tile *ngFor="let acc of contasRecuperadas; let i = index" colspan="4">
+            <mat-card [ngStyle]="{'background-image': 'url(/assets/cartaoCredito.png)', 'background-size': 'cover', 'background-position': 'center', 'background-repeat': 'no-repeat', 'filter': getFilter(i), 'width': '300px',
+            'height': '170px'}">
+              <p style="margin-left: 22px;margin-top:78px">{{acc.name}}</p>
+              <p style="margin-left: 22px;margin-top:4px">Saldo: R$ {{acc.amount}}</p>
+            </mat-card>
+          </mat-grid-tile>
+        </mat-grid-list>
+      </div>
+
+      <div *ngIf="contasRecuperadas.length == 0">
+        <mat-grid-list cols="12" rowHeight="250px" gutterSize="10px">
+
+          <mat-grid-tile colspan="12" *ngIf="!this.carregando">
+              <p style="color: black;">Não há contas recuperadas<br><a style="color: red;" (click)="adicionaContas()">Clique aqui</a> para recuperar os dados de outras instituições financeiras</p>
+          </mat-grid-tile>
+
+          <mat-grid-tile colspan="12" class="loading-overlay" *ngIf="this.carregando">
+            <mat-spinner></mat-spinner>
+          </mat-grid-tile>
+
+        </mat-grid-list>
+      </div>
+
+    </section>
+
+    </mat-tab>
+
+
+
+
+</mat-tab-group>

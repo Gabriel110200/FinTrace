@@ -1,0 +1,45 @@
+<section class="container" tabindex="0">
+
+
+  <table mat-table [dataSource]="dados" (scroll)="tableScroll($event)">
+
+    <ng-container matColumnDef="transacao">
+        <th mat-header-cell *matHeaderCellDef>TIPO DE TRANSAÇÃO</th>
+        <td mat-cell *matCellDef="let element" class={{service.obterClasseTransacao(element.type)}}>
+          {{service.obterTipoTransacao(element.type)}}
+        </td>
+    </ng-container>
+
+  <ng-container matColumnDef="valor">
+    <th mat-header-cell *matHeaderCellDef>VALOR</th>
+    <td mat-cell *matCellDef="let element" class={{service.obterClasseTransacao(element.type)}}>
+        R$ {{element.amount}}
+    </td>
+  </ng-container>
+
+    <ng-container matColumnDef="data">
+        <th mat-header-cell *matHeaderCellDef> DATA TRANSAÇÃO </th>
+        <td mat-cell *matCellDef="let element" class={{service.obterClasseTransacao(element.type)}}>
+            {{element.date | date: 'dd/MM/yyyy'}}
+        </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="descricao">
+      <th mat-header-cell *matHeaderCellDef> DESCRIÇÃO </th>
+      <td mat-cell *matCellDef="let element" class={{service.obterClasseTransacao(element.type)}}>
+          {{element.description}}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunasTabela; sticky: true"></tr>
+    <tr mat-row *matRowDef="let linhas; columns: colunasTabela;"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell centered-cell" colspan="6">Não há informações</td>
+    </tr>
+
+  </table>
+
+
+</section>

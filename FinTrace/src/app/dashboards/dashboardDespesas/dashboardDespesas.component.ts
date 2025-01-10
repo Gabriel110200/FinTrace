@@ -42,7 +42,7 @@ export class DashboardDespesasComponent implements OnInit{
   ]
 
   mes:number = 0
-  campo:number = 2024
+  campo:number = 2025
   anos:number[] = this.dashboard.retornaAnos()
 
 
@@ -52,7 +52,7 @@ export class DashboardDespesasComponent implements OnInit{
   ){}
 
   ngOnInit() {
-    this.listagem(2024)
+    this.listagem(2025)
   }
 
   listagem(ano:number){

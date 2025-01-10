@@ -34,3 +34,13 @@ background-position: center!important;
 background-repeat: no-repeat!important;
 font-family: 'Roboto', sans-serif;
 }
+
+.anexo{
+  width:35px;
+  height:35px;
+  background-color: rgb(47, 142, 172)!important;
+  margin-top: 5px;
+  position:relative;
+  top:5px;
+  right:20px
+}

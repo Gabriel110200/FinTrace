@@ -106,7 +106,26 @@ export class TabelaTransacoesComponent implements OnInit {
     const valido = this.service.verificaLimiteGasto(dadosPreInsert, true)
 
     if(valido){
-      this.toast.error('Transação irá ultrapassar o limite de gastos para o mês. Transação não adicionada')
+      this.toast.error('Transação ultrapassou o limite de gastos para o mês. Tenha atenção nos gastos')
+
+      const transacao:cadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
+        (dado) => {
+          this.toast.success('Transacao cadastrada com sucesso')
+          this.recuperarTransacoes()
+        }
+      )
+
     } else {
       console.log(item)
 
@@ -117,6 +136,7 @@ export class TabelaTransacoesComponent implements OnInit {
         amount: item.amount,
         date: item.date,
         description: item.description,
+        goalId: null,
         recurring: item.recurring
       }
 
@@ -212,7 +232,26 @@ export class TabelaTransacoesComponent implements OnInit {
     const valido = this.service.verificaLimiteGasto(dadosPreInsert, true)
 
     if(valido){
-      this.toast.error('Transação recorrente irá ultrapassar o limite de gastos de um dos meses do período. Transação não adicionada')
+      this.toast.error('Transação ultrapassou o limite de gastos para o mês. Tenha atenção nos gastos')
+
+      const transacao:cadTransacao = {
+        userId: this.userId,
+        categoryId: item.category.id,
+        type: item.type,
+        amount: item.amount,
+        date: item.date,
+        description: item.description,
+        goalId: null,
+        recurring: item.recurring
+      }
+
+      this.post$ = this.transacoesService.cadastrarTransacao(transacao).subscribe(
+        (dado) => {
+          this.toast.success(`Transações recorrentes cadastradas com sucesso`);
+          this.recuperarTransacoes();
+        }
+      )
+
     } else {
 
       const transacao:cadTransacao = {
@@ -222,6 +261,7 @@ export class TabelaTransacoesComponent implements OnInit {
         amount: item.amount,
         date: item.date,
         description: item.description,
+        goalId: null,
         recurring: item.recurring
       }
 
@@ -669,7 +709,5 @@ export class TabelaTransacoesComponent implements OnInit {
   }
 
 }
-function swicth(mes: string) {
-  throw new Error('Function not implemented.');
-}
+
 

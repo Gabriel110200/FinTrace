@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { CadTransacaoComponent } from './cadTransacao/cadTransacao.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -16,6 +17,9 @@ import { categoria } from '../gerenciamentoCategorias/model/categoria';
 })
 export class GerenciamentoTransacoesComponent implements OnInit {
 
+  @Input()
+  requiredFileType!:string;
+
   pesquisa!:FormGroup
 
   tipoTransacao:any[] = [
@@ -28,6 +32,10 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   post$!:Subscription
 
   tipoCategoria!:categoria[]
+
+  fileName = '';
+  base64!:string | undefined
+  envioArquivo$!: Subscription
 
   meses:any[] = [
     'Janeiro',
@@ -44,7 +52,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
     'Dezembro',
   ]
 
-  anos:number[] = [] 
+  anos:number[] = []
 
 
   @ViewChild(TabelaTransacoesComponent)tabela!: TabelaTransacoesComponent
@@ -54,6 +62,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
     private form: FormBuilder,
     private router: Router,
     protected service: TransacoesService,
+    private toast: ToastrService,
     private categoriaService: CategoriaService
   ) { }
 
@@ -113,7 +122,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
   criaAnos(){
     const data = new Date()
     const anoAtual = data.getFullYear()
-    
+
     for (let i = 0; i < 20; i++) {
       this.anos.push(anoAtual - i);
     }
@@ -146,7 +155,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
           categoria: this.tipoCategoria
         }
       })
-  
+
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
           console.log('recorrente:',val)
@@ -164,7 +173,7 @@ export class GerenciamentoTransacoesComponent implements OnInit {
           categoria: this.tipoCategoria
         }
       })
-  
+
       dialogRef.afterClosed().subscribe(val=>{
         if(val){
           this.tabela?.adicionaRegistro(val)
@@ -172,9 +181,47 @@ export class GerenciamentoTransacoesComponent implements OnInit {
       })
 
     }
+  }
 
+  onFileSelected(event: any) {
+    console.log('abri file selected')
 
-    
+    const files: FileList = event.target.files;
+
+    console.log('debug file', files)
+
+    for (let i = 0; i < files.length; i++) {
+      const file: File = files[i];
+      this.fileName = file.name;
+      const extensao = this.retornaExtensao(file.name)
+
+      if (file.size > 1000000) {
+        this.toast.error(`Arquivo deve ser menor do que 5MB - ${file.name}`);
+      }
+      else if(extensao?.toLowerCase() != 'csv'){
+        this.toast.error(`Extensão do arquivo não suportada - ${file.name}`);
+      } else {
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        console.log(formData)
+
+        this.post$ = this.service.importarTransacoes(formData).subscribe(
+          (dado) => {
+            console.log(dado)
+            this.toast.success('Transações adicionadas com sucesso!')
+            this.tabela?.recuperarTransacoes()
+          }
+        )
+
+      }
+    }
+  }
+
+  retornaExtensao(nome:string){
+    const ext = nome.split(/[.]/g)
+    return ext[1]
   }
 
 }

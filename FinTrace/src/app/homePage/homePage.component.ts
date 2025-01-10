@@ -32,7 +32,10 @@ export class HomePageComponent implements OnInit {
   }
 
   logout(){
+    localStorage.removeItem('usuario');
+    sessionStorage.clear()
     localStorage.clear()
+    window.location.reload();
     this.router.navigate(['/login'])
   }
 
