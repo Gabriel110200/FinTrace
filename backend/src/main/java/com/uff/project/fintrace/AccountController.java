@@ -63,7 +63,7 @@ public class AccountController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllAccounts(@RequestParam Long userId) {
+    public ResponseEntity<Map<String, Object>> getAllAccounts(@RequestParam Long userId) {
         List<Account> accounts = accountRepository.findByUserId(userId);
         return buildResponse(accounts,true,null);
     }

@@ -2,7 +2,6 @@ package com.uff.project.fintrace.DTO;
 
 import com.opencsv.bean.CsvBindByName;
 
-import java.time.LocalDate;
 
 public class TransactionCsvDto {
 

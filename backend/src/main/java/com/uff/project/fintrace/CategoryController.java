@@ -40,7 +40,7 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllCategories(@RequestParam Long userId) {
+    public ResponseEntity<Map<String, Object>> getAllCategories(@RequestParam Long userId) {
         try {
             List<Category> categories = categoryRepository.findByUserId(userId);
             return buildResponse(categories, true, null);
@@ -51,7 +51,7 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<Map<String, Object>> createCategory(@RequestBody CategoryRequest categoryRequest) {
         try {
 
             User user = userRepository.findById(categoryRequest.getUserId())
@@ -73,7 +73,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getCategoryById(@PathVariable Long id) {
         try {
             Optional<Category> category = categoryRepository.findById(id);
             if (category.isPresent()) {
@@ -88,7 +88,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
+    public ResponseEntity<Map<String, Object>> updateCategory(@PathVariable Long id, @RequestBody Category categoryDetails) {
         try {
             Optional<Category> category = categoryRepository.findById(id);
             if (category.isPresent()) {
@@ -107,7 +107,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> deleteCategory(@PathVariable Long id) {
         try {
             Optional<Category> category = categoryRepository.findById(id);
             if (category.isPresent()) {
